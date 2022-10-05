@@ -28,7 +28,76 @@
             $("#footer").load("./assets/components/footer.html");
         });
     </script>
+    <style>
+        .progress {
+            width: 90px;
+            height: 90px;
+            background: none;
+            position: relative;
+        }
 
+        .progress::after {
+            content: "";
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            border: 6px solid #eee;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress>span {
+            width: 50%;
+            height: 100%;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            z-index: 1;
+        }
+
+        .progress .progress-left {
+            left: 0;
+        }
+
+        .progress .progress-bar {
+            width: 100%;
+            height: 100%;
+            background: none;
+            border-width: 6px;
+            border-style: solid;
+            position: absolute;
+            top: 0;
+        }
+
+        .progress .progress-left .progress-bar {
+            left: 100%;
+            border-top-right-radius: 80px;
+            border-bottom-right-radius: 80px;
+            border-left: 0;
+            -webkit-transform-origin: center left;
+            transform-origin: center left;
+        }
+
+        .progress .progress-right {
+            right: 0;
+        }
+
+        .progress .progress-right .progress-bar {
+            left: -100%;
+            border-top-left-radius: 80px;
+            border-bottom-left-radius: 80px;
+            border-right: 0;
+            -webkit-transform-origin: center right;
+            transform-origin: center right;
+        }
+
+        .progress .progress-value {
+            position: absolute;
+            top: 4px;
+            left: 0;
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -54,8 +123,70 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Blank Page</h1>
-
+                    <h1 class="h3 mb-4 text-gray-800">Dashboard</h1>
+                    <!-- List group -->
+                    <div class="list-group">
+                        <div class="list-group-item" aria-current="true">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h4 class="mb-1">My Plan</h4>
+                                <!-- <small>
+                                    <button type="button" class="btn btn-outline-secondary">See All ></button>
+                                </small> -->
+                            </div>
+                        </div>
+                        <a href="viewLearningJourney.html" class="list-group-item list-group-item-action" aria-current="true">
+                            <div class="d-flex w-100">
+                                <!--Progress bar-->
+                                <div class="mr-4">
+                                    <div class="progress mx-auto" data-value='75'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h5 font-weight-bold text-primary">75%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--//Progress bar-->
+                                
+                                <div>
+                                    <h5 class="mb-1">Learning Journey 2</h5>
+                                    <p class="mb-1"><i class="fas fa-fw fa-check-circle"></i>&nbsp;Course 1</p>
+                                    <p class="mb-1"><i class="fas fa-fw fa-exclamation-circle"></i>&nbsp;Course 1</p>
+                                </div>
+                            </div>
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                            <div class="d-flex w-100">
+                                <!--Progress bar-->
+                                <div class="mr-4">
+                                    <div class="progress mx-auto" data-value='25'>
+                                        <span class="progress-left">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <span class="progress-right">
+                                            <span class="progress-bar border-primary"></span>
+                                        </span>
+                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
+                                            <div class="h5 font-weight-bold text-primary">50%</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--//Progress bar-->
+                                
+                                <div>
+                                    <h5 class="mb-1">Learning Journey 2</h5>
+                                    <p class="mb-1"><i class="fas fa-fw fa-check-circle"></i>&nbsp;Course 1</p>
+                                    <p class="mb-1"><i class="fas fa-fw fa-exclamation-circle"></i>&nbsp;Course 1</p>
+                                    <p class="text-primary">3 additional tasks</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <!-- // List group-->
                 </div>
                 <!-- /.container-fluid -->
 
@@ -85,6 +216,32 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+
+    <script>
+        $(function() {
+
+            $(".progress").each(function() {
+
+                var value = $(this).attr('data-value');
+                var left = $(this).find('.progress-left .progress-bar');
+                var right = $(this).find('.progress-right .progress-bar');
+
+                if (value > 0) {
+                    if (value <= 50) {
+                    right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                    } else {
+                    right.css('transform', 'rotate(180deg)')
+                    left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                    }
+                }
+            })
+
+            function percentageToDegrees(percentage) {
+                return percentage / 100 * 360
+            }
+
+        });
+    </script>
 
 </body>
 
