@@ -1,14 +1,14 @@
-Skill_ID,Skill_Name,,Skill_Status
-0,Empty,,Active
-1,Teamwork,,Active
-2,Problem-solving,,Active
-3,Time management,,Active
-4,Critical thinking,,Active
-5,Decision-making,,Active
-6,Organizational,,Active
-7,Stress management,,Active
-8,Conflict management,,Active
-9,Adaptability,,Active
-10,Leadership,,Active
-11,Creativity,,Active
-12,Communication,,Active
+Skill_ID,Skill_Name,Skill_Status
+0,Empty,Active
+1,Teamwork,Active
+2,Problem-solving,Active
+3,Time management,Active
+4,Critical thinking,Active
+5,Decision-making,Active
+6,Organizational,Active
+7,Stress management,Active
+8,Conflict management,Active
+9,Adaptability,Active
+10,Leadership,Active
+11,Creativity,Active
+12,Communication,Active
