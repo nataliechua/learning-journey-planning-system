@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow" id="navApp">
 
     <!-- Sidebar Toggle (Topbar) -->
     <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
@@ -21,20 +21,16 @@
             <!-- Dropdown - User Information -->
             <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in"
                 aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" v-on:click="switchToStaff" v-if="(userid=='hr') && (switchToStaffAcct=='N')">
                     <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Profile
+                    Switch to Staff Account
                 </a>
-                <a class="dropdown-item" href="#">
-                    <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Settings
+                <a class="dropdown-item" v-on:click="switchToHR" v-if="(userid=='hr') && (switchToStaffAcct=='Y')">
+                    <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                    Switch to HR Account
                 </a>
-                <a class="dropdown-item" href="#">
-                    <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                    Activity Log
-                </a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
+                <div class="dropdown-divider" v-if="userid=='hr'"></div>
+                <a class="dropdown-item" v-on:click="logout">
                     <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
                     Logout
                 </a>
@@ -44,7 +40,89 @@
     </ul>
 
 </nav>
+<!-- Custom scripts for all pages-->
+<script src="js/sb-admin-2.min.js"></script>
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                loggedin: true, 
+                userid: "staff", 
+                switchToStaffAcct: "N"
+            }
+        },
+        created() { // created is a hook that executes as soon as Vue instance is created
+            // check if there's session
+            // console.log("nav's user id: " + getCookie('user_id'))
+            // console.log("navbar.html: getCookie('username') -> " ,getCookie('username'));
+            // console.log("navbar.html: getCookie('user_email') -> ", getCookie('user_email'));
+            
+            // check credentials  
+            if (getCookie('user_id') == null) {
+                this.loggedin = false;
+            }
+            else if (getCookie('user_id') == "staff") {
+                this.loggedin = true;
+                this.userid = "staff";
+            }
+            else if (getCookie('user_id') == "hr") {
+                this.loggedin = true;
+                this.userid = "hr";
+                this.switchToStaffAcct = getCookie('switch_to_staff_acct');
+            }
 
+            // cookie function
+            function getCookie(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+                for(let i = 0; i <ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                    }
+                }
+                return null;
+            }
 
- <!-- Custom scripts for all pages-->
- <script src="js/sb-admin-2.min.js"></script>
+            
+        },
+        methods: {
+            logout() {
+                sessionStorage.clear();
+                //localStorage.clear();
+                var cookies = document.cookie.split(";");
+
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i];
+                    var eqPos = cookie.indexOf("=");
+                    var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+                    document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+                }
+                window.location.href = "./login.html";
+            },
+            switchToStaff() {
+                
+                setCookie('switch_to_staff_acct', 'Y');
+                window.location.href = "./index.html";
+            },
+            switchToHR() {
+                
+                setCookie('switch_to_staff_acct', 'N');
+                window.location.href = "./HRviewAllRoles.html";
+            }
+        },
+        computed: {
+        }
+    }).mount('#navApp')
+    // setCookie
+    function setCookie(cname, cvalue) {
+        const d = new Date();
+        d.setDate(d.getDate() + 1); // expire in 1 day
+        let expires = "expires="+ d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";";
+    }
+</script>

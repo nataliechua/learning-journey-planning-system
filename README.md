@@ -19,3 +19,7 @@
 - Update skills required for a role
 - Get skills based on role
 - Get course based on skills
+
+## Frontend accounts
+- HR: id=hr; password=hr
+- Staff: id=staff; password=staff

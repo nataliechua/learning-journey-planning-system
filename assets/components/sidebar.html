@@ -12,34 +12,83 @@
     <hr class="sidebar-divider my-0">
 
     <!-- Nav Item - Dashboard -->
-    <li class="nav-item">
-        <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-house"></i>
-            <span>Dashboard</span></a>
-    </li>
+    <div v-if="(userid=='staff') || ((userid=='hr') && (switchToStaffAcct=='Y'))">
+        <li class="nav-item">
+            <a class="nav-link" href="index.html">
+                <i class="fas fa-fw fa-house"></i>
+                <span>Dashboard</span></a>
+        </li>
+    
+        <li class="nav-item">
+            <a class="nav-link" href="learningJourney.html">
+                <i class="fas fa-fw fa-compass"></i>
+                <span>Learning Journey</span></a>
+        </li>
+    </div>
+    <div v-if="(userid=='hr') && (switchToStaffAcct=='N')">
+        <hr class="sidebar-divider my-0">
+        <li class="nav-item">
+            <a class="nav-link" href="HRviewAllRoles.html">
+                <i class="fas fa-fw fa-user-tie"></i>
+                <span>Role</span></a>
+        </li>
 
-    <li class="nav-item">
-        <a class="nav-link" href="learningJourney.html">
-            <i class="fas fa-fw fa-compass"></i>
-            <span>Learning Journey</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-clipboard"></i>
-            <span>Course</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-lightbulb"></i>
-            <span>Skills</span></a>
-    </li>
-
-    <li class="nav-item">
-        <a class="nav-link" href="index.html">
-            <i class="fas fa-fw fa-cog"></i>
-            <span>Settings</span></a>
-    </li>
-
+        <li class="nav-item">
+            <a class="nav-link" href="HRviewAllSkills.html">
+                <i class="fas fa-fw fa-lightbulb"></i>
+                <span>Skills</span></a>
+        </li>
+    </div>
 </ul>
+
+<script>
+    Vue.createApp({
+        data() {
+            return {
+                userid: "staff", 
+                switchToStaffAcct: "N"
+            }
+        },
+        created() { // created is a hook that executes as soon as Vue instance is created
+            // check if there's session
+            // console.log("nav's user id: " + getCookie('user_id'))
+            // console.log("navbar.html: getCookie('username') -> " ,getCookie('username'));
+            // console.log("navbar.html: getCookie('user_email') -> ", getCookie('user_email'));
+            
+            // check credentials  
+            if (getCookie('user_id') == null) {
+                // change this to login page next time
+            }
+            else if (getCookie('user_id') == "staff") {
+                this.userid = "staff";
+            }
+            else if (getCookie('user_id') == "hr") {
+                this.userid = "hr";
+                this.switchToStaffAcct = getCookie('switch_to_staff_acct');
+                console.log("result: " , this.switchToStaffAcct);
+            }
+
+            // cookie function
+            function getCookie(cname) {
+                let name = cname + "=";
+                let decodedCookie = decodeURIComponent(document.cookie);
+                let ca = decodedCookie.split(';');
+                for(let i = 0; i <ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                    c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                    return c.substring(name.length, c.length);
+                    }
+                }
+                return null;
+            }
+        },
+        methods: {
+
+        },
+        computed: {
+        }
+    }).mount('#accordionSidebar')
+</script>

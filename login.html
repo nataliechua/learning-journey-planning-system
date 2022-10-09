@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>LJPS</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="css/styles.css" rel="stylesheet">
+    
+    <script src="vendor/jquery/jquery.min.js"></script>
+    <!-- VueJS -->
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        $(function () {
+            $("#sidebar").load("./assets/components/sidebar.html");
+            $("#topbar").load("./assets/components/topbar.html");
+            $("#footer").load("./assets/components/footer.html");
+        });
+    </script>
+
+</head>
+
+<body id="page-top">
+
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav"></nav>
+    <div class="container-fluid wrapper" id="login">
+        <div class="row bg-light py-5 mb-4">
+            <div class="col text-center ">
+                <h1 class="text-uppercase">Login</h1>
+            </div>
+        </div> 
+        <div class="row p-4">
+            <div class="col-md-6 col-12 mx-auto">
+                <!--Card-->
+                <div class="card">
+                    <div class="card-body">
+                        <!-- Show Err Msg - STARTS -->
+                        <div v-if="err" class="row p-4">
+                            <div class="col-12 col-md-6 mx-auto">
+                                <div class="card border-danger">
+                                    <div class="card-body">
+                                        <p class="card-text" v-html="errMsg"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Show Err Msg - ENDS -->
+                        <!-- Form - STARTS-->
+                        <form>
+                            <div class="m-3">
+                                <label for="patientIdInput" class="form-label">ID</label>
+                                <input type="text" class="form-control" id="idInput" aria-describedby="ID">
+                            </div>
+                            <div class="m-3">
+                                <label for="patientPasswordInput" class="form-label">Password</label>
+                                <input type="password" class="form-control" id="passwordInput">
+                            </div>
+                            <div class="d-grid gap-2 m-3">
+                                <button type="button" class="btn btn-primary" @click="checkPatient">Login</button>
+                            </div>
+                        </form>
+                        <!-- Form - ENDS-->
+                    </div>
+                </div>
+                <!--//Card-->
+            </div>
+        </div>
+    </div>
+    <footer id="footer"></footer>
+    <!-- Scroll to Top Button-->
+    <a class="scroll-to-top rounded" href="#page-top">
+        <i class="fas fa-angle-up"></i>
+    </a>
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    users: [
+                        {"hr":{"username": "hr", "password": "hr"}},
+                        {"staff":{"username": "staff", "password": "staff"}}
+                    ],
+                    err : false,
+                    errMsg : ""
+                }
+            },
+            created() {
+                // check credentials  
+                if (getCookie('user_type') != null) {
+
+                    var user_type = getCookie('user_type');
+                    if (user_type == "hr") {
+                        location.href = './HRviewAllRoles.html';
+                    }
+                    else if (user_type == "staff") {
+                        location.href = './index.html';
+                    }
+                }
+
+            },
+            methods: {
+                checkPatient() {
+                    this.err = false
+                    this.errMsg = ""
+                    var id = document.getElementById("idInput").value
+                    id = id.toLowerCase()
+                    var pwd = document.getElementById("passwordInput").value
+
+                    if (id == "hr" && pwd == "hr") {    
+                        setCookie('user_id', "hr");
+                        setCookie('user_type', "hr");
+                        setCookie('switch_to_staff_acct', "N");
+                        location.href = './HRviewAllRoles.html';
+                    }
+                    else if (id == "staff" && pwd == "staff") {
+                        setCookie('user_id', "staff");
+                        setCookie('user_type', "staff");
+                        location.href = './index.html';
+                    }
+                    else {
+                        this.err = true;
+                        this.errMsg = "Invalid Credentials"
+                    }
+                },
+                clearErr(){
+                    this.err = false
+                    this.errMsg = ""
+                }
+            }
+        });
+        const vm = app.mount("#login");
+
+        // setCookie
+        function setCookie(cname, cvalue) {
+            const d = new Date();
+            d.setDate(d.getDate() + 1); // expire in 1 day
+            let expires = "expires="+ d.toUTCString();
+            document.cookie = cname + "=" + cvalue + ";" + expires + ";";
+        }
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return null;
+        }
+    </script>
+    <!-- Bootstrap core JavaScript-->
+    <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Core plugin JavaScript-->
+    <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <!-- Custom scripts for all pages-->
+    <script src="js/sb-admin-2.min.js"></script>
+
+</body>
+
+</html>
