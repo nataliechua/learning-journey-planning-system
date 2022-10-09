@@ -9,12 +9,18 @@
 1. Error Code: 3948. Loading local data is disabled; this must be enabled on both the client and server sides
    Execute this line of statement: SET GLOBAL local-infile = TRUE;
    
-## Required API endpoints
-- Get all courses from LMS
+## API endpoints
+- Get all courses: http://localhost:5000/courses
+- Get all course registrations: http://localhost:5000/course_registrations
+- Get all course skills: http://localhost:5000/course_skills
+- Get all roles: http://localhost:5000/roles
+- Get all role skills: http://localhost:5000/role_skills
+- Get all skills: http://localhost:5000/skills
+- Get all staffs: http://localhost:5000/staffs
+- Get all user types: http://localhost:5000/user_types
+
 - Update course with skills
-- Get all skills
 - Update skill status
-- Get all roles
 - Update role status
 - Update skills required for a role
 - Get skills based on role
