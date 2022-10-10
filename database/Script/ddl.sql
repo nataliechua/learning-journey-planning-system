@@ -112,7 +112,7 @@ LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/userType.csv'
 INTO TABLE USER_TYPE  
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\n'   
+LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;
 
 /*Import Role CSV File*/ 
@@ -120,7 +120,7 @@ LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/role.csv'
 INTO TABLE ROLE   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\n'   
+LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;
 
 /*Import Skills CSV File*/ 
@@ -128,7 +128,7 @@ LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/skills.csv'
 INTO TABLE SKILL   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\n'   
+LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;  
 
 /*Import Staff CSV File*/ 
@@ -144,7 +144,7 @@ LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/courses.csv'
 INTO TABLE COURSE   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\n'   
+LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;  
 
 /*Import Course Registration CSV File*/ 
@@ -152,7 +152,7 @@ LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/registration.csv'
 INTO TABLE COURSE_REGISTRATION   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\n'   
+LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;  
 
 /*Simulate skills that are already assigned to course*/
@@ -171,4 +171,11 @@ VALUES
 (1, 7),
 (2, 1);
 
+/*Simulate journey that is created by user*/
+INSERT INTO ROLE_SKILL
+VALUES 
+(1, 1),
+(1, 5),
+(1, 7),
+(2, 1);
 select * from role_skill;
