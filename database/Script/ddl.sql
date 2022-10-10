@@ -31,6 +31,16 @@ CONSTRAINT rs_fk1 FOREIGN KEY (Role_ID) REFERENCES ROLE(Role_ID),
 CONSTRAINT rs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 );
 
+/*Simulate skills that are already assigned to role*/
+INSERT INTO ROLE_SKILL
+VALUES 
+(1, 1),
+(1, 5),
+(1, 7),
+(2, 1),
+(2, 2),
+(2, 3);
+
 CREATE TABLE STAFF
 (
 Staff_ID int NOT NULL PRIMARY KEY,
@@ -61,40 +71,70 @@ CONSTRAINT cs_fk1 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID),
 CONSTRAINT cs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 );
 
+/*Simulate skills that are already assigned to course*/
+INSERT INTO COURSE_SKILL
+VALUES 
+('COR001', 1),
+('COR001', 5),
+('COR001', 7),
+('COR002', 1),
+('tch008', 2),
+('MGT001', 3);
+
 CREATE TABLE JOURNEY
 (
 Journey_ID int NOT NULL PRIMARY KEY,
 Journey_Name varchar(30) NOT NULL,
 Staff_ID int NOT NULL,
 Role_ID int NOT NULL,
-Skill_ID int NOT NULL,
-Course_ID varchar(10) NOT NULL,
-Completion_Status varchar(15),
 CONSTRAINT journey_fk1 FOREIGN KEY (Staff_ID) REFERENCES STAFF(Staff_ID),
-CONSTRAINT journey_fk2 FOREIGN KEY (Role_ID) REFERENCES ROLE(Role_ID),
-CONSTRAINT journey_fk3 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID),
-CONSTRAINT journey_fk4 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
+CONSTRAINT journey_fk2 FOREIGN KEY (Role_ID) REFERENCES ROLE(Role_ID)
 );
+
+/*Simulate journey that is created by user*/
+INSERT INTO JOURNEY
+VALUES 
+(1, 'Aiming Data Analyst', 130001, 1),
+(2, 'I want to be a DC', 150008, 2);
 
 CREATE TABLE JOURNEY_SKILL
 (
 Journey_ID int NOT NULL,
+Course_ID varchar(10) NOT NULL,
 Skill_ID int NOT NULL,
 Completion_Status varchar(15),
-CONSTRAINT js_pk PRIMARY KEY (Journey_ID, Skill_ID),
+CONSTRAINT js_pk PRIMARY KEY (Journey_ID, Skill_ID, Course_ID),
 CONSTRAINT js_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
-CONSTRAINT js_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
+CONSTRAINT js_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID),
+CONSTRAINT js_fk3 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
 );
+
+/*Simulate journey_skill that is created by user*/
+INSERT INTO JOURNEY_SKILL
+VALUES 
+(1, 'COR001', 1, 'Completed'),
+(1, 'COR002', 5, 'Completed'),
+(2, 'COR002', 1, 'Completed'),
+(2, 'tch008', 2, 'Completed'),
+(2, 'MGT001', 3, 'OnGoing');
 
 CREATE TABLE JOURNEY_COURSE
 (
 Journey_ID int NOT NULL,
 Course_ID varchar(10) NOT NULL,
-Completion_Status varchar(15),
 CONSTRAINT jc_pk PRIMARY KEY (Journey_ID, Course_ID),
 CONSTRAINT jc_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
 CONSTRAINT jc_fk2 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
 );
+
+/*Simulate journey_course that is created by user*/
+INSERT INTO JOURNEY_COURSE
+VALUES 
+(1, 'COR001'),
+(1, 'COR002'),
+(2, 'COR002'),
+(2, 'tch008'),
+(2, 'MGT001');
 
 CREATE TABLE COURSE_REGISTRATION
 (
@@ -155,27 +195,13 @@ OPTIONALLY ENCLOSED BY '"'
 LINES TERMINATED BY '\r\n'   
 IGNORE 1 ROWS;  
 
-/*Simulate skills that are already assigned to course*/
-INSERT INTO COURSE_SKILL
-VALUES 
-('COR001', 1),
-('COR001', 5),
-('COR001', 7),
-('COR002', 1);
-
-/*Simulate skills that are already assigned to role*/
-INSERT INTO ROLE_SKILL
-VALUES 
-(1, 1),
-(1, 5),
-(1, 7),
-(2, 1);
-
-/*Simulate journey that is created by user*/
-INSERT INTO ROLE_SKILL
-VALUES 
-(1, 1),
-(1, 5),
-(1, 7),
-(2, 1);
-select * from role_skill;
+/*GET learning journey by role and user and learning journey role*/
+SELECT j.Journey_ID, j.Journey_Name, j.Staff_ID, r.Role_Name, c.Course_Name, cr.Completion_Status, s.Skill_Name
+FROM JOURNEY j
+INNER JOIN JOURNEY_COURSE jc ON j.Journey_ID = jc.Journey_ID
+INNER JOIN JOURNEY_SKILL js ON jc.Course_ID = js.Course_ID
+INNER JOIN COURSE c ON js.Course_ID = c.Course_ID
+INNER JOIN SKILL s ON s.Skill_ID = js.Skill_ID
+INNER JOIN ROLE r ON r.Role_ID = j.Role_ID
+RIGHT JOIN COURSE_REGISTRATION cr ON cr.Course_ID = jc.Course_ID
+WHERE j.Staff_ID = 130001 AND j.Role_ID = 1 AND j.Journey_ID = 1 AND cr.Staff_ID = j.Staff_ID AND j.journey_ID = js.journey_ID;
