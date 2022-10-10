@@ -67,6 +67,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
                             <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
+                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: Role 1</a></li>
                             <li class="breadcrumb-item"><a href="editLearningJourney.html">Edit</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Update courses</li>
                         </ol>
@@ -76,40 +77,46 @@
                             <form>
                                 <div class="form-group">
                                     <label for="name">Learning Journey Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter learning journey name" value="Learning Journey">
+                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter learning journey name" value="Learning Journey 1: Role 1">
                                 </div>
                                 <div class="form-group role">
                                     <label for="role">Role</label>
                                     <br>
-                                    <select class="selectpicker" id="role" data-live-search="true">
+                                    <select v-model="role" @change="changeRole()" class="selectpicker" id="role" data-live-search="true">
                                         <option value="" disabled></option>
-                                        <option selected>Role 1</option>
+                                        <option>Role 1</option>
                                         <option>Role 2</option>
                                         <option>Role 3</option>
                                         <option>Role 4</option>
                                     </select>
                                 </div>
-                                <div class="form-group skill">
-                                    <label for="skill">Skill</label>
-                                    <br>
-                                    <select class="selectpicker" id="skill" data-live-search="true">
-                                        <option value="" disabled></option>
-                                        <option selected >Skill 1</option>
-                                        <option>Skill 2</option>
-                                        <option>Skill 3</option>
-                                        <option>Skill 4</option>
-                                    </select>
-                                </div>
-                                <div class="form-group courses">
-                                    <label for="courses">Course</label>
-                                    <br>
-                                    <select class="selectpicker" id="courses" multiple data-live-search="true">
-                                        <option value="" disabled></option>
-                                        <option selected>Course 1</option>
-                                        <option>Course 2</option>
-                                        <option selected>Course 3</option>
-                                        <option>Course 4</option>
-                                    </select>
+                                <div class="form-group" v-for="(item, index) in skillAndCourses" :key="index">
+                                    <hr>
+                                    <div class="form-group">
+                                        <a id="add_row" class="btn btn-danger float-right" v-if="skillAndCourses.length>1" @click="removeSkill(index)">Remove</a>
+                                        <a id="add_row" class="btn btn-primary float-right mr-2" v-if="index==0" @click="addSkill">Add Skill</a>
+                                        <label for="skill">Skill</label>
+                                        <br>
+                                        <!-- <p>{{ item.skill }}</p> -->
+                                        <select v-model="item.skill" @change="changeSkill(index)" class="selectpicker" :name="`skillAndCourses[${index}][skill]`" data-live-search="true">
+                                            <option value="" disabled></option>
+                                            <option>Skill 1</option>
+                                            <option>Skill 2</option>
+                                            <option>Skill 3</option>
+                                            <option>Skill 4</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="courses">Course</label>
+                                        <br>
+                                        <select v-model="item.courses" class="selectpicker" :name="`skillAndCourses[${index}][courses]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
+                                            <option value="" disabled></option>
+                                            <option>Course 1</option>
+                                            <option>Course 2</option>
+                                            <option>Course 3</option>
+                                            <option>Course 4</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <button type="submit" class="btn btn-primary">Update</button>
                             </form>
@@ -143,13 +150,63 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
-        $('.role').change(function(){ 
-            $('.skill').show();
-            $('.courses').hide();
-        });
-        $('.skill').change(function(){ 
-            $('.courses').show();
-        });
+        Vue.createApp({
+        data() {
+            return { // hardcoded create data
+                role:"Role 1",
+                skillAndCourses: [ 
+                    {
+                        skill: "Skill 1",
+                        courses: ["Course 2"]
+                    },
+                    {
+                        skill: "Skill 2",
+                        courses: ["Course 2"]
+                    }
+                ]
+            }
+        },
+        created() { // created is a hook that executes as soon as Vue instance is created
+            
+        },
+        methods: {
+            addSkill() {
+                this.skillAndCourses.push({
+                    skill: "",
+                    courses: []
+                });
+                this.refreshSelectDropDown();
+            },
+            removeSkill(index) {
+                this.skillAndCourses.splice(index, 1);
+                console.log("JSON: ", JSON.stringify(this.skillAndCourses));
+                this.refreshSelectDropDown();
+            },
+            changeRole() {
+                this.skillAndCourses = [
+                    {
+                        skill: "",
+                        courses: [""]
+                    }
+                ];
+                this.refreshSelectDropDown();
+                $("#courses0").prop('disabled', true);
+            },
+            changeSkill(index) {
+                // populate courses frm db
+                // unhide courses
+                $("#courses"+index).prop('disabled', false);
+                this.refreshSelectDropDown();
+            },
+            refreshSelectDropDown() {
+                setTimeout(() => {
+                    jQuery('.selectpicker').selectpicker('refresh');
+                }, 100);
+            }
+        },
+        computed: {
+        }
+    }).mount('#page-top');
     </script>
 </body>
 
