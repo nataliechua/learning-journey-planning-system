@@ -155,9 +155,11 @@ IGNORE 1 ROWS;
 INSERT INTO ROLE_SKILL
 VALUES 
 (1, 1),
+(1, 5),
+(1, 7),
+(2, 1),
 (2, 2),
-(3, 3),
-(3, 4);
+(2, 3);
 
 /*Simulate skills that are already assigned to course*/
 INSERT INTO COURSE_SKILL
