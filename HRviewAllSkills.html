@@ -74,7 +74,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="skill in skills">
+                                    <tr v-for="skill in Active_skills" >
                                         <th scope="row">{{ skill.skill_id }}</th>
                                         <td>{{ skill.skill_name }}</td>
                                         <td>{{ skill.skill_status }}</td>
@@ -100,6 +100,18 @@
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
+                                <tbody>
+                                    <tr v-for="skill in Inactive_skills" >
+                                        <th scope="row">{{ skill.skill_id }}</th>
+                                        <td>{{ skill.skill_name }}</td>
+                                        <td>{{ skill.skill_status }}</td>
+                                        <td>
+                                            <a type="button" class="btn btn-primary" href="HReditSkill.html">Edit</a>
+                                        </td>
+                                    </tr>
+ 
+
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -131,7 +143,9 @@
 
         data() {
             return {
-                "skills": [],
+                "skills":[],
+                "Active_skills": [],
+                "Inactive_skills": [],
                 message: "There is a problem retrieving skills data, please try again later.",
 
             }
@@ -148,8 +162,23 @@
                                 // no skill in db
                                 this.message = data.message;
                             } else {
-                                console.log(data.data.skills);
                                 this.skills = data.data.skills
+                                console.log(this.skills);
+                                
+                                for(i=0;i<this.skills.length;i++){
+                                    currentSkill = this.skills[i];
+                                    // console.log(currentSkill);
+                                    currentSkillStatus = currentSkill.skill_status;
+                                    console.log(currentSkillStatus);
+                                    if(currentSkillStatus=="Active"){
+                                        this.Active_skills.push(currentSkill);
+                                    }else{
+                                        this.Inactive_skills.push(currentSkill);
+                                    }
+
+                                }
+                                console.log(this.Active_skills);
+                                console.log(this.Inactive_skills);
                             }
                         })
                         .catch(error => {
