@@ -34,6 +34,7 @@
 </head>
 
 <body id="page-top">
+    <div id="app" class="container">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -59,6 +60,10 @@
                     <div class="card">
                         <div class="card-body">
                             <a type="button" class="btn btn-primary float-right mb-3" href="HRaddSkill.html">Add <i class="fas fa-fw fa-plus-circle" style="color: #fff !important;"></i></a>
+                            
+                            <div>
+                                <b>Active Skills</b>
+                            </div>
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -69,31 +74,32 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Teamwork</td>
-                                        <td>Active</td>
+                                    <tr v-for="skill in skills">
+                                        <th scope="row">{{ skill.skill_id }}</th>
+                                        <td>{{ skill.skill_name }}</td>
+                                        <td>{{ skill.skill_status }}</td>
                                         <td>
                                             <a type="button" class="btn btn-primary" href="HReditSkill.html">Edit</a>
                                         </td>
                                     </tr>
-                                    <tr>
-                                        <th scope="row">2</th>
-                                        <td>Problem-solving</td>
-                                        <td>Active</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary">Edit</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">3</th>
-                                        <td>Time management</td>
-                                        <td>Active</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary">Edit</button>
-                                        </td>
-                                    </tr>
+ 
+
                                 </tbody>
+                            </table>
+
+                            <div>
+                                <b>Inactive Skills</b>
+                            </div>
+
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">ID</th>
+                                        <th scope="col">Skill</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
                             </table>
                         </div>
                     </div>
@@ -118,6 +124,51 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    <script>
+        const get_all_skills = "http://localhost:5000/skills";
+        const app = Vue.createApp({
+
+        data() {
+            return {
+                "skills": [],
+                message: "There is a problem retrieving skills data, please try again later.",
+
+            }
+        },
+        methods: {
+            getAllSkills() {
+                // on Vue instance created, load the book list
+                const response =
+                    fetch(get_all_skills)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                            } else {
+                                console.log(data.data.skills);
+                                this.skills = data.data.skills
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                    },
+                },
+                    created() {
+                        // on Vue instance created, load the book list
+                        this.getAllSkills();
+                    }
+                });
+
+                const vm = app.mount('#app');
+
+    </script>
     
     <!-- Bootstrap core JavaScript-->
     <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
@@ -127,6 +178,7 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+</div>
 
 </body>
 
