@@ -72,26 +72,75 @@
                             <li class="breadcrumb-item active" aria-current="page">Update courses</li>
                         </ol>
                     </nav>
+                    <!--View Learning Journey-->
+                    <div class="card">
+                        <div class="card-body">
+                            <br>
+                            <p class="h6 font-weight-bold"><i>Learning Journey 1: Role 1</i></p>
+                            <br>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Skill</th>
+                                        <th scope="col">Skill Status</th>
+                                        <th scope="col">Course</th>
+                                        <th scope="col">Course Status</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td rowspan="2" class="align-middle">Skill 1</td>
+                                        <td rowspan="2" class="align-middle">Completed</td>
+                                        <td>Course 1</td>
+                                        <td>Completed</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Course 2</td>
+                                        <td>Completed</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" class="align-middle">Skill 2</td>
+                                        <td rowspan="2" class="align-middle">Completed</td>
+                                        <td>Course 1</td>
+                                        <td>Completed</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Course 2</td>
+                                        <td>Completed</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td rowspan="2" class="align-middle">Skill 3</td>
+                                        <td rowspan="2" class="align-middle">In progress</td>
+                                        <td>Course 1</td>
+                                        <td>Completed</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Course 2</td>
+                                        <td>In progress （75%）</td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary">Remove</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br>
+                        </div>
+                    </div>
+                    <!--//View Learning Journey-->
+                    <br>
                     <div class="card">
                         <div class="card-body">
                             <form>
-                                <div class="form-group">
-                                    <label for="name">Learning Journey Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter learning journey name" value="Learning Journey 1: Role 1">
-                                </div>
-                                <div class="form-group role">
-                                    <label for="role">Role</label>
-                                    <br>
-                                    <select v-model="role" @change="changeRole()" class="selectpicker" id="role" data-live-search="true">
-                                        <option value="" disabled></option>
-                                        <option>Role 1</option>
-                                        <option>Role 2</option>
-                                        <option>Role 3</option>
-                                        <option>Role 4</option>
-                                    </select>
-                                </div>
+                                
+                                <!--Edit Learning Journey Form-->
                                 <div class="form-group" v-for="(item, index) in skillAndCourses" :key="index">
-                                    <hr>
+                                    <hr v-if="index!=0">
                                     <div class="form-group">
                                         <a id="add_row" class="btn btn-danger float-right" v-if="skillAndCourses.length>1" @click="removeSkill(index)">Remove</a>
                                         <a id="add_row" class="btn btn-primary float-right mr-2" v-if="index==0" @click="addSkill">Add Skill</a>
@@ -118,7 +167,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="submit" class="btn btn-primary mt-1">Update</button>
                             </form>
                         </div>
                     </div>
@@ -153,21 +202,25 @@
         Vue.createApp({
         data() {
             return { // hardcoded create data
-                role:"Role 1",
+                role:"",
                 skillAndCourses: [ 
-                    {
-                        skill: "Skill 1",
-                        courses: ["Course 2"]
-                    },
-                    {
-                        skill: "Skill 2",
-                        courses: ["Course 2"]
-                    }
+                    // {
+                    //     skill: "Skill 1",
+                    //     courses: ["Course 2"]
+                    // },
+                    // {
+                    //     skill: "Skill 2",
+                    //     courses: ["Course 2"]
+                    // }
                 ]
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
-            
+            this.skillAndCourses.push({
+                skill: "",
+                courses: []
+            });
+            this.refreshSelectDropDown();
         },
         methods: {
             addSkill() {
@@ -182,16 +235,16 @@
                 console.log("JSON: ", JSON.stringify(this.skillAndCourses));
                 this.refreshSelectDropDown();
             },
-            changeRole() {
-                this.skillAndCourses = [
-                    {
-                        skill: "",
-                        courses: [""]
-                    }
-                ];
-                this.refreshSelectDropDown();
-                $("#courses0").prop('disabled', true);
-            },
+            // changeRole() {
+            //     this.skillAndCourses = [
+            //         {
+            //             skill: "",
+            //             courses: [""]
+            //         }
+            //     ];
+            //     this.refreshSelectDropDown();
+            //     $("#courses0").prop('disabled', true);
+            // },
             changeSkill(index) {
                 // populate courses frm db
                 // unhide courses

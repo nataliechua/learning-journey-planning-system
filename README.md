@@ -26,6 +26,14 @@
 - Get skills based on role
 - Get course based on skills
 
+- Get all learning journey based on staff id
+- Add learning journey 
+- Get a learning journey based on learning journey id
+- Get existing skills that is not inside a learning journey based on learning journey id
+- Update skills and courses based on learning journey id
+- Remove course from skills
+- Remove learning journey
+
 ## Frontend accounts
 - HR: id=hr; password=hr
 - Staff: id=staff; password=staff
