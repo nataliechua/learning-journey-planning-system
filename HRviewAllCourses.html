@@ -53,7 +53,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid" id="record">
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text-gray-800">Courses</h1>
                     <div class="card">
@@ -64,26 +64,18 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" class="col-2">ID</th>
-                                            <th scope="col" class="col-2">Name</th>
-                                            <th scope="col" class="col-6">Skills Required</th>
+                                            <th scope="col" class="col-3">Name</th>
+                                            <th scope="col" class="col-5">Skills Required</th>
                                             <th scope="col" class="col-2"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Data Analyst</td>
-                                            <td>Skill 1, Skill 2</td>
+                                        <tr v-for="(course, index) in courseSkill">
+                                            <th scope="row">{{course.course_id}}</th>
+                                            <td>{{course.course_name}}</td>
+                                            <td>{{course.skill_name.join(', ')}}</td>
                                             <td>
-                                                <a type="button" class="btn btn-primary" href="HReditRole.html">Edit</a>
-                                            </td>
-                                        </tr>
-                                            <tr>
-                                            <th scope="row">2</th>
-                                            <td>Data Consultance</td>
-                                            <td>Keras, Tensorflow, Keras, Tensorflow</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary">Edit</button>
+                                                <a type="button" class="btn btn-primary" href="HReditCourseSkill.html">Edit</a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -102,26 +94,18 @@
                                     <thead>
                                         <tr>
                                             <th scope="col" class="col-2">ID</th>
-                                            <th scope="col" class="col-2">Name</th>
-                                            <th scope="col" class="col-6">Skills Required</th>
+                                            <th scope="col" class="col-3">Name</th>
+                                            <th scope="col" class="col-5">Skills Required</th>
                                             <th scope="col" class="col-2"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <th scope="row">1</th>
-                                            <td>Data Analyst</td>
-                                            <td>Skill 1, Skill 2</td>
+                                        <tr v-for="(course, index) in courseSkill">
+                                            <th scope="row">{{course.course_id}}</th>
+                                            <td>{{course.course_name}}</td>
+                                            <td>{{course.skill_name.join(', ')}}</td>
                                             <td>
-                                                <a type="button" class="btn btn-primary" href="HReditRole.html">Edit</a>
-                                            </td>
-                                        </tr>
-                                            <tr>
-                                            <th scope="row">2</th>
-                                            <td>Data Consultance</td>
-                                            <td>Keras, Tensorflow</td>
-                                            <td>
-                                                <button type="button" class="btn btn-primary">Edit</button>
+                                                <a type="button" class="btn btn-primary" href="HReditCourseSkill.html">Edit</a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -161,6 +145,48 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
+    <!--GET COURSE SKILL RECORD - STARTS-->
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    courseSkill: [
+                    {
+                        course_id: "COR001", 
+                        course_name: "Systems Thinking and Design",
+                        course_status: "Active",
+                        skill_id: [1, 4],
+                        skill_name: ["Teamwork", "Critical Thinking"],
+                        skill_status: ["Active", "Active"]
+                    }, 
+                    {
+                        course_id: "COR002", 
+                        course_name: "Lean Six Sigma Green Belt Certification",
+                        course_status: "Active",
+                        skill_id:[2],
+                        skill_name: ["Problem-solving"],
+                        skill_status: ["Active"]
+                    }, 
+                    {
+                        course_id: "MGT001", 
+                        course_name: "People Management",
+                        course_status: "Active",
+                        skill_id: [3],
+                        skill_name: ["Time management"],
+                        skill_status: ["Active"]
+                    }
+                    ]
+                }
+            },
+            methods: {
+                getPatientRecord() {
+                    
+                },
+            }
+        });
+        const vm = app.mount("#record");
+    </script>
+    <!--GET COURSE SKILL RECORD - ENDS-->
 </body>
 
 </html>

@@ -65,7 +65,7 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid" id="record">
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text-gray-800">Course Skills</h1>
@@ -75,9 +75,9 @@
                             <li class="breadcrumb-item active" aria-current="page">Edit course skills</li>
                         </ol>
                     </nav>
-                    <div class="card">
+                    <div class="card" v-for="course in courseSkill">
                         <div class="card-body">
-                            <h4 class="pb-3"><b>COR2001</b> Data Management</h4>
+                            <h4 class="pb-3"><b>{{course.course_id}}</b> {{course.course_name}}</h4>
 
                             <div class="table-responsive">
                                 <table class="table">
@@ -88,14 +88,19 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>Excel</td>
+                                        <tr v-for="skill in course.skill_name">
+                                            <td>{{skill}}</td>
                                             <td>
                                                 <button type="button" class="btn btn-danger">Remove</button>
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td><input type="text" id="skillName"></td>
+                                            <td>
+                                                <input class="form-control mb-5" list="datalistOptions" v-model="search" id="exampleDataList" placeholder="Search for a skill...">
+                                                <datalist id="datalistOptions">
+                                                <option v-for="skill in filteredSkills" :value="skill.skill_name">{{skill.skill_name}}</option>
+                                                </datalist>
+                                            </td>
                                             <td><button type="submit" class="btn btn-primary">Add</button></td>
                                         </tr>
                                     </tbody>
@@ -130,8 +135,85 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
+    <!--GET COURSE SKILL RECORD - STARTS-->
     <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    skills: [],
+                    courseSkill: [
+                    {
+                        course_id: "COR001", 
+                        course_name: "Systems Thinking and Design",
+                        course_status: "Active",
+                        skill_id: [1, 4],
+                        skill_name: ["Teamwork", "Critical thinking"],
+                        skill_status: ["Active", "Active"]
+                    }
+                    ],
+                    search: ""
+                }
+            },
+            methods: {
+                getPatientRecord() {
+                    
+                },
+                getSkillRecord() {
+                    $(async () => {
+                            // Change serviceURL to your own
+                            var serviceURL = "http://localhost:5000/skills";
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL, { method: 'GET' }
+                                    );
+                                const result = await response.json();
+                                if (result.code === 200) {
+                                    // success case
+                                    //this.searched = true
+                                    //this.err = false
+                                    this.skills = result.data.skills;
+                                    console.log(result.data.skills);
+                                } else if (result.code == 404) {
+                                    // No Such Patient Found
+                                    //this.err = true
+                                    //this.searched = false
+                                    //this.errMsg = result.message;
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    //throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                //this.err = true
+                                //this.searched = false
+                                //this.errMsg = 'There is a problem retrieving patients data, please try again later.<br />' + error;
+                            } // error
+                        });
+                }
+            },
+            computed:{
+                
+                filteredSkills (){
+                    var alreadyASkillArr = this.courseSkill[0].skill_name;
+                    console.log(alreadyASkillArr);
+                    if(this.search){
+                        return this.skills.filter((item)=>{
+                            return (item.skill_name.toLowerCase().startsWith(this.search) && !(alreadyASkillArr.includes(item.skill_name)));
+                        })
+                    }else{
+                        return this.skill;
+                    }
+                }
+            }, 
+            created() {
+                this.getSkillRecord();
+            }
+        });
+        const vm = app.mount("#record");
     </script>
+    <!--GET COURSE SKILL RECORD - ENDS-->
 
 </body>
 
