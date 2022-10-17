@@ -71,25 +71,16 @@ CONSTRAINT journey_fk1 FOREIGN KEY (Staff_ID) REFERENCES STAFF(Staff_ID),
 CONSTRAINT journey_fk2 FOREIGN KEY (Role_ID) REFERENCES ROLE(Role_ID)
 );
 
-CREATE TABLE JOURNEY_SKILL
+CREATE TABLE JOURNEY_SKILL_COURSE
 (
 Journey_ID int NOT NULL,
 Course_ID varchar(10) NOT NULL,
 Skill_ID int NOT NULL,
 Completion_Status varchar(15),
-CONSTRAINT js_pk PRIMARY KEY (Journey_ID, Skill_ID, Course_ID),
-CONSTRAINT js_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
-CONSTRAINT js_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID),
-CONSTRAINT js_fk3 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
-);
-
-CREATE TABLE JOURNEY_COURSE
-(
-Journey_ID int NOT NULL,
-Course_ID varchar(10) NOT NULL,
-CONSTRAINT jc_pk PRIMARY KEY (Journey_ID, Course_ID),
-CONSTRAINT jc_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
-CONSTRAINT jc_fk2 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
+CONSTRAINT jsc_pk PRIMARY KEY (Journey_ID, Skill_ID, Course_ID),
+CONSTRAINT jsc_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
+CONSTRAINT jsc_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID),
+CONSTRAINT jsc_fk3 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID)
 );
 
 CREATE TABLE COURSE_REGISTRATION
@@ -176,28 +167,19 @@ VALUES
 (2, 'I want to be a DC', 150008, 2);
 
 /*Simulate journey_skill that is created by user*/
-INSERT INTO JOURNEY_SKILL
+INSERT INTO JOURNEY_SKILL_COURSE
 VALUES 
 (1, 'COR001', 1, 'Completed'),
 (1, 'COR002', 4, 'Completed'),
 (2, 'COR002', 1, 'Completed'),
 (2, 'MGT001', 3, 'OnGoing');
 
-/*Simulate journey_course that is created by user*/
-INSERT INTO JOURNEY_COURSE
-VALUES 
-(1, 'COR001'),
-(1, 'COR002'),
-(2, 'COR002'),
-(2, 'MGT001');
-
 /*GET learning journey by role and user and learning journey role*/
 SELECT j.Journey_ID, j.Journey_Name, j.Staff_ID, r.Role_Name, c.Course_Name, cr.Completion_Status, s.Skill_Name
 FROM JOURNEY j
-INNER JOIN JOURNEY_COURSE jc ON j.Journey_ID = jc.Journey_ID
-INNER JOIN JOURNEY_SKILL js ON jc.Course_ID = js.Course_ID
-INNER JOIN COURSE c ON js.Course_ID = c.Course_ID
-INNER JOIN SKILL s ON s.Skill_ID = js.Skill_ID
+INNER JOIN JOURNEY_SKILL_COURSE jsc ON j.Journey_ID = jsc.Journey_ID
+INNER JOIN COURSE c ON jsc.Course_ID = c.Course_ID
+INNER JOIN SKILL s ON s.Skill_ID = jsc.Skill_ID
 INNER JOIN ROLE r ON r.Role_ID = j.Role_ID
-RIGHT JOIN COURSE_REGISTRATION cr ON cr.Course_ID = jc.Course_ID
-WHERE j.Staff_ID = 130001 AND j.Role_ID = 1 AND j.Journey_ID = 1 AND cr.Staff_ID = j.Staff_ID AND j.journey_ID = js.journey_ID;
+RIGHT JOIN COURSE_REGISTRATION cr ON cr.Course_ID = jsc.Course_ID
+WHERE j.Staff_ID = 130001 AND j.Role_ID = 1 AND j.Journey_ID = 1 AND cr.Staff_ID = j.Staff_ID AND j.journey_ID = jsc.journey_ID;
