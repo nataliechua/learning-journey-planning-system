@@ -31,8 +31,12 @@
 - Get a learning journey based on learning journey id
 - Get existing skills that is not inside a learning journey based on learning journey id
 - Update skills and courses based on learning journey id
-- Remove course from skills
 - Remove learning journey
+
+- Get all active skills
+- Get all course + skills details based on course status
+- Add skill to course
+- Remove course from skills
 
 ## Frontend accounts
 - HR: id=hr; password=hr
