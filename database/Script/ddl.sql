@@ -76,7 +76,6 @@ CREATE TABLE JOURNEY_SKILL_COURSE
 Journey_ID int NOT NULL,
 Course_ID varchar(10) NOT NULL,
 Skill_ID int NOT NULL,
-Completion_Status varchar(15),
 CONSTRAINT jsc_pk PRIMARY KEY (Journey_ID, Skill_ID, Course_ID),
 CONSTRAINT jsc_fk1 FOREIGN KEY (Journey_ID) REFERENCES JOURNEY(Journey_ID),
 CONSTRAINT jsc_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID),
@@ -169,10 +168,10 @@ VALUES
 /*Simulate journey_skill that is created by user*/
 INSERT INTO JOURNEY_SKILL_COURSE
 VALUES 
-(1, 'COR001', 1, 'Completed'),
-(1, 'COR002', 4, 'Completed'),
-(2, 'COR002', 1, 'Completed'),
-(2, 'MGT001', 3, 'OnGoing');
+(1, 'COR001', 1),
+(1, 'COR002', 4),
+(2, 'COR002', 1),
+(2, 'MGT001', 3);
 
 /*GET learning journey by role and user and learning journey role*/
 SELECT j.Journey_ID, j.Journey_Name, j.Staff_ID, r.Role_Name, c.Course_Name, cr.Completion_Status, s.Skill_Name
