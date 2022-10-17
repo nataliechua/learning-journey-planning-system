@@ -2,12 +2,6 @@ DROP SCHEMA IF EXISTS G3T07ddl;
 CREATE SCHEMA G3T07ddl;
 USE G3T07ddl;
 
-CREATE TABLE USER_TYPE
-(
-UserType_ID int NOT NULL PRIMARY KEY,
-UserType_Name varchar(20) NOT NULL
-);
-
 CREATE TABLE ROLE
 (
 Role_ID int NOT NULL PRIMARY KEY,
@@ -38,8 +32,7 @@ Staff_FName varchar(30) NOT NULL,
 Staff_LName varchar(30) NOT NULL,
 Dept varchar(50) NOT NULL,
 Email varchar(50) NOT NULL,
-User_Type int NOT NULL,
-CONSTRAINT Staff_fk1 FOREIGN KEY (User_Type) REFERENCES User_Type(UserType_ID)
+User_Type varchar(20) NOT NULL
 );
 
 CREATE TABLE COURSE
@@ -92,14 +85,6 @@ Completion_Status varchar(15),
 CONSTRAINT cr_fk1 FOREIGN KEY (Course_ID) REFERENCES COURSE(Course_ID),
 CONSTRAINT cr_fk2 FOREIGN KEY (Staff_ID) REFERENCES STAFF(Staff_ID)
 );
-
-/*Import User Type CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/userType.csv'
-INTO TABLE USER_TYPE  
-FIELDS TERMINATED BY ','  
-OPTIONALLY ENCLOSED BY '"'  
-LINES TERMINATED BY '\r\n'   
-IGNORE 1 ROWS;
 
 /*Import Role CSV File*/ 
 LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/role.csv'
