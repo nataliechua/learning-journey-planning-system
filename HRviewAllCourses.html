@@ -55,7 +55,8 @@
                 <!-- Begin Page Content -->
                 <div class="container-fluid" id="record">
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Courses</h1>
+                    <h1 class="h3 mb-4 text-gray-800">Courses</h1>              
+                    <!--Card for Active Course - STARTS-->
                     <div class="card">
                         <div class="card-body">
                             <h4>Active</h4>
@@ -69,28 +70,51 @@
                                             <th scope="col" class="col-2"></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="(course, index) in courseSkill">
+                                    
+                                    <tbody v-if="activeLoading">
+                                        <tr>
+                                            <td colspan="4">
+                                                <!--Spinner-->
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <div class="spinner-border" role="status">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <strong>Please wait while we are fetching the records...</strong>
+                                                </div>
+                                                <!--//Spinner-->  
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="activeErr">
+                                        <tr>
+                                            <td colspan="4" style="color:red;">{{this.activeErrMsg}}</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="!activeErr && !activeLoading">
+                                        <tr v-for="(course, index) in activeCourseDetails">
                                             <th scope="row">{{course.course_id}}</th>
                                             <td>{{course.course_name}}</td>
-                                            <td>{{course.skill_name.join(', ')}}</td>
+                                            <td>{{course.course_skills.map((list) => list.skill_name).join(", ")}}</td>
                                             <td>
-                                                <a type="button" class="btn btn-primary" href="HReditCourseSkill.html">Edit</a>
+                                                <a :id="course.course_id" type="button" class="btn btn-primary" href="#" @click="changeHref(course.course_id)">Edit</a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
-                            
                         </div>
                     </div>
+                    <!--Card for Active Course - Ends-->
 
-                    <!--Card for Inactive Course-->
+                    <!--Card for Pending Course-->
                     <div class="card my-4">
                         <div class="card-body">
-                            <h4>Inactive</h4>
+                            <h4>Pending</h4>
                             <div class="table-responsive">
-                                <table class="table ">
+                                <table class="table">
                                     <thead>
                                         <tr>
                                             <th scope="col" class="col-2">ID</th>
@@ -99,13 +123,36 @@
                                             <th scope="col" class="col-2"></th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr v-for="(course, index) in courseSkill">
+                                    
+                                    <tbody v-if="pendingLoading">
+                                        <tr>
+                                            <td colspan="4">
+                                                <!--Spinner-->
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <div class="spinner-border" role="status">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <strong>Please wait while we are fetching the records...</strong>
+                                                </div>
+                                                <!--//Spinner-->  
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="pendingErr">
+                                        <tr>
+                                            <td colspan="4" style="color:red;">{{this.pendingErrMsg}}</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="!pendingErr && !pendingLoading">
+                                        <tr v-for="(course, index) in pendingCourseDetails">
                                             <th scope="row">{{course.course_id}}</th>
                                             <td>{{course.course_name}}</td>
-                                            <td>{{course.skill_name.join(', ')}}</td>
+                                            <td>{{course.course_skills.map((list) => list.skill_name).join(", ")}}</td>
                                             <td>
-                                                <a type="button" class="btn btn-primary" href="HReditCourseSkill.html">Edit</a>
+                                                <a :id="course.course_id" type="button" class="btn btn-primary" href="#" @click="changeHref(course.course_id)">Edit</a>
                                             </td>
                                         </tr>
                                     </tbody>
@@ -113,7 +160,60 @@
                             </div>
                         </div>
                     </div>
-                    <!-- End of Card for Inactive Course-->
+                    <!-- End of Card for Pending Course-->
+
+                    <!--Card for Retired Course-->
+                    <div class="card my-4">
+                        <div class="card-body">
+                            <h4>Retired</h4>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="col-2">ID</th>
+                                            <th scope="col" class="col-3">Name</th>
+                                            <th scope="col" class="col-5">Skills Required</th>
+                                            <th scope="col" class="col-2"></th>
+                                        </tr>
+                                    </thead>
+                                    
+                                    <tbody v-if="retiredLoading">
+                                        <tr>
+                                            <td colspan="4">
+                                                <!--Spinner-->
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <div class="spinner-border" role="status">
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <strong>Please wait while we are fetching the records...</strong>
+                                                </div>
+                                                <!--//Spinner-->  
+                                            </td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="retiredErr">
+                                        <tr>
+                                            <td colspan="4" style="color:red;">{{this.retiredErrMsg}}</td>
+                                        </tr>
+                                    </tbody>
+
+                                    <tbody v-if="!retiredErr && !retiredLoading">
+                                        <tr v-for="(course, index) in retiredCourseDetails">
+                                            <th scope="row">{{course.course_id}}</th>
+                                            <td>{{course.course_name}}</td>
+                                            <td>{{course.course_skills.map((list) => list.skill_name).join(", ")}}</td>
+                                            <td>
+                                                <a :id="course.course_id" type="button" class="btn btn-primary" href="#" @click="changeHref(course.course_id)">Edit</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End of Card for Retired Course-->
 
                 </div>
                 <!-- /.container-fluid -->
@@ -150,41 +250,155 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    courseSkill: [
-                    {
-                        course_id: "COR001", 
-                        course_name: "Systems Thinking and Design",
-                        course_status: "Active",
-                        skill_id: [1, 4],
-                        skill_name: ["Teamwork", "Critical Thinking"],
-                        skill_status: ["Active", "Active"]
-                    }, 
-                    {
-                        course_id: "COR002", 
-                        course_name: "Lean Six Sigma Green Belt Certification",
-                        course_status: "Active",
-                        skill_id:[2],
-                        skill_name: ["Problem-solving"],
-                        skill_status: ["Active"]
-                    }, 
-                    {
-                        course_id: "MGT001", 
-                        course_name: "People Management",
-                        course_status: "Active",
-                        skill_id: [3],
-                        skill_name: ["Time management"],
-                        skill_status: ["Active"]
-                    }
-                    ]
+                    activeCourseDetails: [],
+                    activeErrMsg: "",
+                    activeErr: false,
+                    activeLoading: true,
+
+                    pendingCourseDetails: [],
+                    pendingErrMsg: "",
+                    pendingErr: false,
+                    pendingLoading: true,
+
+                    retiredCourseDetails: [],
+                    retiredErrMsg: "",
+                    retiredErr: false,
+                    retiredLoading: true
                 }
             },
             methods: {
-                getPatientRecord() {
-                    
+                getActiveCourseDetails() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/courses_skills_by_course_status/active";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, 
+                                    { 
+                                        method: 'GET',
+                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
+                                    }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.activeLoading = false
+                                this.activeErr = false
+                                this.activeCourseDetails = result.data.courses;
+                                
+                            } else if (result.code == 404) {
+                                // No records
+                                this.activeLoading = false
+                                this.activeErr = true
+                                this.activeErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.activeLoading = false
+                                this.activeErr = true
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.activeLoading = false
+                            this.activeErr = true
+                            this.activeErrMsg = 'There is a problem retrieving active course record, please try again later.<br />' + error;
+                        } // error
+                        });
                 },
+                getRetiredCourseDetails() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/courses_skills_by_course_status/retired";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, 
+                                    { 
+                                        method: 'GET',
+                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
+                                    }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.retiredLoading = false
+                                this.retiredErr = false
+                                this.retiredCourseDetails = result.data.courses;
+                                
+                            } else if (result.code == 404) {
+                                // No records
+                                this.retiredLoading = false
+                                this.retiredErr = true
+                                this.retiredErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.retiredLoading = false
+                                this.retiredErr = true
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.retiredLoading = false
+                            this.retiredErr = true
+                            this.retiredErrMsg = 'There is a problem retrieving retired course record, please try again later.<br />' + error;
+                        } // error
+                    });
+                },
+                getPendingCourseDetails() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/courses_skills_by_course_status/pending";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, 
+                                    { 
+                                        method: 'GET',
+                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
+                                    }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.pendingLoading = false
+                                this.pendingErr = false
+                                this.pendingCourseDetails = result.data.courses;
+                                
+                            } else if (result.code == 404) {
+                                // No records
+                                this.pendingLoading = false
+                                this.pendingErr = true
+                                this.pendingErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.pendingLoading = false
+                                this.pendingErr = true
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.pendingLoading = false
+                            this.pendingErr = true
+                            this.pendingErrMsg = 'There is a problem retrieving pending course record, please try again later.<br />' + error;
+                        } // error
+                    });
+                },
+                changeHref(courseId){
+                    document.getElementById(courseId).setAttribute("href", "HReditCourseSkill.html?course_id=" + courseId)
+                }
+            }, 
+            created(){
+                this.getActiveCourseDetails();
+                this.getPendingCourseDetails();
+                this.getRetiredCourseDetails();
             }
         });
         const vm = app.mount("#record");
+        
     </script>
     <!--GET COURSE SKILL RECORD - ENDS-->
 </body>
