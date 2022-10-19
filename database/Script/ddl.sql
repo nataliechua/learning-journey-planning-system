@@ -141,6 +141,8 @@ INSERT INTO COURSE_SKILL
 VALUES 
 ('COR001', 1),
 ('COR001', 4),
+('tch001', 5),
+('SAL003', 7),
 ('COR002', 2),
 ('MGT001', 3);
 

@@ -262,7 +262,7 @@
 			]
 		},
 		{
-			"name": "update skill status",
+			"name": "update skill status by skill id",
 			"request": {
 				"method": "PUT",
 				"header": [],
@@ -343,6 +343,180 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"skill_id\": 5,\n        \"skill_name\": \"Decision-making\",\n        \"skill_status\": \"Retired\"\n    },\n    \"message\": \"Status for skill id = 5 updated successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "create journey skill course",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"journey_id\": 2,\r\n    \"skill_id\": 6,\r\n    \"course_id\": \"SAL004\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/journey_skill_course/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"journey_skill_course",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create journey skill course",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"journey_id\": 2,\r\n    \"skill_id\": 6,\r\n    \"course_id\": \"SAL004\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/journey_skill_course/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"journey_skill_course",
+								"create"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "169"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.0.2 Python/3.8.1"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 18 Oct 2022 03:34:45 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"course_id\": \"SAL004\",\n        \"journey_id\": 2,\n        \"skill_id\": 6\n    },\n    \"message\": \"Journey skill course pair created successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "create journey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"journey\":{\r\n        \"journey_id\":40,\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":1\r\n\r\n    },\r\n    \"journey_skill_course\": [\r\n        {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 7,\r\n            \"course_id\": \"SAL003\"\r\n        },\r\n                {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 5,\r\n            \"course_id\": \"tch001\"\r\n        }\r\n\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/journey/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"journey",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create journey",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"journey\":{\r\n        \"journey_id\":40,\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":1\r\n\r\n    },\r\n    \"journey_skill_course\": [\r\n        {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 7,\r\n            \"course_id\": \"SAL003\"\r\n        },\r\n                {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 5,\r\n            \"course_id\": \"tch001\"\r\n        }\r\n\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/journey/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"journey",
+								"create"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 19 Oct 2022 04:44:51 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "479"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"journey\": {\n            \"journey_id\": 40,\n            \"journey_name\": \"create journey test\",\n            \"role_id\": 1,\n            \"staff_id\": 140008\n        },\n        \"journey_skill_course\": [\n            {\n                \"course_id\": \"SAL003\",\n                \"journey_id\": 40,\n                \"skill_id\": 7\n            },\n            {\n                \"course_id\": \"tch001\",\n                \"journey_id\": 40,\n                \"skill_id\": 5\n            }\n        ]\n    },\n    \"message\": \"Jounrey and journey skill course pair(s) created successfully.\"\n}"
 				}
 			]
 		}

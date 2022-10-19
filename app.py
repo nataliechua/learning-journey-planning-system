@@ -122,7 +122,6 @@ class Journey_Skill_Course(db.Model):
     journey_id = db.Column(db.Integer, db.ForeignKey('journey.journey_id'), nullable=False)
     course_id = db.Column(db.String(10),db.ForeignKey('course.course_id'), nullable=False)
     skill_id = db.Column(db.Integer,db.ForeignKey('skill.skill_id'),nullable=False)
-    completion_status = db.Column(db.String(15))
 
     __table_args__=(
         db.PrimaryKeyConstraint(
@@ -130,11 +129,10 @@ class Journey_Skill_Course(db.Model):
         ),
     )
 
-    def __init__(self,journey_id,course_id,skill_id,completion_status):
+    def __init__(self,journey_id,course_id,skill_id,):
         self.journey_id=journey_id
         self.course_id=course_id
         self.skill_id=skill_id
-        self.completion_status=completion_status
 
     def to_dict(self):
         columns = self.__mapper__.column_attrs.keys()
@@ -212,7 +210,7 @@ class Staff(db.Model):
     staff_lname = db.Column(db.String(30), nullable=False)
     dept = db.Column(db.String(50), nullable=False)
     email = db.Column(db.String(50), nullable=False)
-    user_type = db.Column(db.Integer,db.ForeignKey('user_type.usetype_id'), nullable=False)
+    user_type = db.Column(db.String(20), nullable=False)
 
     def __init__(self,staff_id,staff_fname,staff_lname,dept,email,user_type):
         self.staff_id=staff_id
@@ -257,26 +255,9 @@ class Staff(db.Model):
 #             result = self.hourly_rate * (num_mins / 60)
 #         return result
 
-class User_Type(db.Model):
-    __tablename__ = 'user_type'
 
-    usertype_id = db.Column(db.Integer,primary_key=True, nullable=False)
-    usertype_name = db.Column(db.String(20), nullable=False)
-
-    def __init__(self,usertype_id,usertype_name):
-        self.usertype_id=usertype_id
-        self.usertype_name=usertype_name
-
-    def to_dict(self):
-        columns = self.__mapper__.column_attrs.keys()
-        result = {}
-        for column in columns:
-            result[column] = getattr(self, column)
-        return result
-
-db.create_all()
-
-
+with app.app_context():
+    db.create_all()
 ######################################################################################################
 #ROUTES TO RETRIEVE INFO
 ######################################################################################################
@@ -323,11 +304,13 @@ def get_course_by_id(id):
 @app.route("/courses/<string:status>")
 def get_courses_by_status(status):
     clist = Course.query.filter_by(course_status=status)
-    if clist:
+    if clist.count():
         return jsonify(
             {
                 "code": 200,
-                "data": [course.to_dict() for course in clist]
+                "data": {
+                    "courses": [course.to_dict() for course in clist]
+                }
             }
         )
     return jsonify(
@@ -357,6 +340,27 @@ def get_all_course_registrations():
         }
     ), 404
 
+#get course registration(S) by staff id and course id
+@app.route("/course_registration/<int:staff_id>/<string:course_id>")
+def get_course_registration_by_staff_id_and_course_id(staff_id,course_id):
+    crlist = Course_Registration.query.filter_by(staff_id=staff_id,course_id=course_id)
+    if crlist.count():
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course_registration(S)": [course_registration.to_dict() for course_registration in crlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Course registration with staff_id = " + str(staff_id) + " and course_id = " + str(course_id) + " not found."
+        }
+    ), 404
+
+
 #get all course skills
 @app.route("/course_skills")
 def get_all_course_skills():
@@ -382,7 +386,7 @@ def get_all_course_skills():
 def get_courses_by_skill_id(skill_id):
     list = db.session.query(Course_Skill, Course, Skill).select_from(Course_Skill).join(Course).join(Skill).filter(Course_Skill.skill_id==skill_id)
         
-    if list:
+    if list.count():
         return jsonify(
             {
                 "code": 200,
@@ -404,7 +408,7 @@ def get_courses_by_skill_id(skill_id):
 def get_skills_by_course_id(course_id):
     list = db.session.query(Course_Skill, Course, Skill).select_from(Course_Skill).join(Course).join(Skill).filter(Course_Skill.course_id==course_id)
         
-    if list:
+    if list.count():
         return jsonify(
             {
                 "code": 200,
@@ -426,7 +430,7 @@ def get_skills_by_course_id(course_id):
 def get_courses_skills_by_course_status(course_status):
     ans=[]
     clist = Course.query.filter_by(course_status=course_status)
-    if clist:
+    if clist.count():
         for course in clist:
             tempdic = {
                 "course_id": course.course_id,
@@ -451,7 +455,7 @@ def get_courses_skills_by_course_status(course_status):
     return jsonify(
         {
             "code": 404,
-            "message": "There are no courses and skills for course status = " + course_status + "." 
+            "message": "There are no courses with status = " + course_status + "." 
         }
     ), 404
 
@@ -459,7 +463,15 @@ def get_courses_skills_by_course_status(course_status):
 @app.route("/remove_course_skill/<string:course_id>/<int:skill_id>")
 def remove_course_skill(course_id,skill_id):
     try:
-        Course_Skill.query.filter_by(course_id = course_id, skill_id=skill_id).delete()
+        cs = Course_Skill.query.filter_by(course_id = course_id, skill_id=skill_id).delete()
+        if not cs:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Course skill pair with course_id = "+str(course_id)+" and skill_id = " + str(skill_id) + " not found."
+                }
+            ), 404
+
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -545,7 +557,7 @@ def get_journey_by_id(id):
 @app.route("/journeys_by_staff/<int:staff_id>")
 def get_journeys_by_staff_id(staff_id):
     jlist = Journey.query.filter_by(staff_id=staff_id)
-    if jlist:
+    if jlist.count():
         return jsonify(
             {
                 "code": 200,
@@ -565,7 +577,14 @@ def get_journeys_by_staff_id(staff_id):
 @app.route("/journey_remove/<int:id>")
 def remove_journey_by_id(id):
     try:
-        Journey.query.filter_by(journey_id = id).delete()
+        j = Journey.query.filter_by(journey_id = id).delete()
+        if not j:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Journey with id = " + str(id) + " not found."
+                }
+            ), 404
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -580,6 +599,40 @@ def remove_journey_by_id(id):
             "message": "Journey deleted successfully."
         }
     ), 202
+
+#create journey
+@app.route("/journey/create", methods=['POST'])
+def create_journey():
+    data = request.get_json()
+    journey_data = data["journey"]
+    jsc_data = data["journey_skill_course"]
+
+    try:
+        journey = Journey(**journey_data)
+        db.session.add(journey)
+        db.session.commit()
+        for jsc in jsc_data:
+            journey_skill_course = Journey_Skill_Course(**jsc)
+            db.session.add(journey_skill_course)
+            db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the journey and journey skill course pair(s). " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Jounrey and journey skill course pair(s) created successfully.",
+            "data": {
+                "journey": journey_data,
+                "journey_skill_course": jsc_data
+            }
+        }
+    ), 201
 
 #get all journey skill course
 @app.route("/journey_skill_course")
@@ -597,7 +650,7 @@ def get_all_journey_skill_course():
     return jsonify(
         {
             "code": 404,
-            "message": "There are no journey skill coure."
+            "message": "There ise no journey skill coure."
         }
     ), 404
 
@@ -605,11 +658,11 @@ def get_all_journey_skill_course():
 @app.route("/skills_not_in_journey/<int:journey_id>")
 def get_skills_not_in_journey(journey_id):
     jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)    
-    if jsclist:
+    if jsclist.count():
         skills =[]
         for jsc in jsclist:
             skills.append(jsc.skill_id)
-        print(skills)
+        #print(skills)
         slist = Skill.query.filter(Skill.skill_id.not_in(skills))
         return jsonify(
             {
@@ -627,10 +680,17 @@ def get_skills_not_in_journey(journey_id):
     ), 404
 
 #remove journey skill course
-@app.route("/remove_journey_skill_course/<int:journey_id>/<string:course_id>/<int:skill_id>")
-def remove_journey_skill_course(journey_id,course_id,skill_id):
+@app.route("/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>")
+def remove_journey_skill_course(journey_id,skill_id,course_id):
     try:
-        Journey_Skill_Course.query.filter_by(journey_id = journey_id,course_id = course_id, skill_id=skill_id).delete()
+        jsc = Journey_Skill_Course.query.filter_by(journey_id = journey_id,course_id = course_id, skill_id=skill_id).delete()
+        if not jsc:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Journey skill course pair with journey_id = " + str(journey_id) + ", course_id = " + str(course_id) + " and skill_id = " + str(skill_id) + " not found."
+                }
+            ), 404        
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -647,32 +707,32 @@ def remove_journey_skill_course(journey_id,course_id,skill_id):
     ), 202
 
 #create journey skill course
-# @app.route("/journey_skill_course/create", methods=['POST'])
-# def create_journey_skill_course():
-#     data = request.get_json()
-#     journey_skill_course = Journey_Skill_Course(**data)
+@app.route("/journey_skill_course/create", methods=['POST'])
+def create_journey_skill_course():
+    data = request.get_json()
+    journey_skill_course = Journey_Skill_Course(**data)
 
-#     try:
-#         db.session.add(journey_skill_course)
-#         db.session.commit()
-#     except Exception as e:
-#         return jsonify(
-#             {
-#                 "code": 500,
-#                 "message": "An error occurred while creating the journey skill course pair. " + str(e)
-#             }
-#         ), 500
+    try:
+        db.session.add(journey_skill_course)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the journey skill course pair. " + str(e)
+            }
+        ), 500
     
-#     print(json.dumps(journey_skill_course.to_dict(), default=str)) # convert a JSON object to a string and print
-#     print()
+    print(json.dumps(journey_skill_course.to_dict(), default=str)) # convert a JSON object to a string and print
+    print()
 
-#     return jsonify(
-#         {
-#             "code": 201,
-#             "message": "Journey skill course pair created successfully.",
-#             "data": journey_skill_course.to_dict()
-#         }
-#     ), 201
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Journey skill course pair created successfully.",
+            "data": journey_skill_course.to_dict()
+        }
+    ), 201
 
 #get all roles
 @app.route("/roles")
@@ -712,6 +772,26 @@ def get_role_by_id(id):
         }
     ), 404
 
+#get roles by status
+@app.route("/roles/<string:status>")
+def get_roles_by_status(status):
+    rlist = Role.query.filter_by(role_status=status)
+    if rlist.count():
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": [role.to_dict() for role in rlist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles with status = "+status+"."
+        }
+    ), 404
+
 #update role status by role id
 @app.route("/update_role_status/<int:role_id>", methods=['PUT'])
 def update_role_status(role_id):
@@ -721,9 +801,6 @@ def update_role_status(role_id):
             return jsonify(
                 {
                     "code": 404,
-                    "data": {
-                        "role_id": role_id
-                    },
                     "message": "Role with id = " + str(role_id) + " not found."
                 }
             ), 404
@@ -744,9 +821,6 @@ def update_role_status(role_id):
         return jsonify(
             {
                 "code": 500,
-                "data": {
-                    "role_id": role_id
-                },
                 "message": "An error occurred while updating role status which id = " + str(role_id) + ". " + str(e)
             }
         ), 500
@@ -775,7 +849,7 @@ def get_all_role_skills():
 @app.route("/skills_by_role/<int:role_id>")
 def get_skills_by_role_id(role_id):
     list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role_id)
-    if list:
+    if list.count():
         return jsonify(
             {
                 "code": 200,
@@ -795,7 +869,14 @@ def get_skills_by_role_id(role_id):
 @app.route("/remove_role_skill/<int:role_id>/<int:skill_id>")
 def remove_role_skill(role_id,skill_id):
     try:
-        Role_Skill.query.filter_by(role_id = role_id, skill_id=skill_id).delete()
+        rs = Role_Skill.query.filter_by(role_id = role_id, skill_id=skill_id).delete()
+        if not rs:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Role skill pair with role_id = " + str(role_id) + " and skll_id = " + str(skill_id) + " not found."
+                }
+            ), 404        
         db.session.commit()
     except Exception as e:
         return jsonify(
@@ -839,7 +920,6 @@ def create_role_skill():
         }
     ), 201
 
-
 #get all skills
 @app.route("/skills")
 def get_all_skills():
@@ -860,11 +940,29 @@ def get_all_skills():
         }
     ), 404
 
+#get skill by id
+@app.route("/skill/<int:id>")
+def get_skill_by_id(id):
+    skill = Skill.query.filter_by(skill_id=id).first()
+    if skill:
+        return jsonify(
+            {
+                "code": 200,
+                "data": skill.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Skill which id = " + str(id) + " not found."
+        }
+    ), 404
+
 #get skills by status
 @app.route("/skills/<string:status>")
 def get_skills_by_status(status):
     slist = Skill.query.filter_by(skill_status=status)
-    if slist:
+    if slist.count():
         return jsonify(
             {
                 "code": 200,
@@ -889,9 +987,6 @@ def update_skill_status(skill_id):
             return jsonify(
                 {
                     "code": 404,
-                    "data": {
-                        "skill_id": skill_id
-                    },
                     "message": "Skill with id = " + str(skill_id) + " not found."
                 }
             ), 404
@@ -912,9 +1007,6 @@ def update_skill_status(skill_id):
         return jsonify(
             {
                 "code": 500,
-                "data": {
-                    "skill_id": skill_id
-                },
                 "message": "An error occurred while updating skill status which id = " + str(skill_id) + ". " + str(e)
             }
         ), 500
@@ -936,26 +1028,6 @@ def get_all_staffs():
         {
             "code": 404,
             "message": "There are no staffs."
-        }
-    ), 404
-
-#get all user types
-@app.route("/user_types")
-def get_all_user_types():
-    utlist = User_Type.query.all()
-    if utlist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "user_types": [user_type.to_dict() for user_type in utlist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no user types."
         }
     ), 404
 
