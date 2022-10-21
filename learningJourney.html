@@ -70,10 +70,10 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="journey in journeys">
+                                    <tr v-for="(journey, index) in journeys">
                                         <th scope="row">{{ journey.journey_name }}</th>
                                         <td>
-                                            {{ displayRoleName(journey.role_id) }}</td>
+                                            {{ roleNameArr[index] }}</td>
                                         <td>dh</td>
                                         <td>
                                             <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
@@ -127,7 +127,8 @@
             data() {
                 return {
                     journeys:[],
-                    message: "There is a problem retrieving journey data, please try again later.",
+                    roleNameArr: [],
+                    message: "There is a problem retrieving journey data, please try again later."
                     
                 }
             },
@@ -146,6 +147,8 @@
                                 } else {
                                     this.journeys = data.data.journeys
                                     console.log(this.journeys);
+                                    this.getRoleArr();
+                                    
                                 }
                             })
                             .catch(error => {
@@ -174,28 +177,45 @@
                 goToViewLJ(learning_journey_id) {
                     location.href = 'viewLearningJourney.html?learning_journey_id=' + learning_journey_id
                 },
-                displayRoleName: async function(role_id) {
-                    
-                    let response =
-                    await fetch(
-                        "http://localhost:5000/role/"+role_id,
-                        {
-                            method: 'GET',
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
+                
+                displayRoleName(role_id) {
+                    const response =
+                        fetch("http://localhost:5000/role/"+role_id) // hardcoding staff-id now
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                if (data.code === 404) {
+                                    // no skill in db
+                                    this.message = data.message;
+                                } else {
+                                    this.roleNameArr.push(data.data.role_name);
+                                    console.log(this.roleNameArr);
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
+                getRoleArr(){
+                    for (var i = 0; i < this.journeys.length; i++) {
+                        var obj = this.journeys[i];
+                        for (var key in obj) {
+                            if (key == "role_id"){
+                                this.displayRoleName(obj[key]);                            
                             }
-                        })
-                    let data = await response.json();
-                    console.log("result: ", data.data.role_name );
-                    return await data.data.role_name;
+                        }
+                    }
+
                 }
-            },created() {
+            },
+            created() {
                 // on Vue instance created, load the book list
                 this.getAllSkills();
             }
-            }
-        );
+        });
     
         const vm = app.mount('#wrapper');
     </script>
