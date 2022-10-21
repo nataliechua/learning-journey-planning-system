@@ -128,20 +128,14 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
-        // Pre-filling role form fields
-        document.getElementById("name").value = skillname;
-
-        var dropdown = document.getElementById("status");
-        dropdown.value = skillstatus;
-        
         const app = Vue.createApp({
 
             data() {
                 return {
                     skill_id:0,
                     skill_name: "",
-                    skill_status: ""
-
+                    skill_status: "",
+                    toastCount: 0
                 }
             },
             methods: {
@@ -210,26 +204,30 @@
                                 }
 
                                 if (result.code === 200) {
-                                    // success 
-                                    toastr.success("Updated successfully");
+                                    if (this.toastCount == 0) {
+                                        // success 
+                                        toastr.success("Updated successfully");
+                                        this.toastCount += 1;
+                                    } 
 
-                                    setInterval(function doThisEveryTwoSeconds() {
+                                    setInterval(function doThisAfterFourSeconds() {
                                         location.href = '/HRviewALlSkills.html';
-                                    }, 500);   // 2000 is 2 seconds  
+                                    }, 400);
+
                                     
                                 } else if (result.code == 500) {
                                     // this.err = true
                                     // this.errMsg = result.message;
                                     toastr.error("An error has occurred. Please try again");
 
-                                    setInterval(function doThisEveryTwoSeconds() {
+                                    setInterval(function doThisAfterFourSeconds() {
                                         
                                     }, 500); 
                                 } else {
                                     // unexpected outcome, throw the error
                                     toastr.error("An error has occurred. Please try again");
 
-                                    setInterval(function doThisEveryTwoSeconds() {
+                                    setInterval(function doThisAfterFourSeconds() {
                                         
                                     }, 500); 
                                     throw response.status;
