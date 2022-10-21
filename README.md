@@ -32,12 +32,12 @@
 - Get all journeys: http://localhost:5000/journeys
 - Get journey by id: http://localhost:5000/journey/<int:id>
 - Get journeys by staff id: http://localhost:5000/journeys_by_staff/<int:staff_id>
-- Question: For the above GETs in journeys, do you want to also display skills and courses in each journey?
 - Remove journey by id: http://localhost:5000/journey_remove/<int:id>
 - Create journey: http://localhost:5000/journey/create
 
 ### journey skill courses
 - Get all journey skill course: http://localhost:5000/journey_skill_course
+- Get journey skill course by journey id: http://localhost:5000/journey_skill_course/<int:journey_id>
 - Get skills not inside journey by journey id: http://localhost:5000/skills_not_in_journey/<int:journey_id>
 - Remove journey skill course: http://localhost:5000/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>
 - Create journey skill course: http://localhost:5000/journey_skill_course/create
@@ -50,9 +50,8 @@
 
 ### role skills
 - Get all role skills: http://localhost:5000/role_skills
-- Get skills by role id: http://localhost:5000/skills_by_role/<int:role_id>
+- Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
-- Question: Do we need for example, when role, skill are all inactive, make role_skill inactive? Do we need to have a status the role_skill?
 - Create role skill: http://localhost:5000/role_skill/create
 
 ### skills

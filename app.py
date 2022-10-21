@@ -1,5 +1,5 @@
 from itertools import groupby
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import delete, insert, update
 from os import environ
@@ -440,10 +440,16 @@ def get_courses_skills_by_course_status(course_status):
                 "course_type": course.course_type,
                 "course_category": course.course_category,
             }
-            response = get_skills_by_course_id(course.course_id)
-            skills= json.loads(response[0].data)['data']['skills']
-            tempdic["course_skills"]=skills
-            ans.append(tempdic)
+            raw_response = make_response(get_skills_by_course_id(course.course_id))
+            if raw_response.status_code==404:
+                tempdic["course_skills"] = []
+                ans.append(tempdic)
+            else:
+                response=raw_response.get_json()
+                skills =  response["data"]["skills"]
+                tempdic["course_skills"] = skills
+                ans.append(tempdic)
+            
         return jsonify(
             {
                 "code": 200,
@@ -650,7 +656,35 @@ def get_all_journey_skill_course():
     return jsonify(
         {
             "code": 404,
-            "message": "There ise no journey skill coure."
+            "message": "There is no journey skill course."
+        }
+    ), 404
+
+#get journey skill course by journey id
+@app.route("/journey_skill_course/<int:journey_id>")
+def get_journey_skill_course_by_journey_id(journey_id):
+    jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
+    if jsclist:
+        dic = {}
+        for jsc in jsclist:
+            if jsc.skill_id not in dic:
+                dic[jsc.skill_id]=[]
+            dic[jsc.skill_id].append(jsc.course_id)
+
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "journey_id": journey_id,
+                    "skill_course": dic
+                }
+            }
+        ), 200
+
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There is no journey with journey id = "+journey_id+ "."
         }
     ), 404
 
@@ -845,23 +879,23 @@ def get_all_role_skills():
         }
     ), 404
 
-#get skills by role id
-@app.route("/skills_by_role/<int:role_id>")
-def get_skills_by_role_id(role_id):
-    list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role_id)
+#get active skills by role id
+@app.route("/active_skills_by_role/<int:role_id>")
+def get_active_skills_by_role_id(role_id):
+    list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role_id,Skill.skill_status=="Active")
     if list.count():
         return jsonify(
             {
                 "code": 200,
                 "data": {
-                    "skills": [skill.to_dict() for role_skill,skill in list]
+                    "active skills": [skill.to_dict() for role_skill,skill in list]
                 }
             }
         ), 200
     return jsonify(
         {
             "code": 404,
-            "message": "There are no skills for role id = "+str(role_id)+"."
+            "message": "There are no active skills for role id = "+str(role_id)+"."
         }
     ), 404
 
