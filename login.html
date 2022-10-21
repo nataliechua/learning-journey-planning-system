@@ -121,12 +121,14 @@
                     if (id == "hr" && pwd == "hr") {    
                         setCookie('user_id', "hr");
                         setCookie('user_type', "hr");
+                        setCookie('staff_id', "150008");
                         setCookie('switch_to_staff_acct', "N");
                         location.href = './HRviewAllRoles.html';
                     }
                     else if (id == "staff" && pwd == "staff") {
                         setCookie('user_id', "staff");
                         setCookie('user_type', "staff");
+                        setCookie('staff_id', "130001");
                         location.href = './index.html';
                     }
                     else {

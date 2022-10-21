@@ -1,13 +1,19 @@
 <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
 
     <!-- Sidebar - Brand -->
-    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html">
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="HRviewAllRoles.html" v-if="(userid=='hr') && (switchToStaffAcct=='N')">
         <div class="sidebar-brand-icon rotate-n-15">
             <i class="fas face-smile text-red" style="color:black"></i>
         </div>
         <div class="sidebar-brand-text mx-3">LJPS</div>
     </a>
-
+    <a class="sidebar-brand d-flex align-items-center justify-content-center" href="index.html" v-else>
+        <div class="sidebar-brand-icon rotate-n-15">
+            <i class="fas face-smile text-red" style="color:black"></i>
+        </div>
+        <div class="sidebar-brand-text mx-3">LJPS</div>
+    </a>
+    <!-- href="HRviewAllRoles.html" v-if="(userid=='hr') && (switchToStaffAcct=='N')"-->
     <!-- Divider -->
     <hr class="sidebar-divider my-0">
 

@@ -34,7 +34,6 @@
 </head>
 
 <body id="page-top">
-    <div id="app" class="container">
 
     <!-- Page Wrapper -->
     <div id="wrapper">
@@ -79,7 +78,7 @@
                                         <td>{{ skill.skill_name }}</td>
                                         <td>{{ skill.skill_status }}</td>
                                         <td>
-                                            <a type="button" class="btn btn-primary" href="HReditSkill.html">Edit</a>
+                                            <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
                                         </td>
                                     </tr>
  
@@ -106,7 +105,7 @@
                                         <td>{{ skill.skill_name }}</td>
                                         <td>{{ skill.skill_status }}</td>
                                         <td>
-                                            <a type="button" class="btn btn-primary" href="HReditSkill.html">Edit</a>
+                                            <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
                                         </td>
                                     </tr>
  
@@ -188,14 +187,18 @@
 
                         });
                     },
-                },
-                    created() {
-                        // on Vue instance created, load the book list
-                        this.getAllSkills();
+                    goToEditSkill(skill_id) {
+                        location.href = 'HReditSkill.html?skill_id=' + skill_id
                     }
-                });
+                },
+                created() {
+                    // on Vue instance created, load the book list
+                    this.getAllSkills();
+                }
+                }
+                );
 
-                const vm = app.mount('#app');
+                const vm = app.mount('#wrapper');
 
     </script>
     
@@ -207,7 +210,6 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
-</div>
 
 </body>
 

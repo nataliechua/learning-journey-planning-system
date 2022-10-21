@@ -29,6 +29,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
     <!-- VueJS -->
     <script src="https://unpkg.com/vue@next"></script>
+    <!--Toastr-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(function () {
             $("#sidebar").load("./assets/components/sidebar.html");
@@ -77,25 +80,24 @@
                     </nav>
                     <div class="card">
                         <div class="card-body">
-                            <form>
-                                ID #1
+
+                            ID #1
+                            <br>
+                            <br>
+                            <div class="form-group">
+                                <label for="name">Skill Name</label>
+                                <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter skill name" v-model="skill_name">
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Status</label>
                                 <br>
-                                <br>
-                                <div class="form-group">
-                                    <label for="name">Skill Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter skill name">
-                                </div>
-                                <div class="form-group">
-                                    <label for="role">Status</label>
-                                    <br>
-                                    <select class="selectpicker" id="status" data-live-search="true">
-                                        <option value="" selected disabled></option>
-                                        <option>Active</option>
-                                        <option>Inactive</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </form>
+                                <select class="selectpicker" id="status" data-live-search="true" v-model="skill_status">
+                                    <option value="" selected disabled></option>
+                                    <option value="Active">Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" @click="save_skill()">Save</button>
                         </div>
                     </div>
                 </div>
@@ -131,6 +133,138 @@
 
         var dropdown = document.getElementById("status");
         dropdown.value = skillstatus;
+        
+        const app = Vue.createApp({
+
+            data() {
+                return {
+                    skill_id:0,
+                    skill_name: "",
+                    skill_status: ""
+
+                }
+            },
+            methods: {
+                get_skill(skill_id) {
+                    if (skill_id == null) {
+                        location.href = '/HRviewALlSkills.html';
+                    }
+                    let url = 'http://localhost:5000/skill/'+this.skill_id;
+                    const response =
+                    fetch(url)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no skill in db
+                                location.href = '/HRviewALlSkills.html';
+                            } else {
+                                this.skill_name = data.data.skill_name;
+                                this.skill_status = data.data.skill_status;
+                                console.log(this.skill_name);
+                                console.log(this.skill_status);
+                                this.refreshSelectDropDown();
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                },
+                save_skill() {
+                    $(async () => {
+                            serviceURL = "http://localhost:5000/update_skill_status/"+this.skill_id;
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL,
+                                        {
+                                            method: 'PUT',
+                                            headers: {
+                                                'Accept': 'application/json', 'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                skill_status: this.skill_status
+                                            })
+                                        }
+                                    );
+                                const result = await response.json();
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
+
+                                if (result.code === 200) {
+                                    // success 
+                                    toastr.success("Updated successfully");
+
+                                    setInterval(function doThisEveryTwoSeconds() {
+                                        location.href = '/HRviewALlSkills.html';
+                                    }, 500);   // 2000 is 2 seconds  
+                                    
+                                } else if (result.code == 500) {
+                                    // this.err = true
+                                    // this.errMsg = result.message;
+                                    toastr.error("An error has occurred. Please try again");
+
+                                    setInterval(function doThisEveryTwoSeconds() {
+                                        
+                                    }, 500); 
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    toastr.error("An error has occurred. Please try again");
+
+                                    setInterval(function doThisEveryTwoSeconds() {
+                                        
+                                    }, 500); 
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                toastr.error("An error has occurred. Please try again");
+
+                                setInterval(function doThisEveryTwoSeconds() {
+                                    
+                                }, 500); 
+                            } // error
+                        });
+                },
+                refreshSelectDropDown() {
+                    setTimeout(() => {
+                        jQuery('.selectpicker').selectpicker('refresh');
+                        $('[data-toggle="tooltip"]').tooltip();  
+                    }, 100);
+                }
+            },
+            created() {
+                // on Vue instance created, load the book list
+                // Get skill by id
+                // Update skill status by skill id
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                this.skill_id = urlParams.get('skill_id');
+                console.log("this.skill_id: " + this.skill_id);
+                this.get_skill(this.skill_id);
+            }
+        });
+
+        const vm = app.mount('#wrapper');
     </script>
 
 </body>
