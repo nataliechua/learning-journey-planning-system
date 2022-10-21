@@ -70,20 +70,22 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <tr v-for="journey in journeys">
+                                        <th scope="row">{{ journey.journey_name }}</th>
+                                        <td>
+                                            {{ displayRoleName(journey.role_id) }}</td>
+                                        <td>dh</td>
+                                        <td>
+                                            <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
+                                        </td>
+                                    </tr>
+                                    <p>** Note: Missing role & status</p>
                                     <tr>
                                         <th scope="row">Learning Journey 1</th>
                                         <td>Role 1</td>
                                         <td>In progress (50%)</td>
                                         <td>
                                             <a type="button" class="btn btn-primary" href="viewLearningJourney.html">View</a>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <th scope="row">Learning Journey 2</th>
-                                        <td>Role 2</td>
-                                        <td>Completed</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary">View</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -119,7 +121,84 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+    <script>
+        const app = Vue.createApp({
 
+            data() {
+                return {
+                    journeys:[],
+                    message: "There is a problem retrieving journey data, please try again later.",
+                    
+                }
+            },
+            methods: {
+                getAllSkills() {
+                    // on Vue instance created, load the book list
+                    // 'staff_id'
+                    const response =
+                        fetch("http://localhost:5000/journeys_by_staff/"+getCookie('staff_id')) // hardcoding staff-id now
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data);
+                                if (data.code === 404) {
+                                    // no skill in db
+                                    this.message = data.message;
+                                } else {
+                                    this.journeys = data.data.journeys
+                                    console.log(this.journeys);
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+
+                    function getCookie(cname) {
+                        let name = cname + "=";
+                        let decodedCookie = decodeURIComponent(document.cookie);
+                        let ca = decodedCookie.split(';');
+                        for(let i = 0; i <ca.length; i++) {
+                            let c = ca[i];
+                            while (c.charAt(0) == ' ') {
+                            c = c.substring(1);
+                            }
+                            if (c.indexOf(name) == 0) {
+                            return c.substring(name.length, c.length);
+                            }
+                        }
+                        return null;
+                    }
+                },
+                goToViewLJ(learning_journey_id) {
+                    location.href = 'viewLearningJourney.html?learning_journey_id=' + learning_journey_id
+                },
+                displayRoleName: async function(role_id) {
+                    
+                    let response =
+                    await fetch(
+                        "http://localhost:5000/role/"+role_id,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                    let data = await response.json();
+                    console.log("result: ", data.data.role_name );
+                    return await data.data.role_name;
+                }
+            },created() {
+                // on Vue instance created, load the book list
+                this.getAllSkills();
+            }
+            }
+        );
+    
+        const vm = app.mount('#wrapper');
+    </script>
 </body>
 
 </html>
