@@ -37,10 +37,6 @@
         });
         $('select').selectpicker();
 
-
-        // Placeholder Role Information
-        var skillname = "Teamwork";
-        var skillstatus = "Active";
     </script>
 
 </head>
@@ -75,11 +71,36 @@
                             <li class="breadcrumb-item active" aria-current="page">Edit course skills</li>
                         </ol>
                     </nav>
-                    <div class="card" v-for="course in courseSkill">
-                        <div class="card-body">
-                            <h4 class="pb-3"><b>{{course.course_id}}</b> {{course.course_name}}</h4>
 
-                            <div class="table-responsive">
+                    <!-- ALERT - START-->
+                    <div id="alertBoxDiv">
+
+                    </div>
+
+                    <!-- ALERT - ENDS-->
+
+                    <div class="card">
+                        <div class="card-body" v-if="loading">
+                            <!--Spinner-->
+                            <div class="d-flex justify-content-center mt-2">
+                                <div class="spinner-border" role="status">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-2">
+                                <strong>Please wait while we are fetching the records...</strong>
+                            </div>
+                            <!--//Spinner--> 
+                        </div>
+                        
+                              
+                        <div class="card-body" v-if="courseDetailErr">
+                            <p style="color: red;">{{this.courseDetailErrMsg}}</p>
+                            
+                        </div>
+                        <div class="card-body"  v-if="!courseDetailErr && !loading"  >
+                            <h4 class="pb-3"><b>{{this.courseDetails.course_id}}</b> {{this.courseDetails.course_name}}</h4>
+
+                            <div :key="componentKey"  class="table-responsive" >
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -88,20 +109,25 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="skill in course.skill_name">
-                                            <td>{{skill}}</td>
+                                        <tr v-for="skill in this.skills">
+                                            <td>{{skill.skill_name}}</td>
                                             <td>
-                                                <button type="button" class="btn btn-danger">Remove</button>
+                                                <button type="button" class="btn btn-danger" @click="removeCourseSkill(skill.skill_id)">Remove</button>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>
-                                                <input class="form-control mb-5" list="datalistOptions" v-model="search" id="exampleDataList" placeholder="Search for a skill...">
-                                                <datalist id="datalistOptions">
-                                                <option v-for="skill in filteredSkills" :value="skill.skill_name">{{skill.skill_name}}</option>
-                                                </datalist>
+                                                <select class="form-select" aria-label="Default select example" id="skillDrop">
+                                                    <option selected>Pick a Skill to add</option>
+                                                    <option v-for="skill in filteredSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
+                                                </select>
                                             </td>
-                                            <td><button type="submit" class="btn btn-primary">Add</button></td>
+                                            <td><button type="submit" class="btn btn-primary" @click="addCourseSkill()">Add</button></td>
+                                        </tr>
+                                        <tr v-if="err">
+                                            <td colspan="2">
+                                                <p>{{errMsg}}</p>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -141,74 +167,279 @@
             data() {
                 return {
                     skills: [],
-                    courseSkill: [
-                    {
-                        course_id: "COR001", 
-                        course_name: "Systems Thinking and Design",
-                        course_status: "Active",
-                        skill_id: [1, 4],
-                        skill_name: ["Teamwork", "Critical thinking"],
-                        skill_status: ["Active", "Active"]
-                    }
-                    ],
-                    search: ""
+                    courseId: "",
+                    search: "",
+                    skillErrMsg: "",
+                    skillErr: false,
+                    skillLoading: true,
+                    allSkills: [],
+                    searchSkillList: [],
+                    courseDetails: [],
+                    courseDetailErr: false,
+                    courseDetailErrMsg: "",
+                    loading: true,
+                    errMsg: "",
+                    err: false,
+                    componentKey: 0,
                 }
             },
             methods: {
-                getPatientRecord() {
-                    
-                },
-                getSkillRecord() {
+                getAllSkills() {
                     $(async () => {
-                            // Change serviceURL to your own
-                            var serviceURL = "http://localhost:5000/skills";
-                            try {
-                                const response =
-                                    await fetch(
-                                        serviceURL, { method: 'GET' }
-                                    );
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/skills/Active";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, { method: 'GET' }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.allSkills = result.data.skills;
+                            } else if (result.code == 404) {
+                                // No Such Patient Found
+                                //this.skillLoading = false
+                                //this.skillErr = true
+                                //this.skillErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                //this.skillLoading = false
+                                //this.skillErr = true
+                                //throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            //this.skillLoading = false
+                            //this.skillErr = true
+                            //this.skillErrMsg = 'There is a problem retrieving skill data, please try again later.<br />' + error;
+                        } // error
+                    });
+                },
+                getCourseSkillRecord() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/skills_by_course/"+this.courseId;
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, { method: 'GET' }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.skillLoading = false
+                                this.skillErr = false
+                                this.skills = result.data.skills;
+                            } else if (result.code == 404) {
+                                // No Such Patient Found
+                                this.skillLoading = false
+                                this.skillErr = true
+                                this.skillErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.skillLoading = false
+                                this.skillErr = true
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.skillLoading = false
+                            this.skillErr = true
+                            this.skillErrMsg = 'There is a problem retrieving skill data, please try again later.<br />' + error;
+                        } // error
+                    });
+                },
+                getCourseId(){
+                    let params = (new URL(document.location)).searchParams;
+                    this.courseId = params.get("course_id");
+                },
+                getCourseDetails(){
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/course/" + this.courseId;
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, { method: 'GET' }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.loading = false
+                                this.courseDetails = result.data;
+                            } else if (result.code == 404) {
+                                // No Such Patient Found
+                                this.loading = false
+                                this.courseDetailErr = true
+                                this.courseDetailErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.loading = false
+                                this.courseDetailErr = true
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.loading = false
+                            this.courseDetailErr = true
+                            this.courseDetailErrMsg = 'There is a problem retrieving course data, please try again later.<br />' + error;
+                        } // error
+                    });
+                },
+                getDifference(array1, array2){
+                    return array1.filter(object1 => {
+                        return !array2.some(object2 => {
+                            return object1.skill_id === object2.skill_id;
+                        });
+                    });
+                },
+                removeCourseSkill(skillId){
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var para = this.courseId + '/' + skillId;
+                        var serviceURL = "http://localhost:5000/remove_course_skill/" + para;
+                        console.log(serviceURL)
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL,
+                                    {
+                                        method: 'GET'
+                                    }
+                                );
                                 const result = await response.json();
-                                if (result.code === 200) {
+                                if (result.code === 202) {
                                     // success case
-                                    //this.searched = true
                                     //this.err = false
-                                    this.skills = result.data.skills;
-                                    console.log(result.data.skills);
+                                    this.showAlertBox("removeSuccess");
+                                    this.forceRerender();
+                                    this.getCourseSkillRecord();
+
                                 } else if (result.code == 404) {
-                                    // No Such Patient Found
                                     //this.err = true
-                                    //this.searched = false
                                     //this.errMsg = result.message;
+                                    this.showAlertBox("removeFailed");
                                 } else {
                                     // unexpected outcome, throw the error
-                                    //throw response.status;
+                                    this.showAlertBox("removeFailed");
+                                    throw response.status;
                                 }
                             } catch (error) {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
+                                this.showAlertBox("removeFailed");
                                 //this.err = true
-                                //this.searched = false
-                                //this.errMsg = 'There is a problem retrieving patients data, please try again later.<br />' + error;
+                                //this.errMsg = 'There is a problem creating new prescription, please try again later.<br />' + error;
                             } // error
                         });
+                },
+                addCourseSkill(){
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var e = document.getElementById("skillDrop");
+                        
+                        var skillId = e.options[e.selectedIndex].value;
+                        var serviceURL = "http://localhost:5000/course_skill/create";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL,
+                                    {
+                                        method: 'POST',
+                                        headers: {
+                                            'Accept': 'application/json', 'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            course_id: this.courseId,
+                                            skill_id: skillId
+                                        })
+                                    }
+                                );
+                                const result = await response.json();
+                                if (result.code === 201) {
+                                    // success case
+                                    //this.err = false
+                                    this.showAlertBox("addSuccess");
+                                    this.forceRerender();
+                                    this.getCourseSkillRecord();
+
+                                } else if (result.code == 500) {
+                                    //this.err = true
+                                    //this.errMsg = result.message;
+                                    this.showAlertBox("addFailed");
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    this.showAlertBox("addFailed");
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                this.showAlertBox("addFailed");
+                                //this.err = true
+                                //this.errMsg = 'There is a problem creating new prescription, please try again later.<br />' + error;
+                            } // error
+                        });
+                },
+                forceRerender(){
+                    this.componentKey += 1;
+                },
+                delayedAlert() {
+                    window.setTimeout(function() {
+                        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                            $(this).remove(); ;
+                        });
+                    }, 2000);
+                },
+                showAlertBox(messageType){
+                    var div = document.getElementById("alertBoxDiv");
+                    if (messageType == "addSuccess"){
+                        div.innerHTML = `<div class="alert alert-success" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Success!</strong> New skill has been added!
+                                        </div>`;
+                    }else if(messageType == "addFailed"){
+                        div.innerHTML = `<div class="alert alert-danger" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Failed!</strong> Error in adding new skill, try again later!
+                                        </div>`;                        
+                    }else if (messageType == "removeSuccess"){
+                        div.innerHTML = `<div class="alert alert-success" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Success!</strong> Skill has been removed!
+                                        </div>`;
+                    }else{
+                        div.innerHTML = `<div class="alert alert-success" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Success!</strong> Error in removing skill, try again later!
+                                        </div>`;
+                    }
+                    
+                    this.delayedAlert();
                 }
             },
             computed:{
-                
                 filteredSkills (){
-                    var alreadyASkillArr = this.courseSkill[0].skill_name;
-                    console.log(alreadyASkillArr);
+                    this.searchSkillList = this.getDifference(this.allSkills, this.skills);
                     if(this.search){
-                        return this.skills.filter((item)=>{
-                            return (item.skill_name.toLowerCase().startsWith(this.search) && !(alreadyASkillArr.includes(item.skill_name)));
+                        return this.searchSkillList.filter((item)=>{
+                            return (item.skill_name.toLowerCase().startsWith(this.search));
                         })
                     }else{
-                        return this.skill;
+                        return this.searchSkillList;
                     }
                 }
             }, 
             created() {
-                this.getSkillRecord();
+                this.getAllSkills();
+                this.getCourseId();
+                this.getCourseDetails();
+                this.getCourseSkillRecord();
+                
             }
         });
         const vm = app.mount("#record");
