@@ -138,6 +138,8 @@
 
     <script>
         const get_all_skills = "http://localhost:5000/skills";
+        const get_all_active_skills = "http://localhost:5000/skills/Active";
+        const get_all_inactive_skills = "http://localhost:5000/skills/Inactive";
         const app = Vue.createApp({
 
         data() {
@@ -150,10 +152,10 @@
             }
         },
         methods: {
-            getAllSkills() {
-                // on Vue instance created, load the book list
+            getAllActiveSkills() {
+                // on Vue instance created, load the active skills
                 const response =
-                    fetch(get_all_skills)
+                    fetch(get_all_active_skills)
                         .then(response => response.json())
                         .then(data => {
                             console.log(response);
@@ -161,23 +163,32 @@
                                 // no skill in db
                                 this.message = data.message;
                             } else {
-                                this.skills = data.data.skills
-                                console.log(this.skills);
-                                
-                                for(i=0;i<this.skills.length;i++){
-                                    currentSkill = this.skills[i];
-                                    // console.log(currentSkill);
-                                    currentSkillStatus = currentSkill.skill_status;
-                                    console.log(currentSkillStatus);
-                                    if(currentSkillStatus=="Active"){
-                                        this.Active_skills.push(currentSkill);
-                                    }else{
-                                        this.Inactive_skills.push(currentSkill);
-                                    }
-
-                                }
+                                this.Active_skills = data.data.skills
                                 console.log(this.Active_skills);
+
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                    },
+                    getAllInactiveSkills() {
+                // on Vue instance created, load the Inactive skills 
+                const response =
+                    fetch(get_all_inactive_skills)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                            } else {
+                                this.Inactive_skills = data.data.skills
                                 console.log(this.Inactive_skills);
+
                             }
                         })
                         .catch(error => {
@@ -193,7 +204,8 @@
                 },
                 created() {
                     // on Vue instance created, load the book list
-                    this.getAllSkills();
+                    this.getAllActiveSkills();
+                    this.getAllInactiveSkills;
                 }
                 }
                 );
