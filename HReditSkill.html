@@ -141,7 +141,7 @@
             methods: {
                 get_skill(skill_id) {
                     if (skill_id == null) {
-                        location.href = '/HRviewALlSkills.html';
+                        location.href = './HRviewALlSkills.html';
                     }
                     let url = 'http://localhost:5000/skill/'+this.skill_id;
                     const response =
@@ -151,7 +151,7 @@
                             console.log(response);
                             if (data.code === 404) {
                                 // no skill in db
-                                location.href = '/HRviewALlSkills.html';
+                                location.href = './HRviewALlSkills.html';
                             } else {
                                 this.skill_name = data.data.skill_name;
                                 this.skill_status = data.data.skill_status;
@@ -211,7 +211,7 @@
                                     } 
 
                                     setInterval(function doThisAfterFourSeconds() {
-                                        location.href = '/HRviewALlSkills.html';
+                                        location.href = './HRviewALlSkills.html';
                                     }, 400);
 
                                     
@@ -219,27 +219,15 @@
                                     // this.err = true
                                     // this.errMsg = result.message;
                                     toastr.error("An error has occurred. Please try again");
-
-                                    setInterval(function doThisAfterFourSeconds() {
-                                        
-                                    }, 500); 
                                 } else {
                                     // unexpected outcome, throw the error
                                     toastr.error("An error has occurred. Please try again");
-
-                                    setInterval(function doThisAfterFourSeconds() {
-                                        
-                                    }, 500); 
                                     throw response.status;
                                 }
                             } catch (error) {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
                                 toastr.error("An error has occurred. Please try again");
-
-                                setInterval(function doThisEveryTwoSeconds() {
-                                    
-                                }, 500); 
                             } // error
                         });
                 },

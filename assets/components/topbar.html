@@ -64,6 +64,7 @@
             // check credentials  
             if (getCookie('user_id') == null) {
                 this.loggedin = false;
+                location.href = './login.html';
             }
             else if (getCookie('user_id') == "staff") {
                 this.loggedin = true;
