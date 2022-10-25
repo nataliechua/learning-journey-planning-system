@@ -413,7 +413,7 @@ def get_skills_by_course_id(course_id):
             {
                 "code": 200,
                 "data": {
-                    #"course": [course.to_dict() for course_skill, course, skill in list][0],
+                    "course": [course.to_dict() for course_skill, course, skill in list][0],
                     "skills": [skill.to_dict() for course_skill, course, skill in list]
                 }
             }
@@ -518,6 +518,47 @@ def create_course_skill():
             "code": 201,
             "message": "Course skill pair created successfully.",
             "data": course_skill.to_dict()
+        }
+    ), 201
+
+#update course skill
+@app.route("/course_skill/update", methods=['POST'])
+def update_course_skill():
+    data = request.get_json()
+    course_id=data["course_id"]
+    skill_ids=data["skill_ids"]
+    try:
+        Course_Skill.query.filter_by(course_id = course_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting course skill pair(s) with course_id = "+course_id+". " + str(e)
+            }
+        )
+    try:
+        for skill_id in skill_ids:
+            cs = {
+                "course_id":course_id,
+                "skill_id":skill_id
+            }
+            course_skill = Course_Skill(**cs)
+            db.session.add(course_skill)
+            db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the course skill pairs. " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Course skill pair(s) created successfully.",
+            "data": data
         }
     ), 201
 
@@ -859,6 +900,34 @@ def update_role_status(role_id):
             }
         ), 500
 
+#create role
+@app.route("/role/create", methods=['POST'])
+def create_role():
+    data = request.get_json()
+    role = Role(**data)
+
+    try:
+        db.session.add(role)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the role. " + str(e)
+            }
+        ), 500
+    
+    print(json.dumps(role.to_dict(), default=str)) # convert a JSON object to a string and print
+    print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Role created successfully.",
+            "data": role.to_dict()
+        }
+    ), 201
+
 #get all role skills
 @app.route("/role_skills")
 def get_all_role_skills():
@@ -876,6 +945,40 @@ def get_all_role_skills():
         {
             "code": 404,
             "message": "There are no role skills."
+        }
+    ), 404
+
+#get all roles with skills
+@app.route("/roles_with_skills")
+def get_all_roles_with_skills():
+    ans=[]
+    rlist = Role.query.all()
+    if rlist:
+        for role in rlist:
+            tempdic = {
+                "role_id": role.role_id,
+                "role_name": role.role_name,
+                "role_status": role.role_status,
+                "role_skills":[]
+            }
+
+            list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role.role_id)
+            for role_skill,skill in list:
+                tempdic["role_skills"].append(skill.to_dict())  
+            ans.append(tempdic)
+        
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": ans,
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles." 
         }
     ), 404
 
@@ -951,6 +1054,47 @@ def create_role_skill():
             "code": 201,
             "message": "Role skill pair created successfully.",
             "data": role_skill.to_dict()
+        }
+    ), 201
+
+#update role skill
+@app.route("/role_skill/update", methods=['POST'])
+def update_role_skill():
+    data = request.get_json()
+    role_id=data["role_id"]
+    skill_ids=data["skill_ids"]
+    try:
+        Role_Skill.query.filter_by(role_id = role_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting role skill pair(s) with role_id = "+role_id+". " + str(e)
+            }
+        )
+    try:
+        for skill_id in skill_ids:
+            cs = {
+                "role_id":role_id,
+                "skill_id":skill_id
+            }
+            role_skill = Role_Skill(**cs)
+            db.session.add(role_skill)
+            db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the role skill pairs. " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Role skill pair(s) created successfully.",
+            "data": data
         }
     ), 201
 
@@ -1044,6 +1188,34 @@ def update_skill_status(skill_id):
                 "message": "An error occurred while updating skill status which id = " + str(skill_id) + ". " + str(e)
             }
         ), 500
+
+#create skill
+@app.route("/skill/create", methods=['POST'])
+def create_skill():
+    data = request.get_json()
+    skill = Skill(**data)
+
+    try:
+        db.session.add(skill)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the skill. " + str(e)
+            }
+        ), 500
+    
+    print(json.dumps(skill.to_dict(), default=str)) # convert a JSON object to a string and print
+    print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Skill created successfully.",
+            "data": skill.to_dict()
+        }
+    ), 201
 
 #get all staffs
 @app.route("/staffs")
