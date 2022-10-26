@@ -4,14 +4,14 @@ USE G3T07ddl;
 
 CREATE TABLE ROLE
 (
-Role_ID int NOT NULL PRIMARY KEY,
+Role_ID int auto_increment NULL PRIMARY KEY,
 Role_Name varchar(50),
 Role_Status varchar(15)
 );
 
 CREATE TABLE SKILL
 (
-Skill_ID int NOT NULL PRIMARY KEY,
+Skill_ID int auto_increment NOT NULL PRIMARY KEY,
 Skill_Name varchar(50) NOT NULL,
 Skill_Status varchar(15) NOT NULL
 );
@@ -27,7 +27,7 @@ CONSTRAINT rs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 
 CREATE TABLE STAFF
 (
-Staff_ID int NOT NULL PRIMARY KEY,
+Staff_ID int auto_increment NOT NULL PRIMARY KEY,
 Staff_FName varchar(30) NOT NULL,
 Staff_LName varchar(30) NOT NULL,
 Dept varchar(50) NOT NULL,
@@ -56,7 +56,7 @@ CONSTRAINT cs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 
 CREATE TABLE JOURNEY
 (
-Journey_ID int NOT NULL PRIMARY KEY,
+Journey_ID int auto_increment NOT NULL PRIMARY KEY,
 Journey_Name varchar(30) NOT NULL,
 Staff_ID int NOT NULL,
 Role_ID int NOT NULL,
