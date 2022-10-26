@@ -706,18 +706,29 @@ def get_all_journey_skill_course():
 def get_journey_skill_course_by_journey_id(journey_id):
     jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
     if jsclist:
-        dic = {}
+        track = []
+        ans = []
         for jsc in jsclist:
-            if jsc.skill_id not in dic:
-                dic[jsc.skill_id]=[]
-            dic[jsc.skill_id].append(jsc.course_id)
+            if jsc.skill_id not in track:
+                skill = Skill.query.filter_by(skill_id=jsc.skill_id).first()
+                temp={
+                    "skill_id":skill.skill_id,
+                    "skill_name":skill.skill_name,
+                    "skill_status":skill.skill_status,
+                    "skill_courses":[]
+                }
+                ans.append(temp)
+                track.append(jsc.skill_id)
+            for skill in ans:
+                if skill["skill_id"]==jsc.skill_id:
+                    skill["skill_courses"].append(jsc.course_id)
 
         return jsonify(
             {
                 "code": 200,
                 "data": {
                     "journey_id": journey_id,
-                    "skill_course": dic
+                    "skills": ans
                 }
             }
         ), 200
@@ -904,7 +915,7 @@ def update_role_status(role_id):
 @app.route("/role/create", methods=['POST'])
 def create_role():
     data = request.get_json()
-    role = Role(**data)
+    role = Role(role_id=None,**data)
 
     try:
         db.session.add(role)
@@ -1193,7 +1204,7 @@ def update_skill_status(skill_id):
 @app.route("/skill/create", methods=['POST'])
 def create_skill():
     data = request.get_json()
-    skill = Skill(**data)
+    skill = Skill(skill_id = None,**data)
 
     try:
         db.session.add(skill)
