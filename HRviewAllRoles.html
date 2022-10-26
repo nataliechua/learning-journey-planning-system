@@ -60,56 +60,56 @@
                         <div class="card-body">
                             <a type="button" class="btn btn-primary float-right mb-3" href="HRaddRole.html">Add <i class="fas fa-fw fa-plus-circle" style="color: #fff !important;"></i></a>
                             
-                            <div v-if="Active_roles.length > 0">
+                            <!-- <div v-if="Active_roles.length > 0"> -->
                                 <div>
                                     <b>Active Roles</b>
                                 </div>
                                 <table class="table">
                                     <thead>
-                                        <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Role</th>
-                                            <th scope="col">Skills required</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col"></th>
+                                        <tr class="d-flex">
+                                            <th class="col-1" scope="col">ID</th>
+                                            <th class="col-2" scope="col">Role</th>
+                                            <th class="col-5" scope="col">Skills required</th>
+                                            <th class="col-2" scope="col">Status</th>
+                                            <th class="col-3" scope="col"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="role in Active_roles" >
-                                            <th scope="row">{{ role.role_id }}</th>
-                                            <td>{{ role.role_name }}</td>
-                                            <td>{{ role.skills_str }}</td>
-                                            <td>{{ role.role_status }}</td>
-                                            <td>
+                                        <tr v-for="role in Active_roles" class="d-flex">
+                                            <th class="col-1" scope="row">{{ role.role_id }}</th>
+                                            <td class="col-2">{{ role.role_name }}</td>
+                                            <td class="col-5">{{ role.skills_str }}</td>
+                                            <td class="col-2">{{ role.role_status }}</td>
+                                            <td class="col-3">
                                                 <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-                            </div>
+                            <!-- </div> -->
 
-                            <div v-if="Inactive_roles.length > 0">
+                            <!-- <div v-if="Inactive_roles.length > 0"> -->
                                 <div>
                                     <b>Inactive Roles</b>
                                 </div>
 
                                 <table class="table">
                                     <thead>
-                                        <tr>
-                                            <th scope="col">ID</th>
-                                            <th scope="col">Role</th>
-                                            <th scope="col">Skills required</th>
-                                            <th scope="col">Status</th>
-                                            <th scope="col"></th>
+                                        <tr class="d-flex">
+                                            <th class="col-1" scope="col">ID</th>
+                                            <th class="col-2" scope="col">Role</th>
+                                            <th class="col-5" scope="col">Skills required</th>
+                                            <th class="col-2" scope="col">Status</th>
+                                            <th class="col-3" scope="col"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="skill in Inactive_roles" >
-                                            <th scope="row">{{ role.role_id }}</th>
-                                            <td>{{ role.role_name }}</td>
-                                            <td>{{ role.skills_str }}</td>
-                                            <td>{{ role.role_status }}</td>
-                                            <td>
+                                        <tr class="d-flex" v-for="role in Inactive_roles" >
+                                            <th class="col-1" scope="row">{{ role.role_id  }}</th>
+                                            <td class="col-2">{{ role.role_name }}</td>
+                                            <td class="col-5">{{ role.skills_str }}</td>
+                                            <td class="col-2">{{ role.role_status }}</td>
+                                            <td class="col-3">
                                                 <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
                                             </td>
                                         </tr>
@@ -117,7 +117,7 @@
 
                                     </tbody>
                                 </table>
-                            </div>
+                            <!-- </div> -->
                         </div>
                     </div>
 
@@ -228,17 +228,26 @@
                                 this.message = data.message;
                             } else {
                                 roles_array = data.data.roles
+
+                                console.log(roles_array)
                                 
                                 for (var i = 0; i < roles_array.length; i++){
-                                    if (roles_array[i].role_status == "Active") {
-                                        skills = roles_array[i].role_skills;
+                                    skills = roles_array[i].role_skills;
+
+                                    skills_str="Unassigned"
+
+                                    if (skills.length != 0) {
                                         skills_str = skills[0].skill_name;
 
                                         for (var j = 1; j < skills.length; j++) {
-                                            skills_str += ", " + skills[j].skill_name
+                                        skills_str += ", " + skills[j].skill_name
                                         }
 
-                                        roles_array[i]["skills_str"] = skills_str;
+                                    }
+
+                                    roles_array[i]["skills_str"] = skills_str;
+                                    
+                                    if (roles_array[i].role_status == "Active") {
                                         this.Active_roles.push(roles_array[i])
                                     } else {
                                         this.Inactive_roles.push(roles_array[i])
@@ -246,6 +255,9 @@
                                 }   
 
                             }
+
+                            console.log(this.Active_roles)
+                            console.log(this.Inactive_roles)
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
@@ -260,6 +272,7 @@
                     // this.getAllActiveRoles();
                     // this.getAllInactiveRoles();
                     this.getAllRoles();
+                    console.log(this.Active_roles)
                 }
                 }
                 );

@@ -29,6 +29,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
     <!-- VueJS -->
     <script src="https://unpkg.com/vue@next"></script>
+    <!--Toastr-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(function () {
             $("#sidebar").load("./assets/components/sidebar.html");
@@ -140,38 +143,6 @@
                 }
             },
             methods: {
-                getAllSkills() {
-                    $(async () => {
-                        // Change serviceURL to your own
-                        var serviceURL = "http://localhost:5000/skills/Active";
-                        try {
-                            const response =
-                                await fetch(
-                                    serviceURL, { method: 'GET' }
-                                );
-                            const result = await response.json();
-                            if (result.code === 200) {
-                                // success case
-                                this.allSkills = result.data.skills;
-                            } else if (result.code == 404) {
-                                // No Such Patient Found
-                                //this.skillLoading = false
-                                //this.skillErr = true
-                                //this.skillErrMsg = result.message;
-                            } else {
-                                // unexpected outcome, throw the error
-                                //this.skillLoading = false
-                                //this.skillErr = true
-                                //throw response.status;
-                            }
-
-                            // console.log(this.allSkills)
-                        } catch (error) {
-                            console.log(error.message);
-                        }
-                    });
-                    
-                },
                 saveRole() {
                     console.log("SaveRole()");
                     $(async () => {
@@ -192,6 +163,7 @@
                                         }
                                     );
                                 const result = await response.json();
+                                console.log(result);
                                 // toastr configuration
                                 toastr.options = {
                                     "closeButton": true,
@@ -210,9 +182,12 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                if (result.code === 200) {
+                                console.log(result.code)
+
+                                if (result.code === 201) {
                                     if (this.toastCount == 0) {
                                         // success 
+                                        // console.log("created successfully")
                                         toastr.success("Created successfully");
                                         this.toastCount += 1;
                                     } 
@@ -234,6 +209,7 @@
                             } catch (error) {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
+                                console.log(error.message())
                                 toastr.error("An error has occurred. Please try again");
                             } // error
                         });
