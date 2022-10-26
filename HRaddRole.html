@@ -66,7 +66,7 @@
                     <h1 class="h3 mb-4 text-gray-800">Roles</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
-                            <li class="breadcrumb-item"><a href="HRviewALlRoles.html">Roles</a></li>
+                            <li class="breadcrumb-item"><a href="HRaddRole.html">Roles</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Add New Role</li>
                         </ol>
                     </nav>
@@ -75,37 +75,36 @@
                             <form>
                                 <div class="form-group">
                                     <label for="name">Role Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter role name">
+                                    <input v-model="role_name" type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter role name">
                                 </div>
                                 <br>
 
-                                <div class="form-group">
+                                <!-- <div class="form-group">
                                     <label for="skillsrequired">Skills Required</label>
                                     <br>
-                                    <select class="selectpicker" id="skillsrequired" multiple data-live-search="true">
+                                    <select v-model="role_skills" id="skillsrequired" multiple data-live-search="true">
                                         <option value="" disabled></option>
-                                        <option>Skill 1</option>
-                                        <option>Skill 2</option>
-                                        <option>Skill 3</option>
-                                        <option>Skill 4</option>
+                                        <option v-for="skill in allSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
                                     </select>
-                                </div>
+                                </div>  -->
                                 
-                                <br>
+                                <!-- <br> -->
                                 <div class="form-group">
                                     <label for="role">Status</label>
                                     <br>
-                                    <select class="selectpicker" id="role" data-live-search="true">
+                                    <select v-model="role_status" class="selectpicker" id="role" data-live-search="true">
                                         <option value="" selected disabled></option>
                                         <option>Active</option>
                                         <option>Inactive</option>
                                     </select>
+                                    <br>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Create</button>
+                                <button type='button' class="btn btn-primary" @click="saveRole">Create</button>
                             </form>
                         </div>
                     </div>
                 </div>
+                
                 <!-- /.container-fluid -->
 
             </div>
@@ -128,6 +127,131 @@
     
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>
+
+    <script>
+        const app = Vue.createApp({
+
+            data() {
+                return {
+                    allSkills: [],
+                    role_name: "",
+                    role_status: "",
+                    role_skills: []
+                }
+            },
+            methods: {
+                getAllSkills() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/skills/Active";
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, { method: 'GET' }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.allSkills = result.data.skills;
+                            } else if (result.code == 404) {
+                                // No Such Patient Found
+                                //this.skillLoading = false
+                                //this.skillErr = true
+                                //this.skillErrMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                //this.skillLoading = false
+                                //this.skillErr = true
+                                //throw response.status;
+                            }
+
+                            // console.log(this.allSkills)
+                        } catch (error) {
+                            console.log(error.message);
+                        }
+                    });
+                    
+                },
+                saveRole() {
+                    console.log("SaveRole()");
+                    $(async () => {
+                            serviceURL = "http://localhost:5000/role/create";
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL,
+                                        {
+                                            method: 'POST',
+                                            headers: {
+                                                'Accept': 'application/json', 'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                role_name: this.role_name,
+                                                role_status: this.role_status
+                                            })
+                                        }
+                                    );
+                                const result = await response.json();
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
+
+                                if (result.code === 200) {
+                                    if (this.toastCount == 0) {
+                                        // success 
+                                        toastr.success("Created successfully");
+                                        this.toastCount += 1;
+                                    } 
+
+                                    setInterval(function doThisAfterFourSeconds() {
+                                        location.href = './HRviewALlRoles.html';
+                                    }, 400);
+
+                                    
+                                } else if (result.code == 500) {
+                                    // this.err = true
+                                    // this.errMsg = result.message;
+                                    toastr.error("An error has occurred. Please try again");
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    toastr.error("An error has occurred. Please try again");
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                toastr.error("An error has occurred. Please try again");
+                            } // error
+                        });
+                },
+                refreshSelectDropDown() {
+                    setTimeout(() => {
+                        jQuery('.selectpicker').selectpicker('refresh');
+                        $('[data-toggle="tooltip"]').tooltip();  
+                    }, 100);
+                }
+            },
+            created() {
+                this.getAllSkills();
+            }
+        });
+
+        const vm = app.mount('#wrapper');
+    </script>
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>

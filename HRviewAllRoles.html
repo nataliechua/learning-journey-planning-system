@@ -59,37 +59,65 @@
                     <div class="card">
                         <div class="card-body">
                             <a type="button" class="btn btn-primary float-right mb-3" href="HRaddRole.html">Add <i class="fas fa-fw fa-plus-circle" style="color: #fff !important;"></i></a>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Role</th>
-                                        <th scope="col">Skills Required</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <th scope="row">1</th>
-                                        <td>Data Analyst</td>
-                                        <td>Skill 1, Skill 2</td>
-                                        <td>Active</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary" href="HReditRole.html">Edit</a>
-                                        </td>
-                                    </tr>
+                            
+                            <div v-if="Active_roles.length > 0">
+                                <div>
+                                    <b>Active Roles</b>
+                                </div>
+                                <table class="table">
+                                    <thead>
                                         <tr>
-                                        <th scope="row">2</th>
-                                        <td>Data Consultance</td>
-                                        <td>Keras, Tensorflow</td>
-                                        <td>Active</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary">Edit</button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Skills required</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="role in Active_roles" >
+                                            <th scope="row">{{ role.role_id }}</th>
+                                            <td>{{ role.role_name }}</td>
+                                            <td>{{ role.skills_str }}</td>
+                                            <td>{{ role.role_status }}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div v-if="Inactive_roles.length > 0">
+                                <div>
+                                    <b>Inactive Roles</b>
+                                </div>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">ID</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Skills required</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="skill in Inactive_roles" >
+                                            <th scope="row">{{ role.role_id }}</th>
+                                            <td>{{ role.role_name }}</td>
+                                            <td>{{ role.skills_str }}</td>
+                                            <td>{{ role.role_status }}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
+                                            </td>
+                                        </tr>
+
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -122,6 +150,123 @@
 
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
+
+    <script>
+        const get_all_roles = "http://localhost:5000/roles_with_skills";
+        const get_all_active_roles = "http://localhost:5000/roles/Active";
+        const get_all_inactive_roles= "http://localhost:5000/roles/Inactive";
+        const app = Vue.createApp({
+
+        data() {
+            return {
+                "skills":[],
+                "Active_roles": [],
+                "Inactive_roles": [],
+                message: "There is a problem retrieving roles data, please try again later.",
+
+            }
+        },
+        methods: {
+            getAllActiveRoles() {
+                // on Vue instance created, load the active skills
+                const response =
+                    fetch(get_all_active_roles)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                            } else {
+                                this.Active_roles = data.data.roles
+                                console.log(this.Active_roles);
+
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                    },
+             getAllInactiveRoles() {
+                // on Vue instance created, load the Inactive role 
+                const response =
+                    fetch(get_all_inactive_roles)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no role in db
+                                this.message = data.message;
+                            } else {
+                                this.Inactive_roles = data.data.roles
+                                console.log(this.Inactive_roles);
+
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                    },
+                goToEditRole(role_id) {
+                        location.href = './HReditRole.html?role_id=' + role_id
+                },
+
+                getAllRoles() {
+                    const response =
+                    fetch(get_all_roles)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(response);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                            } else {
+                                roles_array = data.data.roles
+                                
+                                for (var i = 0; i < roles_array.length; i++){
+                                    if (roles_array[i].role_status == "Active") {
+                                        skills = roles_array[i].role_skills;
+                                        skills_str = skills[0].skill_name;
+
+                                        for (var j = 1; j < skills.length; j++) {
+                                            skills_str += ", " + skills[j].skill_name
+                                        }
+
+                                        roles_array[i]["skills_str"] = skills_str;
+                                        this.Active_roles.push(roles_array[i])
+                                    } else {
+                                        this.Inactive_roles.push(roles_array[i])
+                                    };
+                                }   
+
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            console.log(this.message + error);
+
+                        });
+                }
+                },
+                created() {
+                    // on Vue instance created, load the book list
+                    // this.getAllActiveRoles();
+                    // this.getAllInactiveRoles();
+                    this.getAllRoles();
+                }
+                }
+                );
+
+                const vm = app.mount('#wrapper');
+
+    </script>
 
 </body>
 
