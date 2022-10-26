@@ -4,14 +4,14 @@ USE G3T07ddl;
 
 CREATE TABLE ROLE
 (
-Role_ID int NOT NULL PRIMARY KEY,
+Role_ID int auto_increment NOT NULL PRIMARY KEY,
 Role_Name varchar(50),
 Role_Status varchar(15)
 );
 
 CREATE TABLE SKILL
 (
-Skill_ID int NOT NULL PRIMARY KEY,
+Skill_ID int auto_increment NOT NULL PRIMARY KEY,
 Skill_Name varchar(50) NOT NULL,
 Skill_Status varchar(15) NOT NULL
 );
@@ -27,7 +27,7 @@ CONSTRAINT rs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 
 CREATE TABLE STAFF
 (
-Staff_ID int NOT NULL PRIMARY KEY,
+Staff_ID int auto_increment NOT NULL PRIMARY KEY,
 Staff_FName varchar(30) NOT NULL,
 Staff_LName varchar(30) NOT NULL,
 Dept varchar(50) NOT NULL,
@@ -56,7 +56,7 @@ CONSTRAINT cs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 
 CREATE TABLE JOURNEY
 (
-Journey_ID int NOT NULL PRIMARY KEY,
+Journey_ID int auto_increment NOT NULL PRIMARY KEY,
 Journey_Name varchar(30) NOT NULL,
 Staff_ID int NOT NULL,
 Role_ID int NOT NULL,
@@ -87,7 +87,7 @@ CONSTRAINT cr_fk2 FOREIGN KEY (Staff_ID) REFERENCES STAFF(Staff_ID)
 );
 
 /*Import Role CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/role.csv'
+LOAD DATA INFILE 'C:/wamp64/tmp/spm_database/RawData/role.csv'
 INTO TABLE ROLE   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
@@ -95,7 +95,7 @@ LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;
 
 /*Import Skills CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/skills.csv'
+LOAD DATA INFILE 'C:/wamp64/tmp/spm_database/RawData/skills.csv'
 INTO TABLE SKILL   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
@@ -103,7 +103,7 @@ LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;  
 
 /*Import Staff CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/staff.csv'
+LOAD DATA INFILE 'C:/wamp64/tmp/spm_database/RawData/staff.csv'
 INTO TABLE STAFF
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
@@ -111,7 +111,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS;  
 
 /*Import Course CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/courses.csv'
+LOAD DATA INFILE 'C:/wamp64/tmp/spm_database/RawData/courses.csv'
 INTO TABLE COURSE   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
@@ -119,7 +119,7 @@ LINES TERMINATED BY '\r\n'
 IGNORE 1 ROWS;  
 
 /*Import Course Registration CSV File*/ 
-LOAD DATA INFILE 'C:/wamp64/tmp/database/RawData/registration.csv'
+LOAD DATA INFILE 'C:/wamp64/tmp/spm_database/RawData/registration.csv'
 INTO TABLE COURSE_REGISTRATION   
 FIELDS TERMINATED BY ','  
 OPTIONALLY ENCLOSED BY '"'  
