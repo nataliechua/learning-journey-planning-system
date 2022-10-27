@@ -1002,7 +1002,7 @@ def get_active_skills_by_role_id(role_id):
             {
                 "code": 200,
                 "data": {
-                    "active skills": [skill.to_dict() for role_skill,skill in list]
+                    "active_skills": [skill.to_dict() for role_skill,skill in list]
                 }
             }
         ), 200
