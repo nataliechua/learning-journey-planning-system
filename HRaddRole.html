@@ -220,8 +220,44 @@
                         $('[data-toggle="tooltip"]').tooltip();  
                     }, 100);
                 }
+            },created() {
+                // check credentials (check for staff)
+                if (getCookie('user_type') != null) {
+
+                    let user_type = getCookie('user_type');
+
+                    if (user_type == "staff") {
+                        location.href = './index.html';
+                    }
+                    if (user_type == "hr") {
+
+                        // check switch_to_staff_acct
+                        let switch_to_staff_acct = getCookie('switch_to_staff_acct')
+
+                        if (switch_to_staff_acct == "Y") {
+
+                            location.href = './index.html';
+                        }
+                    }
+                }
             }
         });
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return null;
+        }
 
         const vm = app.mount('#wrapper');
     </script>
