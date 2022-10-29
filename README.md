@@ -39,8 +39,8 @@
 
 ### journey skill courses
 - Get all journey skill course: http://localhost:5000/journey_skill_course
-- Get all journey info by journey id: http://localhost:5000/all_journey_info/<int:journey_id>
-- Get all journeys info by staff id: http://localhost:5000/all_journeys_info/<int:staff_id>
+- (used) Get all journey info by journey id: http://localhost:5000/all_journey_info/<int:journey_id>
+- (used) Get all journeys info by staff id: http://localhost:5000/all_journeys_info/<int:staff_id>
 - Get skills not inside journey by journey id: http://localhost:5000/skills_not_in_journey/<int:journey_id>
 - Remove journey skill course: http://localhost:5000/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>
 - Create journey skill course: http://localhost:5000/journey_skill_course/create
@@ -63,9 +63,9 @@
 
 ### skills
 - Get all skills: http://localhost:5000/skills
-- Get skill by id: http://localhost:5000/skill/<int:id>
+- (used) Get skill by id: http://localhost:5000/skill/<int:id>
 - Get skills by status: http://localhost:5000/skills/<string:status>
-- Update skill status by skill id: http://localhost:5000/update_skill_status/<int:skill_id>
+- (used) Update skill status by skill id: http://localhost:5000/update_skill_status/<int:skill_id>
 - Create skill: http://localhost:5000/skill/create
 
 ### staffs

@@ -69,13 +69,32 @@
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <p>** Note: Missing role & status</p>
+                                <tbody v-if="loading">
+                                    <tr>
+                                        <td colspan="4">
+                                            <!--Spinner-->
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <div class="spinner-border" role="status">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <strong>Please wait while we are fetching the records...</strong>
+                                            </div>
+                                            <!--//Spinner-->  
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                                <tbody v-if="errorMsg">
+                                    <tr>
+                                        <td colspan="4" style="color:red;">{{this.message}}</td>
+                                    </tr>
+                                </tbody>
+                                <tbody v-if="!errrorMsg && !loading">
                                     <tr v-for="(journey, index) in journeys">
                                         <th scope="row">{{ journey.journey_name }}</th>
-                                        <td>
-                                            {{ roleNameArr[index] }}</td>
-                                        <td>dh</td>
+                                        <td>{{ journey.role.role_name }}</td>
+                                        <td>{{ journey.journey_completion_status }}%</td>
                                         <td>
                                             <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
                                         </td>
@@ -120,8 +139,9 @@
                 return {
                     journeys:[],
                     roleNameArr: [],
-                    message: "There is a problem retrieving journey data, please try again later."
-                    
+                    message: "There is a problem retrieving journey data, please try again later.",
+                    errorMsg: false,
+                    loading: true
                 }
             },
             methods: {
@@ -129,97 +149,52 @@
                     // on Vue instance created, load the book list
                     // 'staff_id'
                     const response =
-                        fetch("http://localhost:5000/journeys_by_staff/"+getCookie('staff_id')) // hardcoding staff-id now
+                        fetch("http://localhost:5000/all_journeys_info/"+getCookie('staff_id')) // hardcoding staff-id now
                             .then(response => response.json())
                             .then(data => {
-                                console.log(data);
                                 if (data.code === 404) {
                                     // no skill in db
                                     this.message = data.message;
+                                    this.loading = false;
+                                    this.errorMsg = true;
                                 } else {
                                     this.journeys = data.data.journeys
-                                    console.log(this.journeys);
-                                    this.getRoleArr();
-                                    
+                                    console.log("data: " ,data.data.journeys);
+                                    this.loading = false;
+                                    this.errorMsg = false;
                                 }
                             })
                             .catch(error => {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
+                                this.loading = false;
+                                this.message = error;
+                                this.errorMsg = true;
                                 console.log(this.message + error);
 
                             });
-
-                    function getCookie(cname) {
-                        let name = cname + "=";
-                        let decodedCookie = decodeURIComponent(document.cookie);
-                        let ca = decodedCookie.split(';');
-                        for(let i = 0; i <ca.length; i++) {
-                            let c = ca[i];
-                            while (c.charAt(0) == ' ') {
-                            c = c.substring(1);
-                            }
-                            if (c.indexOf(name) == 0) {
-                            return c.substring(name.length, c.length);
-                            }
-                        }
-                        return null;
-                    }
                 },
                 goToViewLJ(learning_journey_id) {
                     location.href = './viewLearningJourney.html?learning_journey_id=' + learning_journey_id
-                },
-                
-                displayRoleName(role_id) {
-                    const response =
-                        fetch("http://localhost:5000/role/"+role_id) // hardcoding staff-id now
-                            .then(response => response.json())
-                            .then(data => {
-                                console.log(data);
-                                if (data.code === 404) {
-                                    // no skill in db
-                                    this.message = data.message;
-                                } else {
-                                    this.roleNameArr.push(data.data.role_name);
-                                    console.log(this.roleNameArr);
-                                }
-                            })
-                            .catch(error => {
-                                // Errors when calling the service; such as network error, 
-                                // service offline, etc
-                                console.log(this.message + error);
-
-                            });
-                },
-                getRoleArr(){
-                    for (var i = 0; i < this.journeys.length; i++) {
-                        var obj = this.journeys[i];
-                        for (var key in obj) {
-                            if (key == "role_id"){
-                                this.displayRoleName(obj[key]);                            
-                            }
-                        }
-                    }
-
                 }
             },
             created() {
                 // check credentials (check for staff)
-            if (getCookie('user_type') != null) {
+                if (getCookie('user_type') != null) {
 
-                let user_type = getCookie('user_type');
+                    let user_type = getCookie('user_type');
 
-                if (user_type != "staff") {
+                    if (user_type != "staff") {
 
-                    // check switch_to_staff_acct
-                    let switch_to_staff_acct = getCookie('switch_to_staff_acct')
+                        // check switch_to_staff_acct
+                        let switch_to_staff_acct = getCookie('switch_to_staff_acct')
 
-                    if (switch_to_staff_acct == "N") {
+                        if (switch_to_staff_acct == "N") {
 
-                        location.href = './HRviewAllRoles.html';
+                            location.href = './HRviewAllRoles.html';
+                        }
                     }
                 }
-            }
                 this.getAllSkills();
             }
         });

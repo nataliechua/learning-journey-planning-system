@@ -138,9 +138,10 @@
                                 </small> -->
                             </div>
                         </div>
-                        <a href="viewLearningJourney.html" class="list-group-item list-group-item-action" aria-current="true">
+                        <!-- <a v-for="(journey, index) in journeys" href="viewLearningJourney.html" class="list-group-item list-group-item-action" aria-current="true">
                             <div class="d-flex w-100">
-                                <!--Progress bar-->
+                                {{journey}}
+                                {{journey.journey_completion_status}}
                                 <div class="mr-4">
                                     <div class="progress mx-auto" data-value='50'>
                                         <span class="progress-left">
@@ -154,7 +155,6 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--//Progress bar-->
                                 
                                 <div>
                                     <h5 class="mb-1">Learning Journey 2</h5>
@@ -162,12 +162,27 @@
                                     <p class="mb-1"><i class="fas fa-fw fa-exclamation-circle"></i>&nbsp;Course 2</p>
                                 </div>
                             </div>
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action" aria-current="true">
+                        </a> -->
+                        <div v-if="loading" class="list-group-item list-group-item-action">
+                            <!--Spinner-->
+                            <div class="d-flex justify-content-center mt-2">
+                                <div class="spinner-border" role="status">
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-2">
+                                <strong>Please wait while we are fetching the records...</strong>
+                            </div>
+                            <!--//Spinner-->  
+                        </div>
+                        <div v-if="errorMsg" class="list-group-item list-group-item-action">
+                            <p style="color:red;">{{this.message}}</p>
+                        </div>
+                        <a v-for="(journey, index) in journeys" class="list-group-item list-group-item-action" aria-current="true"  @click="goToViewLJ(journey.journey_id)" style="cursor: pointer;">
                             <div class="d-flex w-100">
+                                <!-- {{journey}} -->
                                 <!--Progress bar-->
                                 <div class="mr-4">
-                                    <div class="progress mx-auto" data-value='100'>
+                                    <div class="progress mx-auto" v-bind:data-value='journey.journey_completion_status'>
                                         <span class="progress-left">
                                             <span class="progress-bar border-primary"></span>
                                         </span>
@@ -175,17 +190,24 @@
                                             <span class="progress-bar border-primary"></span>
                                         </span>
                                         <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h5 font-weight-bold text-primary">100%</div>
+                                            <div class="h5 font-weight-bold text-primary">{{journey.journey_completion_status}}%</div>
                                         </div>
                                     </div>
                                 </div>
                                 <!--//Progress bar-->
                                 
                                 <div>
-                                    <h5 class="mb-1">Learning Journey 2</h5>
-                                    <p class="mb-1"><i class="fas fa-fw fa-check-circle"></i>&nbsp;Course 1</p>
-                                    <p class="mb-1"><i class="fas fa-fw fa-check-circle"></i>&nbsp;Course 2</p>
-                                    <p class="text-primary">3 more courses</p>
+                                    <h5 class="mb-1">{{journey.journey_name}}</h5>
+                                    <template v-for="skill in journey.skills">
+                                        <!-- <p>{{skill}}</p> -->
+                                        <template v-for="course in skill.skill_courses">
+                                            <p>
+                                                <i class="fas fa-fw fa-check-circle" v-if="course.course_completion_status=='Completed'"></i>
+                                                <i class="fas fa-fw fa-exclamation-circle" v-else></i>&nbsp
+                                                {{course.course_name}}
+                                            </p>
+                                        </template>
+                                    </template>
                                 </div>
                             </div>
                         </a>
@@ -222,34 +244,14 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
-        $(function() {
-
-            $(".progress").each(function() {
-
-                var value = $(this).attr('data-value');
-                var left = $(this).find('.progress-left .progress-bar');
-                var right = $(this).find('.progress-right .progress-bar');
-
-                if (value > 0) {
-                    if (value <= 50) {
-                    right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
-                    } else {
-                    right.css('transform', 'rotate(180deg)')
-                    left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
-                    }
-                }
-            })
-
-            function percentageToDegrees(percentage) {
-                return percentage / 100 * 360
-            }
-
-        });
 
         const app = Vue.createApp({
             data() {
                 return {
-
+                    journeys:[],
+                    message: "There is a problem retrieving journey data, please try again later.",
+                    errorMsg: false,
+                    loading: true
                 }
             },
             created() {
@@ -269,8 +271,67 @@
                         }
                     }
                 }
+                this.getAllSkills();
             },
             methods: {
+                getAllSkills() {
+                    // on Vue instance created, load the book list
+                    // 'staff_id'
+                    const response =
+                        fetch("http://localhost:5000/all_journeys_info/"+getCookie('staff_id')) // hardcoding staff-id now
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.code === 404) {
+                                    // no skill in db
+                                    this.message = data.message;
+                                    this.loading = false;
+                                    this.errorMsg = true;
+                                } else {
+                                    this.journeys = data.data.journeys
+                                    // console.log(this.journeys);
+                                    console.log("data: " ,data.data.journeys);
+                                    this.loading = false;
+                                    this.errorMsg = false;
+                                    // initilize progress bar
+                                    this.calculateProgress();
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                this.loading = false;
+                                this.errorMsg = error;
+                                console.log(this.message + error);
+
+                            });
+                },
+                goToViewLJ(learning_journey_id) {
+                    location.href = './viewLearningJourney.html?learning_journey_id=' + learning_journey_id
+                },
+                calculateProgress() {
+                    $(function() {
+                        $(".progress").each(function() {
+
+                            var value = $(this).attr('data-value');
+                            var left = $(this).find('.progress-left .progress-bar');
+                            var right = $(this).find('.progress-right .progress-bar');
+
+                            if (value > 0) {
+                                if (value <= 50) {
+                                right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)')
+                                } else {
+                                right.css('transform', 'rotate(180deg)')
+                                left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)')
+                                }
+                            }
+                        })
+
+                        function percentageToDegrees(percentage) {
+                            return percentage / 100 * 360
+                        }
+
+                    });
+                }
             }
         });
         const vm = app.mount("#wrapper");

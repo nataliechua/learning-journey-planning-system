@@ -13,6 +13,9 @@
 
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
+
+    <script src="vendor/jquery/jquery.min.js"></script>
+
     <link
         href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
         rel="stylesheet">
@@ -56,11 +59,11 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Learning Journey 1: Role 1</h1>
+                    <h1 class="h3 mb-4 text-gray-800">{{journey_name}}</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
                             <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Learning Journey 1: Role 1</li>
+                            <li class="breadcrumb-item active" aria-current="page">{{journey_name}}</li>
                         </ol>
                     </nav>
                     <div class="card">
@@ -77,8 +80,52 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody v-if="loading">
                                     <tr>
+                                        <td colspan="4">
+                                            <!--Spinner-->
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <div class="spinner-border" role="status">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <strong>Please wait while we are fetching the records...</strong>
+                                            </div>
+                                            <!--//Spinner-->  
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                                <tbody v-if="errorMsg">
+                                    <tr>
+                                        <td colspan="4" style="color:red;">{{this.message}}</td>
+                                    </tr>
+                                </tbody>
+                                <tbody v-if="!errrorMsg && !loading" v-for="skill in skills">
+                                    
+                                    <tr v-for="(course,index) in skill.skill_courses">
+                                        <!-- <td rowspan="{{skill.skill_courses.length}}">
+                                            {{skill.skill_name}}
+                                        </td>
+                                        <td rowspan="{{skill.skill_courses.length}}">
+                                            {{skill.skill_status}}
+                                        </td> -->
+                                        <!--not sure if it works-->
+                                        <td>
+                                            {{skill.skill_name}}
+                                        </td>
+                                        <td>
+                                            {{skill.skill_status}}
+                                        </td>
+                                        <td>
+                                            {{course.course_name}} 
+                                        </td>
+                                        <td>
+                                            {{course.course_status}}
+                                        </td>
+                                        <!-- <td>{{course}}</td> -->
+                                    </tr>
+                                    <!-- <tr>
                                         <td rowspan="2" class="align-middle">Skill 1</td>
                                         <td rowspan="2" class="align-middle">Completed</td>
                                         <td>Course 1</td>
@@ -89,31 +136,7 @@
                                         <td>Course 2</td>
                                         <td>Completed</td>
                                         <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2" class="align-middle">Skill 2</td>
-                                        <td rowspan="2" class="align-middle">Completed</td>
-                                        <td>Course 1</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Course 2</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2" class="align-middle">Skill 3</td>
-                                        <td rowspan="2" class="align-middle">In progress</td>
-                                        <td>Course 1</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Course 2</td>
-                                        <td>In progress （50%）</td>
-                                        <td></td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                         </div>
@@ -152,31 +175,42 @@
 
         data() {
             return {
-                "journeys":[],
+                journey_name:"",
+                skills:[],
                 message: "There is a problem retrieving journey data, please try again later.",
-
+                errorMsg: false,
+                loading: true
             }
         },
         methods: {
             getAllSkills() {
                 // on Vue instance created, load the book list
-                // 'staff_id'
+                const queryString = window.location.search;
+                const urlParams = new URLSearchParams(queryString);
+                const learningJourneyId = urlParams.get('learning_journey_id')
+
                 const response =
-                    fetch("http://localhost:5000/journeys_by_staff/"+getCookie('staff_id')) // hardcoding staff-id now
+                    fetch("http://localhost:5000/all_journey_info/"+learningJourneyId) // hardcoding staff-id now
                         .then(response => response.json())
                         .then(data => {
-                            console.log(data);
+                            // console.log(data);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
+                                this.loading = false;
+                                this.errorMsg = true;
                             } else {
-                                this.journeys = data.journeys
-                                console.log(this.journeys);
+                                this.skills = data.data.skills;
+                                this.journey_name = data.data.journey_name;
+                                this.loading = false;
+                                this.errorMsg = false;
                             }
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
+                            this.loading = false;
+                            this.errorMsg = error;
                             console.log(this.message + error);
 
                         });
