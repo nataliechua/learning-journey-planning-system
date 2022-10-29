@@ -749,6 +749,7 @@ def get_all_journey_info_by_journey_id(journey_id):
         jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
         track = []
         ans = []
+        role = Role.query.filter_by(role_id=journey.role_id).first()
         for jsc in jsclist:
             if jsc.skill_id not in track:
                 skill = Skill.query.filter_by(skill_id=jsc.skill_id).first()
@@ -782,7 +783,8 @@ def get_all_journey_info_by_journey_id(journey_id):
                 "data": {
                     "journey_id": journey_id,
                     "journey_name":journey.journey_name,
-                    "role_id":journey.role_id,
+                    #"role_id":journey.role_id,
+                    "role": role.to_dict(),
                     "staff_id":journey.staff_id,
                     "journey_completion_status": journey_completion_status(ans),
                     "skills": ans
