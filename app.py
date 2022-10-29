@@ -1,4 +1,5 @@
 from itertools import groupby
+from re import S
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import delete, insert, update
@@ -465,6 +466,42 @@ def get_courses_skills_by_course_status(course_status):
         }
     ), 404
 
+#get active skills whether in course by course id
+@app.route("/active_skills_whether_in_course/<string:course_id>")
+def get_active_skills_whether_in_course_by_course_id(course_id):
+    cslist = Course_Skill.query.filter_by(course_id = course_id)
+    slist = Skill.query.filter_by(skill_status="Active")
+    in_course_skills = []
+    ans = []
+    if cslist.count() != 0:
+        for cs in cslist:
+            in_course_skills.append(cs.skill_id)
+    for s in slist:
+        if s.skill_id in in_course_skills:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_course": True
+            }
+        else:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_course": False
+            }
+        ans.append(tempdic)
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "course_id": course_id,
+                "skills": ans
+            }
+        }
+    ), 200
+
 #remove course skill
 @app.route("/remove_course_skill/<string:course_id>/<int:skill_id>")
 def remove_course_skill(course_id,skill_id):
@@ -701,11 +738,12 @@ def get_all_journey_skill_course():
         }
     ), 404
 
-#get journey skill course by journey id
-@app.route("/journey_skill_course/<int:journey_id>")
-def get_journey_skill_course_by_journey_id(journey_id):
-    jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
-    if jsclist:
+#get all journey info by journey id
+@app.route("/all_journey_info/<int:journey_id>")
+def get_all_journey_info_by_journey_id(journey_id):
+    journey = Journey.query.filter_by(journey_id=journey_id).first()
+    if journey:
+        jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
         track = []
         ans = []
         for jsc in jsclist:
@@ -721,13 +759,29 @@ def get_journey_skill_course_by_journey_id(journey_id):
                 track.append(jsc.skill_id)
             for skill in ans:
                 if skill["skill_id"]==jsc.skill_id:
-                    skill["skill_courses"].append(jsc.course_id)
+                    course_info = db.session.query(Course_Registration, Course).select_from(Course_Registration).join(Course).filter(Course_Registration.course_id==jsc.course_id, Course_Registration.staff_id == journey.staff_id)
+                    for course_registration, course in course_info:
+                        course_ans = {
+                            "course_id":course.course_id,
+                            "course_name":course.course_name,
+                            "course_desc":course.course_desc,
+                            "course_status":course.course_status,
+                            "course_type":course.course_type,
+                            "course_category":course.course_category,
+                            "course_completion_status":course_registration.completion_status
+                        }
+
+                    skill["skill_courses"].append(course_ans)
 
         return jsonify(
             {
                 "code": 200,
                 "data": {
                     "journey_id": journey_id,
+                    "journey_name":journey.journey_name,
+                    "role_id":journey.role_id,
+                    "staff_id":journey.staff_id,
+                    "journey_completion_status": journey_completion_status(ans),
                     "skills": ans
                 }
             }
@@ -739,6 +793,47 @@ def get_journey_skill_course_by_journey_id(journey_id):
             "message": "There is no journey with journey id = "+journey_id+ "."
         }
     ), 404
+
+def journey_completion_status(skills_list):
+    skills_count = 0
+    skills_completed_count = 0
+    for skill in skills_list:
+        skills_count +=1
+        for course in skill["skill_courses"]:
+            if course["course_completion_status"] =="Completed":
+                skills_completed_count +=1
+                break
+        
+    return round(skills_completed_count/skills_count * 100)
+
+#get all journeys info by staff id
+@app.route("/all_journeys_info/<int:staff_id>")
+def get_all_journey_info_by_staff_id(staff_id):
+    journeys = Journey.query.filter_by(staff_id=staff_id)
+    ans=[]
+    if journeys.count()==0:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "There is no journey with staff id = "+staff_id+ "."
+            }
+        ), 404
+
+    for journey in journeys:
+        raw_response = make_response(get_all_journey_info_by_journey_id(journey.journey_id))
+        response=raw_response.get_json()
+        data =  response["data"]
+        ans.append(data)
+    
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "staff_id":staff_id,
+                "journeys":ans
+            }
+        }
+    ), 200
 
 #get skills not inside journey by journey id
 @app.route("/skills_not_in_journey/<int:journey_id>")
@@ -1002,7 +1097,7 @@ def get_active_skills_by_role_id(role_id):
             {
                 "code": 200,
                 "data": {
-                    "active skills": [skill.to_dict() for role_skill,skill in list]
+                    "active_skills": [skill.to_dict() for role_skill,skill in list]
                 }
             }
         ), 200
@@ -1012,6 +1107,42 @@ def get_active_skills_by_role_id(role_id):
             "message": "There are no active skills for role id = "+str(role_id)+"."
         }
     ), 404
+
+#Get active skills whether in role by role id
+@app.route("/active_skills_whether_in_role/<string:role_id>")
+def get_active_skills_whether_in_role_by_role_id(role_id):
+    rslist = Role_Skill.query.filter_by(role_id = role_id)
+    slist = Skill.query.filter_by(skill_status="Active")
+    in_role_skills = []
+    ans = []
+    if rslist.count() != 0:
+        for rs in rslist:
+            in_role_skills.append(rs.skill_id)
+    for s in slist:
+        if s.skill_id in in_role_skills:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_role": True
+            }
+        else:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_role": False
+            }
+        ans.append(tempdic)
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "role_id": role_id,
+                "skills": ans
+            }
+        }
+    ), 200
 
 #remove role skill
 @app.route("/remove_role_skill/<int:role_id>/<int:skill_id>")

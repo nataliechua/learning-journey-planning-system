@@ -25,6 +25,7 @@
 - Get courses by skill id: http://localhost:5000/courses_by_skill/<int:skill_id>
 - Get skills by course id: http://localhost:5000/skills_by_course/<string:course_id>
 - Get courses and skills by course status: http://localhost:5000/courses_skills_by_course_status/<string:course_status>
+- Get active skills whether in course by course id: http://localhost:5000/active_skills_whether_in_course/<string:course_id>
 - Remove course skill: http://localhost:5000/remove_course_skill/<string:course_id>/<int:skill_id>
 - Create course skill: http://localhost:5000/course_skill/create
 - Update course skill: http://localhost:5000/course_skill/update
@@ -38,7 +39,8 @@
 
 ### journey skill courses
 - Get all journey skill course: http://localhost:5000/journey_skill_course
-- Get journey skill course by journey id: http://localhost:5000/journey_skill_course/<int:journey_id>
+- Get all journey info by journey id: http://localhost:5000/all_journey_info/<int:journey_id>
+- Get all journeys info by staff id: http://localhost:5000/all_journeys_info/<int:staff_id>
 - Get skills not inside journey by journey id: http://localhost:5000/skills_not_in_journey/<int:journey_id>
 - Remove journey skill course: http://localhost:5000/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>
 - Create journey skill course: http://localhost:5000/journey_skill_course/create
@@ -54,6 +56,7 @@
 - Get all role skills: http://localhost:5000/role_skills
 - Get all roles with skills: http://localhost:5000/roles_with_skills
 - Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
+- Get active skills whether in role by role id: http://localhost:5000/active_skills_whether_in_role/<string:role_id>
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
 - Create role skill: http://localhost:5000/role_skill/create
 - Update role skill: http://localhost:5000/role_skill/update
