@@ -166,6 +166,23 @@
         },
         created() { // created is a hook that executes as soon as Vue instance is created
             this.getAvailableRoles();
+            
+            // check credentials (check for staff)
+            if (getCookie('user_type') != null) {
+
+                let user_type = getCookie('user_type');
+
+                if (user_type != "staff") {
+
+                    // check switch_to_staff_acct
+                    let switch_to_staff_acct = getCookie('switch_to_staff_acct')
+
+                    if (switch_to_staff_acct == "N") {
+
+                        location.href = './HRviewAllRoles.html';
+                    }
+                }
+            }
             $('[data-toggle="tooltip"]').tooltip();  
         },
         methods: {
@@ -316,6 +333,21 @@
         }
     }).mount('#page-top');
     
+    function getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+            }
+        }
+        return null;
+    }
     </script>
 </body>
 

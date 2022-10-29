@@ -70,6 +70,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <p>** Note: Missing role & status</p>
                                     <tr v-for="(journey, index) in journeys">
                                         <th scope="row">{{ journey.journey_name }}</th>
                                         <td>
@@ -77,15 +78,6 @@
                                         <td>dh</td>
                                         <td>
                                             <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
-                                        </td>
-                                    </tr>
-                                    <p>** Note: Missing role & status</p>
-                                    <tr>
-                                        <th scope="row">Learning Journey 1</th>
-                                        <td>Role 1</td>
-                                        <td>In progress (50%)</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary" href="viewLearningJourney.html">View</a>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -175,7 +167,7 @@
                     }
                 },
                 goToViewLJ(learning_journey_id) {
-                    location.href = 'viewLearningJourney.html?learning_journey_id=' + learning_journey_id
+                    location.href = './viewLearningJourney.html?learning_journey_id=' + learning_journey_id
                 },
                 
                 displayRoleName(role_id) {
@@ -212,12 +204,43 @@
                 }
             },
             created() {
-                // on Vue instance created, load the book list
+                // check credentials (check for staff)
+            if (getCookie('user_type') != null) {
+
+                let user_type = getCookie('user_type');
+
+                if (user_type != "staff") {
+
+                    // check switch_to_staff_acct
+                    let switch_to_staff_acct = getCookie('switch_to_staff_acct')
+
+                    if (switch_to_staff_acct == "N") {
+
+                        location.href = './HRviewAllRoles.html';
+                    }
+                }
+            }
                 this.getAllSkills();
             }
         });
     
         const vm = app.mount('#wrapper');
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return null;
+        }
     </script>
 </body>
 
