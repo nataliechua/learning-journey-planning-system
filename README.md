@@ -39,7 +39,8 @@
 
 ### journey skill courses
 - Get all journey skill course: http://localhost:5000/journey_skill_course
-- Get journey skill course by journey id: http://localhost:5000/journey_skill_course/<int:journey_id>
+- Get all journey info by journey id: http://localhost:5000/all_journey_info/<int:journey_id>
+- Get all journeys info by staff id: http://localhost:5000/all_journeys_info/<int:staff_id>
 - Get skills not inside journey by journey id: http://localhost:5000/skills_not_in_journey/<int:journey_id>
 - Remove journey skill course: http://localhost:5000/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>
 - Create journey skill course: http://localhost:5000/journey_skill_course/create
