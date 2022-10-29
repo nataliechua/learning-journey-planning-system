@@ -29,6 +29,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
     <!-- VueJS -->
     <script src="https://unpkg.com/vue@next"></script>
+    <!--Toastr-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(function () {
             $("#sidebar").load("./assets/components/sidebar.html");
@@ -75,18 +78,18 @@
                             <form>
                                 <div class="form-group">
                                     <label for="name">Skill Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter skill name">
+                                    <input v-model="skill_name" type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter skill name">
                                 </div>
                                 <div class="form-group">
-                                    <label for="role">Status</label>
+                                    <label for="skill">Status</label>
                                     <br>
-                                    <select class="selectpicker" id="status" data-live-search="true">
+                                    <select v-model="skill_status" class="selectpicker" id="skill" data-live-search="true">
                                         <option value="" selected disabled></option>
                                         <option>Active</option>
                                         <option>Inactive</option>
                                     </select>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Create</button>
+                                <button type="button" class="btn btn-primary" @click="saveSkill">Create</button>
                             </form>
                         </div>
                     </div>
@@ -110,6 +113,99 @@
     <a class="scroll-to-top rounded" href="#page-top">
         <i class="fas fa-angle-up"></i>
     </a>
+
+    <script>
+        const app = Vue.createApp({
+
+            data() {
+                return {
+                    skill_name: "",
+                    skill_status: ""
+                }
+            },
+            methods: {
+                saveSkill() {
+                    console.log("SaveSkill()");
+                    $(async () => {
+                            serviceURL = "http://localhost:5000/skill/create";
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL,
+                                        {
+                                            method: 'POST',
+                                            headers: {
+                                                'Accept': 'application/json', 'Content-Type': 'application/json'
+                                            },
+                                            body: JSON.stringify({
+                                                skill_name: this.skill_name,
+                                                skill_status: this.skill_status
+                                            })
+                                        }
+                                    );
+                                const result = await response.json();
+                                console.log(result);
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
+
+                                console.log(result.code)
+
+                                if (result.code === 201) {
+                                    if (this.toastCount == 0) {
+                                        // success 
+                                        // console.log("created successfully")
+                                        toastr.success("Created successfully");
+                                        this.toastCount += 1;
+                                    } 
+
+                                    setInterval(function doThisAfterFourSeconds() {
+                                        location.href = './HRviewAllSkills.html';
+                                    }, 400);
+
+                                    
+                                } else if (result.code == 500) {
+                                    // this.err = true
+                                    // this.errMsg = result.message;
+                                    toastr.error("An error has occurred. Please try again");
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    toastr.error("An error has occurred. Please try again");
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(error.message())
+                                toastr.error("An error has occurred. Please try again");
+                            } // error
+                        });
+                },
+                refreshSelectDropDown() {
+                    setTimeout(() => {
+                        jQuery('.selectpicker').selectpicker('refresh');
+                        $('[data-toggle="tooltip"]').tooltip();  
+                    }, 100);
+                }
+            }
+        });
+
+        const vm = app.mount('#wrapper');
+    </script>
     
     <!-- Core plugin JavaScript-->
     <script src="vendor/jquery-easing/jquery.easing.min.js"></script>

@@ -2,12 +2,18 @@ Skill_ID,Skill_Name,Skill_Status
 1,Teamwork,Active
 2,Problem-solving,Active
 3,Time management,Active
-4,Critical thinking,Active
-5,Decision-making,Active
-6,Organizational,Active
-7,Stress management,Active
-8,Conflict management,Active
-9,Adaptability,Active
-10,Leadership,Active
-11,Creativity,Active
-12,Communication,Active
+4,Decision-making,Active
+5,Organizational,Active
+6,Conflict management,Active
+7,Communication,Active
+8,Leadership,Active
+9,Creativity,Active
+10,Python Programming,Active
+11,Big Data,Active
+12,Data Analysis,Active
+13,Java Programming,Active
+14,Database Management,Active
+15,Web Development,Active
+16,UI Design,Active
+17,UX Design,Active
+18,Cyber-security,Active
