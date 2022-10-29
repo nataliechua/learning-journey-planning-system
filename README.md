@@ -22,13 +22,13 @@
 
 ### course skills
 - Get all course skills: http://localhost:5000/course_skills
-- Get courses by skill id: http://localhost:5000/courses_by_skill/<int:skill_id>
+- (used) Get courses by skill id: http://localhost:5000/courses_by_skill/<int:skill_id>
 - Get skills by course id: http://localhost:5000/skills_by_course/<string:course_id>
-- Get courses and skills by course status: http://localhost:5000/courses_skills_by_course_status/<string:course_status>
-- Get active skills whether in course by course id: http://localhost:5000/active_skills_whether_in_course/<string:course_id>
+- (used) Get courses and skills by course status: http://localhost:5000/courses_skills_by_course_status/<string:course_status>
+- (used) Get active skills whether in course by course id: http://localhost:5000/active_skills_whether_in_course/<string:course_id>
 - Remove course skill: http://localhost:5000/remove_course_skill/<string:course_id>/<int:skill_id>
 - Create course skill: http://localhost:5000/course_skill/create
-- Update course skill: http://localhost:5000/course_skill/update
+- (used) Update course skill: http://localhost:5000/course_skill/update
 
 ### journeys
 - Get all journeys: http://localhost:5000/journeys
@@ -48,14 +48,14 @@
 ### roles
 - Get all roles: http://localhost:5000/roles
 - Get role by id: http://localhost:5000/role/<int:id>
-- Get roles by status: http://localhost:5000/roles/<string:status>
+- (used) Get roles by status: http://localhost:5000/roles/<string:status>
 - Update role status by role id: http://localhost:5000/update_role_status/<int:role_id>
 - Create role: http://localhost:5000/role/create
 
 ### role skills
 - Get all role skills: http://localhost:5000/role_skills
 - Get all roles with skills: http://localhost:5000/roles_with_skills
-- Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
+- (used) Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
 - Get active skills whether in role by role id: http://localhost:5000/active_skills_whether_in_role/<string:role_id>
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
 - Create role skill: http://localhost:5000/role_skill/create

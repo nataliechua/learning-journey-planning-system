@@ -473,6 +473,7 @@ def get_active_skills_whether_in_course_by_course_id(course_id):
     slist = Skill.query.filter_by(skill_status="Active")
     in_course_skills = []
     ans = []
+    course = Course.query.filter_by(course_id=course_id).first()
     if cslist.count() != 0:
         for cs in cslist:
             in_course_skills.append(cs.skill_id)
@@ -496,7 +497,9 @@ def get_active_skills_whether_in_course_by_course_id(course_id):
         {
             "code": 200,
             "data": {
-                "course_id": course_id,
+                # "course_id": course_id,
+                # "course_name" : course_name,
+                "course": course.to_dict(),
                 "skills": ans
             }
         }
@@ -1113,6 +1116,7 @@ def get_active_skills_by_role_id(role_id):
 def get_active_skills_whether_in_role_by_role_id(role_id):
     rslist = Role_Skill.query.filter_by(role_id = role_id)
     slist = Skill.query.filter_by(skill_status="Active")
+    role = Role.query.filter_by(role_id=role_id).first()
     in_role_skills = []
     ans = []
     if rslist.count() != 0:
@@ -1138,7 +1142,7 @@ def get_active_skills_whether_in_role_by_role_id(role_id):
         {
             "code": 200,
             "data": {
-                "role_id": role_id,
+                "role": role.to_dict(),
                 "skills": ans
             }
         }
