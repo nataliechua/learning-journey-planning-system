@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>LJPS</title>
-
+    <link rel="icon" type="image/x-icon" href="assets/img/favicon.png">
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
     <link
@@ -117,14 +117,15 @@
                     if (id == "hr" && pwd == "hr") {    
                         setCookie('user_id', "hr");
                         setCookie('user_type', "hr");
-                        setCookie('staff_id', "150008");
+                        //setCookie('staff_id', "130001");
+                        setCookie('staff_id', "150265");
                         setCookie('switch_to_staff_acct', "N");
                         location.href = './HRviewAllRoles.html';
                     }
                     else if (id == "staff" && pwd == "staff") {
                         setCookie('user_id', "staff");
                         setCookie('user_type', "staff");
-                        setCookie('staff_id', "130001");
+                        setCookie('staff_id', "150008");
                         location.href = './index.html';
                     }
                     else {
