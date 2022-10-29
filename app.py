@@ -1,4 +1,5 @@
 from itertools import groupby
+from re import S
 from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import delete, insert, update
@@ -464,6 +465,42 @@ def get_courses_skills_by_course_status(course_status):
             "message": "There are no courses with status = " + course_status + "." 
         }
     ), 404
+
+#get active skills whether in course by course id
+@app.route("/active_skills_whether_in_course/<string:course_id>")
+def get_active_skills_whether_in_course_by_course_id(course_id):
+    cslist = Course_Skill.query.filter_by(course_id = course_id)
+    slist = Skill.query.filter_by(skill_status="Active")
+    in_course_skills = []
+    ans = []
+    if cslist.count() != 0:
+        for cs in cslist:
+            in_course_skills.append(cs.skill_id)
+    for s in slist:
+        if s.skill_id in in_course_skills:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_course": True
+            }
+        else:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_course": False
+            }
+        ans.append(tempdic)
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "course_id": course_id,
+                "skills": ans
+            }
+        }
+    ), 200
 
 #remove course skill
 @app.route("/remove_course_skill/<string:course_id>/<int:skill_id>")
@@ -1012,6 +1049,42 @@ def get_active_skills_by_role_id(role_id):
             "message": "There are no active skills for role id = "+str(role_id)+"."
         }
     ), 404
+
+#Get active skills whether in role by role id
+@app.route("/active_skills_whether_in_role/<string:role_id>")
+def get_active_skills_whether_in_role_by_role_id(role_id):
+    rslist = Role_Skill.query.filter_by(role_id = role_id)
+    slist = Skill.query.filter_by(skill_status="Active")
+    in_role_skills = []
+    ans = []
+    if rslist.count() != 0:
+        for rs in rslist:
+            in_role_skills.append(rs.skill_id)
+    for s in slist:
+        if s.skill_id in in_role_skills:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_role": True
+            }
+        else:
+            tempdic = {
+                "skill_id": s.skill_id,
+                "skill_name": s.skill_name,
+                "skill_status": s.skill_status,
+                "skill_in_role": False
+            }
+        ans.append(tempdic)
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "role_id": role_id,
+                "skills": ans
+            }
+        }
+    ), 200
 
 #remove role skill
 @app.route("/remove_role_skill/<int:role_id>/<int:skill_id>")
