@@ -438,7 +438,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n    \"journey\":{\r\n        \"journey_id\":40,\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":1\r\n\r\n    },\r\n    \"journey_skill_course\": [\r\n        {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 7,\r\n            \"course_id\": \"SAL003\"\r\n        },\r\n                {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 5,\r\n            \"course_id\": \"tch001\"\r\n        }\r\n\r\n    ]\r\n}",
+					"raw": "{\r\n    \"journey\":{\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":8,\r\n        \"skills\":[\r\n            {\r\n                \"skill_id\":1,\r\n                \"course_ids\":[\"MGT001\",\"MGT003\"]\r\n            },\r\n            {\r\n                \"skill_id\":8,\r\n                \"course_ids\":[\"MGT001\",\"MGT004\"]\r\n            }\r\n        ]\r\n    }\r\n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -466,7 +466,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"journey\":{\r\n        \"journey_id\":40,\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":1\r\n\r\n    },\r\n    \"journey_skill_course\": [\r\n        {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 7,\r\n            \"course_id\": \"SAL003\"\r\n        },\r\n                {\r\n            \"journey_id\": 40,\r\n            \"skill_id\": 5,\r\n            \"course_id\": \"tch001\"\r\n        }\r\n\r\n    ]\r\n}",
+							"raw": "{\r\n    \"journey\":{\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":8,\r\n        \"skills\":[\r\n            {\r\n                \"skill_id\":1,\r\n                \"course_ids\":[\"MGT001\",\"MGT003\"]\r\n            },\r\n            {\r\n                \"skill_id\":8,\r\n                \"course_ids\":[\"MGT001\",\"MGT004\"]\r\n            }\r\n        ]\r\n    }\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -496,7 +496,7 @@
 						},
 						{
 							"key": "Date",
-							"value": "Wed, 19 Oct 2022 04:44:51 GMT"
+							"value": "Sun, 30 Oct 2022 08:02:38 GMT"
 						},
 						{
 							"key": "Content-Type",
@@ -504,7 +504,7 @@
 						},
 						{
 							"key": "Content-Length",
-							"value": "479"
+							"value": "507"
 						},
 						{
 							"key": "Access-Control-Allow-Origin",
@@ -516,7 +516,7 @@
 						}
 					],
 					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"journey\": {\n            \"journey_id\": 40,\n            \"journey_name\": \"create journey test\",\n            \"role_id\": 1,\n            \"staff_id\": 140008\n        },\n        \"journey_skill_course\": [\n            {\n                \"course_id\": \"SAL003\",\n                \"journey_id\": 40,\n                \"skill_id\": 7\n            },\n            {\n                \"course_id\": \"tch001\",\n                \"journey_id\": 40,\n                \"skill_id\": 5\n            }\n        ]\n    },\n    \"message\": \"Jounrey and journey skill course pair(s) created successfully.\"\n}"
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"journey\": {\n            \"journey_name\": \"create journey test\",\n            \"role_id\": 8,\n            \"skills\": [\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT003\"\n                    ],\n                    \"skill_id\": 1\n                },\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT004\"\n                    ],\n                    \"skill_id\": 8\n                }\n            ],\n            \"staff_id\": 140008\n        }\n    },\n    \"message\": \"Jounrey and journey skill course pair(s) created successfully.\"\n}"
 				}
 			]
 		},
@@ -695,6 +695,95 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 1,\n        \"skill_ids\": [\n            4,\n            8,\n            10\n        ]\n    },\n    \"message\": \"Role skill pair(s) created successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "update role info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/role_info/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"role_info",
+						"update"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "update role info",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/role_info/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"role_info",
+								"update"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 30 Oct 2022 08:39:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "214"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 1,\n        \"role_name\": \"polar bear\",\n        \"role_status\": \"Retired\",\n        \"skill_ids\": [\n            4,\n            8,\n            10\n        ]\n    },\n    \"message\": \"Role info updated successfully.\"\n}"
 				}
 			]
 		},

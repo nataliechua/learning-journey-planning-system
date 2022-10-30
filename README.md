@@ -60,6 +60,7 @@
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
 - Create role skill: http://localhost:5000/role_skill/create
 - Update role skill: http://localhost:5000/role_skill/update
+- Update role info: http://localhost:5000/role_info/update
 
 ### skills
 - Get all skills: http://localhost:5000/skills

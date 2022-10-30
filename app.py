@@ -469,11 +469,12 @@ def get_courses_skills_by_course_status(course_status):
 #get active skills whether in course by course id
 @app.route("/active_skills_whether_in_course/<string:course_id>")
 def get_active_skills_whether_in_course_by_course_id(course_id):
+    course = Course.query.filter_by(course_id=course_id).first()
     cslist = Course_Skill.query.filter_by(course_id = course_id)
     slist = Skill.query.filter_by(skill_status="Active")
     in_course_skills = []
     ans = []
-    course = Course.query.filter_by(course_id=course_id).first()
+
     if cslist.count() != 0:
         for cs in cslist:
             in_course_skills.append(cs.skill_id)
@@ -497,8 +498,6 @@ def get_active_skills_whether_in_course_by_course_id(course_id):
         {
             "code": 200,
             "data": {
-                # "course_id": course_id,
-                # "course_name" : course_name,
                 "course": course.to_dict(),
                 "skills": ans
             }
@@ -597,7 +596,7 @@ def update_course_skill():
     return jsonify(
         {
             "code": 201,
-            "message": "Course skill pair(s) created successfully.",
+            "message": "Course skill pair(s) updated successfully.",
             "data": data
         }
     ), 201
@@ -692,21 +691,46 @@ def remove_journey_by_id(id):
 def create_journey():
     data = request.get_json()
     journey_data = data["journey"]
-    jsc_data = data["journey_skill_course"]
+
+    journey_input = {
+        "journey_name":journey_data["journey_name"],
+        "staff_id":journey_data["staff_id"],
+        "role_id":journey_data["role_id"]
+    }
+    skills = journey_data["skills"]
 
     try:
-        journey = Journey(**journey_data)
+        journey = Journey(**journey_input,journey_id = None)
         db.session.add(journey)
         db.session.commit()
-        for jsc in jsc_data:
-            journey_skill_course = Journey_Skill_Course(**jsc)
-            db.session.add(journey_skill_course)
-            db.session.commit()
     except Exception as e:
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the journey and journey skill course pair(s). " + str(e)
+                "message": "An error occurred while creating the journey. " + str(e)
+            }
+        ), 500
+
+    try:
+        get_journey = Journey.query.filter_by(journey_name=journey_data["journey_name"],staff_id=journey_data["staff_id"],role_id=journey_data["role_id"]).first()
+        journey_id = get_journey.to_dict()["journey_id"]
+
+        for skill in skills:
+            for course_id in skill["course_ids"]:
+                journey_skill_course_input ={
+                    "journey_id":journey_id,
+                    "course_id":course_id,
+                    "skill_id":skill["skill_id"]
+                }
+                journey_skill_course = Journey_Skill_Course(**journey_skill_course_input)
+                db.session.add(journey_skill_course)
+                db.session.commit()
+        
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the journey skill course pair(s). " + str(e)
             }
         ), 500
 
@@ -715,8 +739,7 @@ def create_journey():
             "code": 201,
             "message": "Jounrey and journey skill course pair(s) created successfully.",
             "data": {
-                "journey": journey_data,
-                "journey_skill_course": jsc_data
+                "journey": journey_data
             }
         }
     ), 201
@@ -1116,11 +1139,12 @@ def get_active_skills_by_role_id(role_id):
 #Get active skills whether in role by role id
 @app.route("/active_skills_whether_in_role/<string:role_id>")
 def get_active_skills_whether_in_role_by_role_id(role_id):
+    role = Role.query.filter_by(role_id=role_id).first()
     rslist = Role_Skill.query.filter_by(role_id = role_id)
     slist = Skill.query.filter_by(skill_status="Active")
-    role = Role.query.filter_by(role_id=role_id).first()
     in_role_skills = []
     ans = []
+
     if rslist.count() != 0:
         for rs in rslist:
             in_role_skills.append(rs.skill_id)
@@ -1140,6 +1164,7 @@ def get_active_skills_whether_in_role_by_role_id(role_id):
                 "skill_in_role": False
             }
         ans.append(tempdic)
+    
     return jsonify(
         {
             "code": 200,
@@ -1241,7 +1266,65 @@ def update_role_skill():
     return jsonify(
         {
             "code": 201,
-            "message": "Role skill pair(s) created successfully.",
+            "message": "Role skill pair(s) updated successfully.",
+            "data": data
+        }
+    ), 201
+
+#update role info
+@app.route("/role_info/update", methods=['POST'])
+def update_role_info():
+    data = request.get_json()
+    role_id=data["role_id"]
+    role_name=data["role_name"]
+    role_status=data["role_status"]
+    skill_ids=data["skill_ids"]
+
+    try:
+        role = Role.query.filter_by(role_id=role_id).first()
+        role.role_name = role_name
+        role.role_status = role_status
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while updating role info with role_id = "+str(role_id)+". " + str(e)
+            }
+        )
+
+    try:
+        Role_Skill.query.filter_by(role_id = role_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting role skill pair(s) with role_id = "+str(role_id)+". " + str(e)
+            }
+        )
+    
+    try:
+        for skill_id in skill_ids:
+            cs = {
+                "role_id":role_id,
+                "skill_id":skill_id
+            }
+            role_skill = Role_Skill(**cs)
+            db.session.add(role_skill)
+            db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the role skill pairs. " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Role info updated successfully.",
             "data": data
         }
     ), 201

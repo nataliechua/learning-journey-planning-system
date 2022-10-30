@@ -1,1 +1,0 @@
-/all_journeys_info/<int:staff_id>
