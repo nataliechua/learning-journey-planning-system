@@ -38,10 +38,6 @@
         });
         $('select').selectpicker();
 
-
-        // Placeholder Role Information
-        var rolename = "Data Analyst";
-        var rolestatus = "Active";
     </script>
 
 </head>
@@ -66,50 +62,67 @@
                 <!-- End of Topbar -->
 
                 <!-- Begin Page Content -->
-                <div class="container-fluid">
+                <div class="container-fluid" id="record">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Roles</h1>
+                    <h1 class="h3 mb-4 text-gray-800">Role</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
-                            <li class="breadcrumb-item"><a href="HRviewALlRoles.html">Roles</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Edit Role</li>
+                            <li class="breadcrumb-item"><a href="HRviewAllCourses.html">Roles</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Edit Role Information</li>
                         </ol>
                     </nav>
+
+                    <!-- ALERT - START-->
+                    <div id="alertBoxDiv">
+                    </div>
+
+                    <!-- ALERT - ENDS-->
+
                     <div class="card">
-                        <div class="card-body">
-                            <form>
-                                ID #1
-                                <br>
-                                <br>
-                                <div class="form-group">
-                                    <label for="name">Role Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter role name">
+                        <div class="card-body" v-if="loading || err">
+                            <div v-if="loading">
+                            <!--Spinner-->
+                                <div class="d-flex justify-content-center mt-2">
+                                    <div class="spinner-border" role="status"></div>
                                 </div>
+                                <div class="d-flex justify-content-center mt-2">
+                                    <strong>Please wait while we are fetching the records...</strong>
+                                </div>
+                            <!--//Spinner-->  
+                            </div>
+                            <div v-else>
+                                <p style="color: red;">{{this.errMsg}}</p>
+                            </div>
+                            
+                        </div>
+                        <div class="card-body" v-else>
+                            
+                            <h4 class="pb-3"><b>{{this.roleDetails.role.role_id}}</b>: {{this.roleDetails.role.role_name}}</h4>
 
-                                <div class="form-group">
-                                    <label for="skillsrequired">Skills Required</label>
-                                    <br>
-                                    <select class="selectpicker" id="skillsrequired" multiple data-live-search="true">
-                                        <option value="" disabled></option>
-                                        <option selected="selected">Skill 1</option>
-                                        <option selected="selected">Skill 2</option>
-                                        <option>Skill 3</option>
-                                        <option>Skill 4</option>
-                                    </select>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="role">Status</label>
-                                    <br>
-                                    <select class="selectpicker" id="status" data-live-search="true">
-                                        <option value="" selected disabled></option>
-                                        <option>Active</option>
-                                        <option>Inactive</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </form>
+                            <div class="form-group">
+                                <label for="name">Role Name</label><br/>
+                                <input type="text"v-model="roleName">
+                            </div>
+                            <div class="form-group">
+                                <label for="skillsrequired">Skills Required</label>
+                                <br>
+                                <select class="selectpicker" id="skillsrequired" multiple data-live-search="true">
+                                    <option value="" disabled></option>
+                                    <option v-for="skill in roleDetails.skills" :value="skill.skill_id" :selected="skill.skill_in_role">{{skill.skill_name}}</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="role">Status</label>
+                                <br>
+                                <select class="selectpicker" id="status" v-model="roleStatus" data-live-search="true">
+                                    <option value="" selected disabled></option>
+                                    <option value="Active" >Active</option>
+                                    <option value="Inactive">Inactive</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" @click="getSelectedSkills">Save</button>
+                            
                         </div>
                     </div>
                 </div>
@@ -139,13 +152,211 @@
     <!-- Custom scripts for all pages-->
     <script src="js/sb-admin-2.min.js"></script>
 
+    <!--GET ROLE RECORD - STARTS-->
     <script>
-        // Pre-filling role form fields
-        document.getElementById("name").value = rolename;
+        const app = Vue.createApp({
+            data() {
+                return {
+                    roleId: "",
+                    roleDetails: [],
+                    roleName: "",
+                    roleStatus: "",
+                    loading: true,
+                    err: false,
+                    errMsg: "",
+                    selected_skills: [],
 
-        var dropdown = document.getElementById("status");
-        dropdown.value = rolestatus;
+                    updateLoad: false,
+                    updateErr: false,
+                    updateErrMsg: ""
+                }
+            },
+            methods: {
+                getRoleId(){
+                    let params = (new URL(document.location)).searchParams;
+                    this.roleId = params.get("role_id");
+                },
+                getRoleDetails() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/active_skills_whether_in_role/" + this.roleId;
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, 
+                                    { 
+                                        method: 'GET',
+                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
+                                    }
+                                );
+                            const result = await response.json();
+                            if (result.code === 200) {
+                                // success case
+                                this.loading = false;
+                                this.roleDetails = result.data;
+                                this.roleName = result.data.role.role_name;
+                                this.roleStatus = result.data.role.role_status;
+                                this.err = false;
+                                this.refreshSelectDropDown();
+                                
+                            } else if (result.code == 404) {
+                                // No records
+                                this.loading = false;
+                                this.err = true;
+                                this.errMsg = result.message;
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.loading = false;
+                                this.err = true;
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.loading = false;
+                            this.err = true;
+                            this.errMsg = 'There is a problem retrieving the records, please try again later.<br />' + error;
+                        } // error
+                        });
+                },
+                updateRoleDetails() {
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/role_info/update";
+                        this.updateLoad = true;
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL,
+                                    {
+                                        method: 'POST',
+                                        headers: {
+                                            'Accept': 'application/json', 'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({
+                                            role_id: this.roleId,
+                                            role_name: this.roleName,
+                                            role_status: this.roleStatus,
+                                            skill_ids: this.selected_skills
+                                        })
+                                    }
+                                );
+                                const result = await response.json();
+                                if (result.code === 201) {
+                                    // success case
+                                    this.updateLoad = false;
+                                    this.updateErr = false;
+                                    this.showAlertBox("success");
+
+                                } else if (result.code == 500) {
+                                    this.updateErr = true;
+                                    this.updateLoad = false;
+                                    this.updateMsg = result.message;
+                                    this.showAlertBox("failed");
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    this.updateErr = true;
+                                    this.updateLoad = false;
+                                    this.showAlertBox("failed");
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                this.updateLoad = false;
+                                this.updateErr = true;
+                                this.showAlertBox("failed");
+                                this.updateErrMsg = 'There is a problem updating records, please try again later.<br />' + error;
+                            } // error
+                        });
+                },
+                refreshSelectDropDown() {
+                    setTimeout(() => {
+                        jQuery('.selectpicker').selectpicker('refresh');
+                        $('[data-toggle="tooltip"]').tooltip();  
+                    }, 100);
+                },
+                getSelectedSkills(){
+                    for (var option of document.getElementById('skillsrequired').options)
+                    {
+                        if (option.selected) {
+                            this.selected_skills.push(option.value);
+                        }
+                    }
+
+                    this.updateRoleDetails();
+                },
+                showAlertBox(messageType){
+                    var div = document.getElementById("alertBoxDiv");
+                    if (messageType == "success"){
+                        div.innerHTML = `<div class="alert alert-success" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Success!</strong> Role Information Updated!
+                                        </div>`;
+                    }else{
+                        div.innerHTML = `<div class="alert alert-danger" v-show="showAlert" id="alertDiv" role="alert">
+                                            <button onclick="document.getElementById('alertDiv').style.opacity = '0'" type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                            <strong>Failed!</strong> Error in updating role information, try again later!
+                                        </div>`;                        
+                    }
+                    
+                    this.delayedAlert();
+                },
+                delayedAlert() {
+                    window.setTimeout(function() {
+                        $(".alert").fadeTo(500, 0).slideUp(500, function(){
+                            $(this).remove(); ;
+                        });
+                    }, 2000);
+                }
+            }, 
+            created(){
+
+                // check credentials (check for staff)
+                if (getCookie('user_type') != null) {
+
+                    let user_type = getCookie('user_type');
+
+                    if (user_type == "staff") {
+                        location.href = './index.html';
+                    }
+                    if (user_type == "hr") {
+
+                        // check switch_to_staff_acct
+                        let switch_to_staff_acct = getCookie('switch_to_staff_acct')
+
+                        if (switch_to_staff_acct == "Y") {
+
+                            location.href = './index.html';
+                        }
+                    }
+                }
+                this.getRoleId();
+                this.getRoleDetails();
+                this.refreshSelectDropDown();
+            }
+        });
+
+        function getCookie(cname) {
+            let name = cname + "=";
+            let decodedCookie = decodeURIComponent(document.cookie);
+            let ca = decodedCookie.split(';');
+            for(let i = 0; i <ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+                }
+                if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+                }
+            }
+            return null;
+        }
+        
+        const vm = app.mount("#record");
+        
     </script>
+    <!--GET ROLE RECORD - ENDS-->
 
 </body>
 

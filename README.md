@@ -56,11 +56,11 @@
 - Get all role skills: http://localhost:5000/role_skills
 - Get all roles with skills: http://localhost:5000/roles_with_skills
 - (used) Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
-- Get active skills whether in role by role id: http://localhost:5000/active_skills_whether_in_role/<string:role_id>
+- (used) Get active skills whether in role by role id: http://localhost:5000/active_skills_whether_in_role/<string:role_id>
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
 - Create role skill: http://localhost:5000/role_skill/create
 - Update role skill: http://localhost:5000/role_skill/update
-- Update role info: http://localhost:5000/role_info/update
+- (used) Update role info: http://localhost:5000/role_info/update
 
 ### skills
 - Get all skills: http://localhost:5000/skills
