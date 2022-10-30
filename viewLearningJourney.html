@@ -69,7 +69,7 @@
                     </nav>
                     <div class="card">
                         <div class="card-body">
-                            <a type="button" class="btn btn-primary float-right mb-3 mr-2" href="editLearningJourney.html">Edit Learning Journey</a>
+                            <a type="button" class="btn btn-primary float-right mb-3 mr-2" @click="goToEditLJ()">Edit Learning Journey</a>
                             
                             <table class="table">
                                 <thead>
@@ -178,7 +178,8 @@
                 skills:[],
                 message: "There is a problem retrieving journey data, please try again later.",
                 errorMsg: false,
-                loading: true
+                loading: true,
+                journeyId: ""
             }
         },
         methods: {
@@ -187,6 +188,7 @@
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString);
                 const learningJourneyId = urlParams.get('learning_journey_id')
+                this.journeyId = urlParams.get('learning_journey_id');
 
                 const response =
                     fetch("http://localhost:5000/all_journey_info/"+learningJourneyId) // hardcoding staff-id now
@@ -229,7 +231,10 @@
                     }
                     return null;
                 }
-            }
+            },
+            goToEditLJ() {
+                    location.href = './editLearningJourney.html?learning_journey_id=' + this.journeyId;
+                }
         },created() {
             // check credentials (check for staff)
             if (getCookie('user_type') != null) {
