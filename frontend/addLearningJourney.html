@@ -76,7 +76,7 @@
                             <form>
                                 <div class="form-group">
                                     <label for="name">Learning Journey Name</label>
-                                    <input type="text" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter learning journey name">
+                                    <input type="text" v-model="journeyName" class="form-control" id="name" aria-describedby="emailHelp" placeholder="Enter learning journey name">
                                 </div>
                                 <div class="form-group role">
                                     <label for="role">Role</label>
@@ -97,7 +97,7 @@
                                         </a>
                                         <br>
                                         <!-- <p>{{ item.skill }}</p> -->
-                                        <select v-model="item.skill" @change="changeSkill(index, item.skill)" class="selectpicker" :name="`skillAndCourses[${index}][skill]`" data-live-search="true">
+                                        <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
                                             <option value="" disabled></option>
                                             <option v-for="skill in availableSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
                                             <!-- <option>Skill 1</option>
@@ -112,7 +112,7 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <select v-model="item.courses" class="selectpicker" :name="`skillAndCourses[${index}][courses]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
+                                        <select v-model="item.course_ids" class="selectpicker" :name="`skillAndCourses[${index}][courses_ids]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
                                             <optionvalue="" disabled></option>
                                             <option v-for="course in availableCourses[`${index}`]" :value="course.course_id">{{course.course_name}}</option>
                                             <!-- <option>Course 1</option>
@@ -122,7 +122,7 @@
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary">Create</button>
+                                <button type="button" class="btn btn-primary" @click="addANewLJ()">Create</button>
                             </form>
                         </div>
                     </div>
@@ -158,16 +158,19 @@
         data() {
             return { // hardcoded create data
                 role:"",
+                journeyName: "",
                 skillAndCourses: [],
                 availableRoles: [],
                 availableSkills: [],
                 availableCourses: [],
-                skillId: ""
+                skillId: "",
+                staffId: "" /*hard coded*/
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
             this.getAvailableRoles();
-            
+            this.staffId = getCookie('staff_id');
+            console.log(this.staffId);
             // check credentials (check for staff)
             if (getCookie('user_type') != null) {
 
@@ -293,8 +296,8 @@
             addSkill() {
                 //initialise course
                 this.skillAndCourses.push({
-                    skill: "",
-                    courses: []
+                    skill_id: "",
+                    course_ids: []
                 });
                 this.refreshSelectDropDown();
 
@@ -307,8 +310,8 @@
             changeRole() {
                 this.skillAndCourses = [
                     {
-                        skill: "",
-                        courses: [""]
+                        skill_id: "",
+                        course_ids: [""]
                     }
                 ];
                 this.refreshSelectDropDown();
@@ -322,12 +325,62 @@
                 $("#courses"+index).prop('disabled', false);
                 this.refreshSelectDropDown();
                 this.getCoursesBasedOnSkillSelected();
+                console.log(this.skillAndCourses);
             },
             refreshSelectDropDown() {
                 setTimeout(() => {
                     jQuery('.selectpicker').selectpicker('refresh');
                     $('[data-toggle="tooltip"]').tooltip();  
                 }, 100);
+            },
+            addANewLJ(){
+                $(async () => {
+                    // Change serviceURL to your own
+                    var serviceURL = "http://localhost:5000/journey/create";
+                    try {
+                        const response =
+                            await fetch(
+                                serviceURL,
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json', 'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        journey: {
+                                            journey_name: this.journeyName, 
+                                            staff_id: this.staffId,
+                                            role_id: this.role,
+                                            skills: this.skillAndCourses
+                                        }
+                                    })
+                                }
+                            );
+                        const result = await response.json();
+                        if (result.code === 201) {
+                            // success case
+                            // this.loading = false
+                            // this.err = false
+                            location.href = './learningJourney.html';
+
+                        } else if (result.code == 500) {
+                            // this.loading = false
+                            // this.err = true
+                            // this.errMsg = result.message;
+                        } else {
+                            // unexpected outcome, throw the error
+                            // this.loading = false
+                            // this.err = true
+                            throw response.status;
+                        }
+                    } catch (error) {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        // this.loading = false
+                        // this.err = true
+                        // this.errMsg = 'There is a problem creating new learning journey, please try again later.<br />' + error;
+                    } // error
+                });
             }
         },
         computed: {
