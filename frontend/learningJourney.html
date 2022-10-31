@@ -149,7 +149,7 @@
                     // on Vue instance created, load the book list
                     // 'staff_id'
                     const response =
-                        fetch("http://localhost:5000/all_journeys_info/"+getCookie('staff_id')) // hardcoding staff-id now
+                        fetch("http://localhost:5000/all_journeys_info/"+getCookie('staff_id'))
                             .then(response => response.json())
                             .then(data => {
                                 if (data.code === 404) {

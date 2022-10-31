@@ -191,7 +191,7 @@
                 this.journeyId = urlParams.get('learning_journey_id');
 
                 const response =
-                    fetch("http://localhost:5000/all_journey_info/"+learningJourneyId) // hardcoding staff-id now
+                    fetch("http://localhost:5000/all_journey_info/"+learningJourneyId)
                         .then(response => response.json())
                         .then(data => {
                             // console.log(data);
