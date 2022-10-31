@@ -1,7 +1,7 @@
 import unittest
 import flask_testing
 import json
-from app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
+from backend.app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
 
 class TestApp(flask_testing.TestCase):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/g3t07ddl'

@@ -2,7 +2,7 @@ from asyncio.windows_events import NULL
 import unittest
 import flask_testing
 import json
-from app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
+from backend.app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
 
 
 class TestApp(flask_testing.TestCase):

@@ -786,18 +786,14 @@ def get_all_journey_info_by_journey_id(journey_id):
                 track.append(jsc.skill_id)
             for skill in ans:
                 if skill["skill_id"]==jsc.skill_id:
-                    course_info = db.session.query(Course_Registration, Course).select_from(Course_Registration).join(Course).filter(Course_Registration.course_id==jsc.course_id, Course_Registration.staff_id == journey.staff_id)
-                    for course_registration, course in course_info:
-                        course_ans = {
-                            "course_id":course.course_id,
-                            "course_name":course.course_name,
-                            "course_desc":course.course_desc,
-                            "course_status":course.course_status,
-                            "course_type":course.course_type,
-                            "course_category":course.course_category,
-                            "course_completion_status":course_registration.completion_status
-                        }
-
+                    course_info = Course.query.filter_by(course_id=jsc.course_id).first()
+                    course_ans = course_info.to_dict()
+                    course_registration_info = Course_Registration.query.filter_by(staff_id=journey.staff_id,course_id=jsc.course_id).first()
+                    if course_registration_info:
+                        course_ans["course_completion_status"] =course_registration_info.completion_status
+                    else:
+                        course_ans["course_completion_status"] = "Not Registered"
+                    
                     skill["skill_courses"].append(course_ans)
 
         return jsonify(
