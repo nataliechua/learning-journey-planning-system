@@ -50,7 +50,7 @@
 - Get role by id: http://localhost:5000/role/<int:id>
 - (used) Get roles by status: http://localhost:5000/roles/<string:status>
 - Update role status by role id: http://localhost:5000/update_role_status/<int:role_id>
-- Create role: http://localhost:5000/role/create
+- (used) Create role: http://localhost:5000/role/create
 
 ### role skills
 - Get all role skills: http://localhost:5000/role_skills
