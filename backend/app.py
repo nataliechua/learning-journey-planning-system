@@ -1112,6 +1112,40 @@ def get_all_roles_with_skills():
         }
     ), 404
 
+#get roles with skills by role status
+@app.route("/roles_with_skills/<string:role_status>")
+def get_roles_with_skills_by_role_status(role_status):
+    ans=[]
+    rlist = Role.query.filter_by(role_status=role_status)
+    if rlist.count():
+        for role in rlist:
+            tempdic = {
+                "role_id": role.role_id,
+                "role_name": role.role_name,
+                "role_status": role.role_status,
+                "role_skills":[]
+            }
+
+            list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role.role_id)
+            for role_skill,skill in list:
+                tempdic["role_skills"].append(skill.to_dict())  
+            ans.append(tempdic)
+        
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": ans,
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles with status = "+role_status+"." 
+        }
+    ), 404
+
 #get active skills by role id
 @app.route("/active_skills_by_role/<int:role_id>")
 def get_active_skills_by_role_id(role_id):
@@ -1133,7 +1167,7 @@ def get_active_skills_by_role_id(role_id):
     ), 404
 
 #Get active skills whether in role by role id
-@app.route("/active_skills_whether_in_role/<string:role_id>")
+@app.route("/active_skills_whether_in_role/<int:role_id>")
 def get_active_skills_whether_in_role_by_role_id(role_id):
     role = Role.query.filter_by(role_id=role_id).first()
     rslist = Role_Skill.query.filter_by(role_id = role_id)

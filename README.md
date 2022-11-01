@@ -55,6 +55,7 @@
 ### role skills
 - Get all role skills: http://localhost:5000/role_skills
 - Get all roles with skills: http://localhost:5000/roles_with_skills
+- Get roles with skills by role status: http://localhost:5000/roles_with_skills/<string:role_status>
 - (used) Get active skills by role id: http://localhost:5000/active_skills_by_role/<int:role_id>
 - (used) Get active skills whether in role by role id: http://localhost:5000/active_skills_whether_in_role/<string:role_id>
 - Remove role skill: http://localhost:5000/remove_role_skill/<int:role_id>/<int:skill_id>
