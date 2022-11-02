@@ -153,9 +153,8 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
-        const get_all_roles = "http://localhost:5000/roles_with_skills";
-        const get_all_active_roles = "http://localhost:5000/roles/Active";
-        const get_all_inactive_roles= "http://localhost:5000/roles/Inactive";
+        const get_all_active_roles = "http://localhost:5000/roles_with_skills/Active";
+        const get_all_inactive_roles = "http://localhost:5000/roles_with_skills/Inactive";
         const app = Vue.createApp({
 
         data() {
@@ -180,7 +179,22 @@
                                 this.message = data.message;
                             } else {
                                 this.Active_roles = data.data.roles
-                                console.log(this.Active_roles);
+                                for (var i = 0; i < this.Active_roles.length; i++){
+                                    skills = this.Active_roles[i].role_skills;
+
+                                    skills_str="Unassigned"
+
+                                    if (skills.length != 0) {
+                                        skills_str = skills[0].skill_name;
+
+                                        for (var j = 1; j < skills.length; j++) {
+                                            skills_str += ", " + skills[j].skill_name
+                                        }
+
+                                    }
+
+                                    this.Active_roles[i]["skills_str"] = skills_str;
+                                }
 
                             }
                         })
@@ -203,7 +217,23 @@
                                 this.message = data.message;
                             } else {
                                 this.Inactive_roles = data.data.roles
-                                console.log(this.Inactive_roles);
+                                for (var i = 0; i < this.Inactive_roles.length; i++){
+                                    skills = this.Inactive_roles[i].role_skills;
+
+                                    skills_str="Unassigned"
+
+                                    if (skills.length != 0) {
+                                        skills_str = skills[0].skill_name;
+
+                                        for (var j = 1; j < skills.length; j++) {
+                                            skills_str += ", " + skills[j].skill_name
+                                        }
+
+                                    }
+
+                                    this.Inactive_roles[i]["skills_str"] = skills_str;
+                                }
+                                
 
                             }
                         })
@@ -217,56 +247,7 @@
                 goToEditRole(role_id) {
                         location.href = './HReditRole.html?role_id=' + role_id
                 },
-
-                getAllRoles() {
-                    const response =
-                    fetch(get_all_roles)
-                        .then(response => response.json())
-                        .then(data => {
-                            console.log(response);
-                            if (data.code === 404) {
-                                // no skill in db
-                                this.message = data.message;
-                            } else {
-                                roles_array = data.data.roles
-
-                                console.log(roles_array)
-                                
-                                for (var i = 0; i < roles_array.length; i++){
-                                    skills = roles_array[i].role_skills;
-
-                                    skills_str="Unassigned"
-
-                                    if (skills.length != 0) {
-                                        skills_str = skills[0].skill_name;
-
-                                        for (var j = 1; j < skills.length; j++) {
-                                        skills_str += ", " + skills[j].skill_name
-                                        }
-
-                                    }
-
-                                    roles_array[i]["skills_str"] = skills_str;
-                                    
-                                    if (roles_array[i].role_status == "Active") {
-                                        this.Active_roles.push(roles_array[i])
-                                    } else {
-                                        this.Inactive_roles.push(roles_array[i])
-                                    };
-                                }   
-
-                            }
-
-                            console.log(this.Active_roles)
-                            console.log(this.Inactive_roles)
-                        })
-                        .catch(error => {
-                            // Errors when calling the service; such as network error, 
-                            // service offline, etc
-                            console.log(this.message + error);
-
-                        });
-                }
+ 
                 },
                 created() {
                     // check credentials (check for staff)
@@ -289,9 +270,8 @@
                         }
                     }
                     // on Vue instance created, load the book list
-                    // this.getAllActiveRoles();
-                    // this.getAllInactiveRoles();
-                    this.getAllRoles();
+                    this.getAllActiveRoles();
+                    this.getAllInactiveRoles();
                     console.log(this.Active_roles)
                 }
                 }
