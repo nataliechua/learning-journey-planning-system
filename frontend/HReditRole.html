@@ -121,7 +121,7 @@
                                     <option value="Inactive">Inactive</option>
                                 </select>
                             </div>
-                            <button class="btn btn-primary" @click="getSelectedSkills">Save</button>
+                            <button class="btn btn-primary" @click="getSelectedSkills" >Save</button>
                             
                         </div>
                     </div>
@@ -301,6 +301,9 @@
                     }
                     
                     this.delayedAlert();
+                    setInterval(function doThisAfterFourSeconds() {
+                                        location.href = './HRViewAllRoles.html';
+                                    }, 400);
                 },
                 delayedAlert() {
                     window.setTimeout(function() {
