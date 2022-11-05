@@ -283,6 +283,9 @@
                     }
                     
                     this.delayedAlert();
+                    setInterval(function doThisAfterFourSeconds() {
+                                        location.href = './HRviewAllCourses.html';
+                                    }, 400);
                 },
                 delayedAlert() {
                     window.setTimeout(function() {
