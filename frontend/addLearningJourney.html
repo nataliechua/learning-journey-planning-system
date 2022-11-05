@@ -263,7 +263,7 @@
                     } // error
                 });
             },
-            getCoursesBasedOnSkillSelected() {
+            getCoursesBasedOnSkillSelected(index) {
                 $(async () => {
                     // Change serviceURL to your own
                     var serviceURL = "http://localhost:5000/courses_by_skill/" + this.skillId;
@@ -275,10 +275,12 @@
                         const result = await response.json();
                         if (result.code === 200) {
                             // success case
-                            this.availableCourses.push(result.data.courses);
+                            this.availableCourses[index] = result.data.courses;
+                            //this.availableCourses.push(result.data.courses);
                             this.refreshSelectDropDown();
                         } else if (result.code == 404) {
                             // No Such Roles Found
+                            this
                             //this.skillLoading = false
                             //this.skillErr = true
                             //this.skillErrMsg = result.message;
@@ -308,7 +310,6 @@
             },
             removeSkill(index) {
                 this.skillAndCourses.splice(index, 1);
-                console.log("JSON: ", JSON.stringify(this.skillAndCourses));
                 this.refreshSelectDropDown();
             },
             changeRole() {
@@ -325,11 +326,12 @@
             changeSkill(index, skillId) {
                 // populate courses frm db
                 // unhide courses
+                this.availableCourses[index] = [];
                 this.skillId = skillId;
+                this.skillAndCourses[index].course_ids = [""];
                 $("#courses"+index).prop('disabled', false);
                 this.refreshSelectDropDown();
-                this.getCoursesBasedOnSkillSelected();
-                console.log(this.skillAndCourses);
+                this.getCoursesBasedOnSkillSelected(index);
             },
             refreshSelectDropDown() {
                 setTimeout(() => {
@@ -351,12 +353,10 @@
                                         'Accept': 'application/json', 'Content-Type': 'application/json'
                                     },
                                     body: JSON.stringify({
-                                        journey: {
                                             journey_name: this.journeyName, 
-                                            staff_id: this.staffId,
+                                            staff_id: parseInt(this.staffId),
                                             role_id: this.role,
                                             skills: this.skillAndCourses
-                                        }
                                     })
                                 }
                             );
