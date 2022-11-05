@@ -88,7 +88,7 @@
 - (ps) Get skill by id: http://localhost:5000/skill/<int:id>
 - (ps) Update skill status by skill id: http://localhost:5000/update_skill_status/<int:skill_id>
 - Get all skills: http://localhost:5000/skills
-- Get skills by status: http://localhost:5000/skills/<string:status>
+- (val) Get skills by status: http://localhost:5000/skills/<string:status>
 - (ll) Create skill: http://localhost:5000/skill/create
 
 ### staffs
