@@ -689,8 +689,35 @@ def remove_journey_by_id(id):
 #create journey
 @app.route("/journey/create", methods=['POST'])
 def create_journey():
-    data = request.get_json()
-    journey_data = data["journey"]
+    journey_data = request.get_json()
+
+    if not all(key in journey_data.keys() for 
+               key in ("journey_name","staff_id","role_id","skills")):
+        return jsonify({
+            "message": "Invalid JSON input. Journey name, staff id, role id and journey skills should be provided in the JSON object."
+        }), 500
+    
+    if journey_data["journey_name"].isspace() or journey_data["journey_name"] == None or len(journey_data["journey_name"])==0:
+        raise Exception ("Journey name should not be empty or just contain white spaces.")
+
+    if journey_data["role_id"] == None:
+        raise Exception ("A Journey should at least have one role.")
+
+    if journey_data["skills"] == None or journey_data["skills"] == []:
+        raise Exception ("A Journey should at least have one skill.")
+
+    for skill in journey_data["skills"]:
+        if not all(key in skill.keys() for 
+               key in ("skill_id","course_ids")):
+            return jsonify({
+                "message": "Invalid JSON input. Skill id and corresponding courses ids should be provided in the JSON object."
+            }), 500
+        
+        if skill["skill_id"] == None:
+            raise Exception ("A Skill must be chosen for each skill courses pair.") 
+
+        if skill["course_ids"] == None or skill["course_ids"] == []:
+            raise Exception ("At least a course must be chosen for each skill courses pair.") 
 
     journey_input = {
         "journey_name":journey_data["journey_name"],
@@ -1034,6 +1061,16 @@ def update_role_status(role_id):
 @app.route("/role/create", methods=['POST'])
 def create_role():
     data = request.get_json()
+
+    if not all(key in data.keys() for 
+               key in ("role_name","role_status")):
+        return jsonify({
+            "message": "Invalid JSON input. Role name and status should be provided in the JSON object."
+        }), 500
+    
+    if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
+        raise Exception ("Role name should not be empty or just contain white spaces.")
+
     role = Role(role_id=None,**data)
 
     try:
@@ -1112,6 +1149,40 @@ def get_all_roles_with_skills():
         }
     ), 404
 
+#get roles with skills by role status
+@app.route("/roles_with_skills/<string:role_status>")
+def get_roles_with_skills_by_role_status(role_status):
+    ans=[]
+    rlist = Role.query.filter_by(role_status=role_status)
+    if rlist.count():
+        for role in rlist:
+            tempdic = {
+                "role_id": role.role_id,
+                "role_name": role.role_name,
+                "role_status": role.role_status,
+                "role_skills":[]
+            }
+
+            list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role.role_id)
+            for role_skill,skill in list:
+                tempdic["role_skills"].append(skill.to_dict())  
+            ans.append(tempdic)
+        
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": ans,
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles with status = "+role_status+"." 
+        }
+    ), 404
+
 #get active skills by role id
 @app.route("/active_skills_by_role/<int:role_id>")
 def get_active_skills_by_role_id(role_id):
@@ -1133,7 +1204,7 @@ def get_active_skills_by_role_id(role_id):
     ), 404
 
 #Get active skills whether in role by role id
-@app.route("/active_skills_whether_in_role/<string:role_id>")
+@app.route("/active_skills_whether_in_role/<int:role_id>")
 def get_active_skills_whether_in_role_by_role_id(role_id):
     role = Role.query.filter_by(role_id=role_id).first()
     rslist = Role_Skill.query.filter_by(role_id = role_id)
@@ -1271,6 +1342,16 @@ def update_role_skill():
 @app.route("/role_info/update", methods=['POST'])
 def update_role_info():
     data = request.get_json()
+
+    if not all(key in data.keys() for 
+               key in ("role_id","role_name","role_status","skill_ids")):
+        return jsonify({
+            "message": "Invalid JSON input. Role id, name, status and corresponded skill ids should be provided in the JSON object."
+        }), 500
+
+    if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
+        raise Exception ("Role name should not be empty or just contain white spaces.")
+    
     role_id=data["role_id"]
     role_name=data["role_name"]
     role_status=data["role_status"]
@@ -1420,6 +1501,16 @@ def update_skill_status(skill_id):
 @app.route("/skill/create", methods=['POST'])
 def create_skill():
     data = request.get_json()
+
+    if not all(key in data.keys() for 
+               key in ("skill_name","skill_status")):
+        return jsonify({
+            "message": "Invalid JSON input. Skill name and status should be provided in the JSON object."
+        }), 500
+    
+    if data["skill_name"].isspace() or data["skill_name"] == None or len(data["skill_name"])==0:
+        raise Exception ("Skill name should not be empty or just contain white spaces.")
+
     skill = Skill(skill_id = None,**data)
 
     try:

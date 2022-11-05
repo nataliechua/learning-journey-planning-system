@@ -7,6 +7,536 @@
 	},
 	"item": [
 		{
+			"name": "(used) create role",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role_name\":\"Machine Learning Lead\",\r\n    \"role_status\":\"Retired\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/role/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"role",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create role",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role_name\":\"Machine Learning Lead\",\r\n    \"role_status\":\"Retired\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/role/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"role",
+								"create"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Oct 2022 05:55:06 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "167"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 3,\n        \"role_name\": \"Machine Learning Lead\",\n        \"role_status\": \"Retired\"\n    },\n    \"message\": \"Role created successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "(used) update role info",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/role_info/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"role_info",
+						"update"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "update role info",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/role_info/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"role_info",
+								"update"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Sun, 30 Oct 2022 08:39:11 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "214"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 1,\n        \"role_name\": \"polar bear\",\n        \"role_status\": \"Retired\",\n        \"skill_ids\": [\n            4,\n            8,\n            10\n        ]\n    },\n    \"message\": \"Role info updated successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "(used) create skill",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"skill_name\":\"Raspberry Pi\",\r\n    \"skill_status\":\"Retired\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/skill/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"skill",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create skill",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"skill_name\":\"Raspberry Pi\",\r\n    \"skill_status\":\"Retired\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/skill/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"skill",
+								"create"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 26 Oct 2022 05:54:13 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "163"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"skill_id\": 13,\n        \"skill_name\": \"Raspberry Pi\",\n        \"skill_status\": \"Retired\"\n    },\n    \"message\": \"Skill created successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "(used) update course skill",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"course_id\":\"tch001\",\r\n    \"skill_ids\":[3,5,6]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/course_skill/update",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"course_skill",
+						"update"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "update course skill",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"course_id\":\"tch001\",\r\n    \"skill_ids\":[3,5,6]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/course_skill/update",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"course_skill",
+								"update"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Tue, 25 Oct 2022 18:26:14 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "172"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"course_id\": \"tch001\",\n        \"skill_ids\": [\n            3,\n            5,\n            6\n        ]\n    },\n    \"message\": \"Course skill pair(s) created successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "(used) update skill status by skill id",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"skill_status\":\"Retired\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/update_skill_status/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"update_skill_status",
+						"5"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "update skill status",
+					"originalRequest": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"skill_status\":\"Retired\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/update_skill_status/5",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"update_skill_status",
+								"5"
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "187"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.0.2 Python/3.8.1"
+						},
+						{
+							"key": "Date",
+							"value": "Mon, 17 Oct 2022 11:12:57 GMT"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"skill_id\": 5,\n        \"skill_name\": \"Decision-making\",\n        \"skill_status\": \"Retired\"\n    },\n    \"message\": \"Status for skill id = 5 updated successfully.\"\n}"
+				}
+			]
+		},
+		{
+			"name": "(used) create journey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"journey_name\": \"create journey test\",\r\n    \"staff_id\": 140008,\r\n    \"role_id\": 8,\r\n    \"skills\": [\r\n        {\r\n            \"skill_id\": 1,\r\n            \"course_ids\": [\r\n                \"MGT001\",\r\n                \"MGT003\"\r\n            ]\r\n        },\r\n        {\r\n            \"skill_id\": 8,\r\n            \"course_ids\": [\r\n                \"MGT001\",\r\n                \"MGT004\"\r\n            ]\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:5000/journey/create",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"journey",
+						"create"
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "create journey",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"journey_name\": \"create journey test\",\r\n    \"staff_id\": 140008,\r\n    \"role_id\": 8,\r\n    \"skills\": [\r\n        {\r\n            \"skill_id\": 1,\r\n            \"course_ids\": [\r\n                \"MGT001\",\r\n                \"MGT003\"\r\n            ]\r\n        },\r\n        {\r\n            \"skill_id\": 8,\r\n            \"course_ids\": [\r\n                \"MGT001\",\r\n                \"MGT004\"\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:5000/journey/create",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"journey",
+								"create"
+							]
+						}
+					},
+					"status": "CREATED",
+					"code": 201,
+					"_postman_previewlanguage": "json",
+					"header": [
+						{
+							"key": "Server",
+							"value": "Werkzeug/2.2.2 Python/3.10.8"
+						},
+						{
+							"key": "Date",
+							"value": "Wed, 02 Nov 2022 20:21:41 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "application/json"
+						},
+						{
+							"key": "Content-Length",
+							"value": "507"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Connection",
+							"value": "close"
+						}
+					],
+					"cookie": [],
+					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"journey\": {\n            \"journey_name\": \"create journey test\",\n            \"role_id\": 8,\n            \"skills\": [\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT003\"\n                    ],\n                    \"skill_id\": 1\n                },\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT004\"\n                    ],\n                    \"skill_id\": 8\n                }\n            ],\n            \"staff_id\": 140008\n        }\n    },\n    \"message\": \"Jounrey and journey skill course pair(s) created successfully.\"\n}"
+				}
+			]
+		},
+		{
 			"name": "create course skill",
 			"request": {
 				"method": "POST",
@@ -262,91 +792,6 @@
 			]
 		},
 		{
-			"name": "update skill status by skill id",
-			"request": {
-				"method": "PUT",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"skill_status\":\"Retired\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/update_skill_status/5",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"update_skill_status",
-						"5"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "update skill status",
-					"originalRequest": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"skill_status\":\"Retired\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/update_skill_status/5",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"update_skill_status",
-								"5"
-							]
-						}
-					},
-					"status": "OK",
-					"code": 200,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "187"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.0.2 Python/3.8.1"
-						},
-						{
-							"key": "Date",
-							"value": "Mon, 17 Oct 2022 11:12:57 GMT"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 200,\n    \"data\": {\n        \"skill_id\": 5,\n        \"skill_name\": \"Decision-making\",\n        \"skill_status\": \"Retired\"\n    },\n    \"message\": \"Status for skill id = 5 updated successfully.\"\n}"
-				}
-			]
-		},
-		{
 			"name": "create journey skill course",
 			"request": {
 				"method": "POST",
@@ -428,184 +873,6 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"course_id\": \"SAL004\",\n        \"journey_id\": 2,\n        \"skill_id\": 6\n    },\n    \"message\": \"Journey skill course pair created successfully.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "create journey",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"journey\":{\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":8,\r\n        \"skills\":[\r\n            {\r\n                \"skill_id\":1,\r\n                \"course_ids\":[\"MGT001\",\"MGT003\"]\r\n            },\r\n            {\r\n                \"skill_id\":8,\r\n                \"course_ids\":[\"MGT001\",\"MGT004\"]\r\n            }\r\n        ]\r\n    }\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/journey/create",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"journey",
-						"create"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "create journey",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"journey\":{\r\n        \"journey_name\":\"create journey test\",\r\n        \"staff_id\": 140008,\r\n        \"role_id\":8,\r\n        \"skills\":[\r\n            {\r\n                \"skill_id\":1,\r\n                \"course_ids\":[\"MGT001\",\"MGT003\"]\r\n            },\r\n            {\r\n                \"skill_id\":8,\r\n                \"course_ids\":[\"MGT001\",\"MGT004\"]\r\n            }\r\n        ]\r\n    }\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/journey/create",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"journey",
-								"create"
-							]
-						}
-					},
-					"status": "CREATED",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.2.2 Python/3.10.8"
-						},
-						{
-							"key": "Date",
-							"value": "Sun, 30 Oct 2022 08:02:38 GMT"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "507"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"journey\": {\n            \"journey_name\": \"create journey test\",\n            \"role_id\": 8,\n            \"skills\": [\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT003\"\n                    ],\n                    \"skill_id\": 1\n                },\n                {\n                    \"course_ids\": [\n                        \"MGT001\",\n                        \"MGT004\"\n                    ],\n                    \"skill_id\": 8\n                }\n            ],\n            \"staff_id\": 140008\n        }\n    },\n    \"message\": \"Jounrey and journey skill course pair(s) created successfully.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "update course skill",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"course_id\":\"tch001\",\r\n    \"skill_ids\":[3,5,6]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/course_skill/update",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"course_skill",
-						"update"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "update course skill",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"course_id\":\"tch001\",\r\n    \"skill_ids\":[3,5,6]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/course_skill/update",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"course_skill",
-								"update"
-							]
-						}
-					},
-					"status": "CREATED",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.2.2 Python/3.10.8"
-						},
-						{
-							"key": "Date",
-							"value": "Tue, 25 Oct 2022 18:26:14 GMT"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "172"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"course_id\": \"tch001\",\n        \"skill_ids\": [\n            3,\n            5,\n            6\n        ]\n    },\n    \"message\": \"Course skill pair(s) created successfully.\"\n}"
 				}
 			]
 		},
@@ -695,273 +962,6 @@
 					],
 					"cookie": [],
 					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 1,\n        \"skill_ids\": [\n            4,\n            8,\n            10\n        ]\n    },\n    \"message\": \"Role skill pair(s) created successfully.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "update role info",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/role_info/update",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"role_info",
-						"update"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "update role info",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"role_id\":1,\r\n    \"role_name\":\"polar bear\",\r\n    \"role_status\":\"Retired\",\r\n    \"skill_ids\":[4,8,10]\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/role_info/update",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"role_info",
-								"update"
-							]
-						}
-					},
-					"status": "CREATED",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.2.2 Python/3.10.8"
-						},
-						{
-							"key": "Date",
-							"value": "Sun, 30 Oct 2022 08:39:11 GMT"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "214"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 1,\n        \"role_name\": \"polar bear\",\n        \"role_status\": \"Retired\",\n        \"skill_ids\": [\n            4,\n            8,\n            10\n        ]\n    },\n    \"message\": \"Role info updated successfully.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "create role",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"role_name\":\"Machine Learning Lead\",\r\n    \"role_status\":\"Retired\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/role/create",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"role",
-						"create"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "create role",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"role_name\":\"Machine Learning Lead\",\r\n    \"role_status\":\"Retired\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/role/create",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"role",
-								"create"
-							]
-						}
-					},
-					"status": "CREATED",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.2.2 Python/3.10.8"
-						},
-						{
-							"key": "Date",
-							"value": "Wed, 26 Oct 2022 05:55:06 GMT"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "167"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"role_id\": 3,\n        \"role_name\": \"Machine Learning Lead\",\n        \"role_status\": \"Retired\"\n    },\n    \"message\": \"Role created successfully.\"\n}"
-				}
-			]
-		},
-		{
-			"name": "create skill",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n    \"skill_name\":\"Raspberry Pi\",\r\n    \"skill_status\":\"Retired\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "http://localhost:5000/skill/create",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"skill",
-						"create"
-					]
-				}
-			},
-			"response": [
-				{
-					"name": "create skill",
-					"originalRequest": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"skill_name\":\"Raspberry Pi\",\r\n    \"skill_status\":\"Retired\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://localhost:5000/skill/create",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "5000",
-							"path": [
-								"skill",
-								"create"
-							]
-						}
-					},
-					"status": "CREATED",
-					"code": 201,
-					"_postman_previewlanguage": "json",
-					"header": [
-						{
-							"key": "Server",
-							"value": "Werkzeug/2.2.2 Python/3.10.8"
-						},
-						{
-							"key": "Date",
-							"value": "Wed, 26 Oct 2022 05:54:13 GMT"
-						},
-						{
-							"key": "Content-Type",
-							"value": "application/json"
-						},
-						{
-							"key": "Content-Length",
-							"value": "163"
-						},
-						{
-							"key": "Access-Control-Allow-Origin",
-							"value": "*"
-						},
-						{
-							"key": "Connection",
-							"value": "close"
-						}
-					],
-					"cookie": [],
-					"body": "{\n    \"code\": 201,\n    \"data\": {\n        \"skill_id\": 13,\n        \"skill_name\": \"Raspberry Pi\",\n        \"skill_status\": \"Retired\"\n    },\n    \"message\": \"Skill created successfully.\"\n}"
 				}
 			]
 		}
