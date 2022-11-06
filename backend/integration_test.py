@@ -2,11 +2,11 @@ from asyncio.windows_events import NULL
 import unittest
 import flask_testing
 import json
-from backend.app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
+from app import app, db, Course, Course_Registration, Course_Skill, Journey, Journey_Skill_Course, Role, Role_Skill, Skill, Staff
 
 
 class TestApp(flask_testing.TestCase):
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/g3t07ddlTest'
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/g3t07ddl'
     app.config['SQLALCHEMY_ENGINE_OPTONS'] = {'pool_size': 100,
                                               'pool_recycle': 280}
     app.config['TESTING'] = True

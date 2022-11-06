@@ -263,125 +263,6 @@ with app.app_context():
 #ROUTES TO RETRIEVE INFO
 ######################################################################################################
 
-#get all courses
-@app.route("/courses")
-def get_all_courses():
-    clist = Course.query.all()
-    if clist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "courses": [course.to_dict() for course in clist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no courses."
-        }
-    ), 404
-
-#get course by id
-@app.route("/course/<string:id>")
-def get_course_by_id(id):
-    course = Course.query.filter_by(course_id=id).first()
-    if course:
-        return jsonify(
-            {
-                "code": 200,
-                "data": course.to_dict()
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Course which id = " + str(id) + " not found."
-        }
-    ), 404
-
-#get courses by status
-@app.route("/courses/<string:status>")
-def get_courses_by_status(status):
-    clist = Course.query.filter_by(course_status=status)
-    if clist.count():
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "courses": [course.to_dict() for course in clist]
-                }
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Courses which status = " + status + " not found."
-        }
-    ), 404
-
-#get all course registrations
-@app.route("/course_registrations")
-def get_all_course_registrations():
-    crlist = Course_Registration.query.all()
-    if crlist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "course_registrations": [course_registration.to_dict() for course_registration in crlist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no course registrations."
-        }
-    ), 404
-
-#get course registration(S) by staff id and course id
-@app.route("/course_registration/<int:staff_id>/<string:course_id>")
-def get_course_registration_by_staff_id_and_course_id(staff_id,course_id):
-    crlist = Course_Registration.query.filter_by(staff_id=staff_id,course_id=course_id)
-    if crlist.count():
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "course_registration(S)": [course_registration.to_dict() for course_registration in crlist]
-                }
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Course registration with staff_id = " + str(staff_id) + " and course_id = " + str(course_id) + " not found."
-        }
-    ), 404
-
-
-#get all course skills
-@app.route("/course_skills")
-def get_all_course_skills():
-    cslist = Course_Skill.query.all()
-    if cslist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "course_skills": [course_skill.to_dict() for course_skill in cslist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no course skills."
-        }
-    ), 404
-
 #get courses by skill id
 @app.route("/courses_by_skill/<int:skill_id>")
 def get_courses_by_skill_id(skill_id):
@@ -504,62 +385,6 @@ def get_active_skills_whether_in_course_by_course_id(course_id):
         }
     ), 200
 
-#remove course skill
-@app.route("/remove_course_skill/<string:course_id>/<int:skill_id>")
-def remove_course_skill(course_id,skill_id):
-    try:
-        cs = Course_Skill.query.filter_by(course_id = course_id, skill_id=skill_id).delete()
-        if not cs:
-            return jsonify(
-                {
-                    "code": 404,
-                    "message": "Course skill pair with course_id = "+str(course_id)+" and skill_id = " + str(skill_id) + " not found."
-                }
-            ), 404
-
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code":500,
-                "message": "An error occurred while deleting the course skill pair. " + str(e)
-            }
-        )
-    return jsonify(
-        {
-            "code": 202,
-            "message": "Course skill pair deleted successfully."
-        }
-    ), 202
-
-#create course skill
-@app.route("/course_skill/create", methods=['POST'])
-def create_course_skill():
-    data = request.get_json()
-    course_skill = Course_Skill(**data)
-
-    try:
-        db.session.add(course_skill)
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while creating the course skill pair. " + str(e)
-            }
-        ), 500
-    
-    print(json.dumps(course_skill.to_dict(), default=str)) # convert a JSON object to a string and print
-    print()
-
-    return jsonify(
-        {
-            "code": 201,
-            "message": "Course skill pair created successfully.",
-            "data": course_skill.to_dict()
-        }
-    ), 201
-
 #update course skill
 @app.route("/course_skill/update", methods=['POST'])
 def update_course_skill():
@@ -601,63 +426,101 @@ def update_course_skill():
         }
     ), 201
 
-#get all journeys
-@app.route("/journeys")
-def get_all_journeys():
-    jlist = Journey.query.all()
-    if jlist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "journeys": [journey.to_dict() for journey in jlist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no journeys."
-        }
-    ), 404
-
-#get journey by id
-@app.route("/journey/<int:id>")
-def get_journey_by_id(id):
-    journey = Journey.query.filter_by(journey_id=id).first()
+#get all journey info by journey id
+@app.route("/all_journey_info/<int:journey_id>")
+def get_all_journey_info_by_journey_id(journey_id):
+    journey = Journey.query.filter_by(journey_id=journey_id).first()
     if journey:
-        return jsonify(
-            {
-                "code": 200,
-                "data": journey.to_dict()
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Journey which id = " + str(id) + " not found."
-        }
-    ), 404
+        jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
+        track = []
+        ans = []
+        role = Role.query.filter_by(role_id=journey.role_id).first()
+        for jsc in jsclist:
+            if jsc.skill_id not in track:
+                skill = Skill.query.filter_by(skill_id=jsc.skill_id).first()
+                temp={
+                    "skill_id":skill.skill_id,
+                    "skill_name":skill.skill_name,
+                    "skill_status":skill.skill_status,
+                    "skill_courses":[]
+                }
+                ans.append(temp)
+                track.append(jsc.skill_id)
+            for skill in ans:
+                if skill["skill_id"]==jsc.skill_id:
+                    course_info = Course.query.filter_by(course_id=jsc.course_id).first()
+                    course_ans = course_info.to_dict()
+                    course_registration_info = Course_Registration.query.filter_by(staff_id=journey.staff_id,course_id=jsc.course_id).first()
+                    if course_registration_info:
+                        course_ans["course_completion_status"] =course_registration_info.completion_status
+                    else:
+                        course_ans["course_completion_status"] = "Not Registered"
+                    
+                    skill["skill_courses"].append(course_ans)
 
-#get journeys by staff id
-@app.route("/journeys_by_staff/<int:staff_id>")
-def get_journeys_by_staff_id(staff_id):
-    jlist = Journey.query.filter_by(staff_id=staff_id)
-    if jlist.count():
         return jsonify(
             {
                 "code": 200,
                 "data": {
-                    "journeys": [journey.to_dict() for journey in jlist]
+                    "journey_id": journey_id,
+                    "journey_name":journey.journey_name,
+                    #"role_id":journey.role_id,
+                    "role": role.to_dict(),
+                    "staff_id":journey.staff_id,
+                    "journey_completion_status": journey_completion_status(ans),
+                    "skills": ans
                 }
             }
         ), 200
+
     return jsonify(
         {
             "code": 404,
-            "message": "There are no journeys for staff id = "+str(staff_id)+"."
+            "message": "There is no journey with journey id = "+journey_id+ "."
         }
     ), 404
+
+def journey_completion_status(skills_list):
+    skills_count = 0
+    skills_completed_count = 0
+    for skill in skills_list:
+        skills_count +=1
+        for course in skill["skill_courses"]:
+            if course["course_completion_status"] =="Completed":
+                skills_completed_count +=1
+                break
+        
+    return round(skills_completed_count/skills_count * 100)
+
+#get all journeys info by staff id
+@app.route("/all_journeys_info/<int:staff_id>")
+def get_all_journeys_info_by_staff_id(staff_id):
+    journeys = Journey.query.filter_by(staff_id=staff_id)
+    ans=[]
+    if journeys.count()==0:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "There is no journey with staff id = "+staff_id+ "."
+            }
+        ), 404
+
+    for journey in journeys:
+        raw_response = make_response(get_all_journey_info_by_journey_id(journey.journey_id))
+        response=raw_response.get_json()
+        data =  response["data"]
+        ans.append(data)
+    
+    return jsonify(
+        {
+            "code": 200,
+            "data": {
+                "staff_id":staff_id,
+                "journeys":ans
+            }
+        }
+    ), 200
+
 
 #remove journey by id
 @app.route("/journey_remove/<int:id>")
@@ -679,10 +542,49 @@ def remove_journey_by_id(id):
                 "message": "An error occurred while deleting the journey. " + str(e)
             }
         )
+    
+    try:
+        jsc = Journey_Skill_Course.query.filter_by(journey_id = id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting the journey skill course pair. " + str(e)
+            }
+        )
+    
     return jsonify(
         {
             "code": 202,
             "message": "Journey deleted successfully."
+        }
+    ), 202
+
+#remove journey skill course
+@app.route("/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>")
+def remove_journey_skill_course(journey_id,skill_id,course_id):
+    try:
+        jsc = Journey_Skill_Course.query.filter_by(journey_id = journey_id,course_id = course_id, skill_id=skill_id).delete()
+        if not jsc:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Journey skill course pair with journey_id = " + str(journey_id) + ", course_id = " + str(course_id) + " and skill_id = " + str(skill_id) + " not found."
+                }
+            ), 404        
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting the journey skill course pair. " + str(e)
+            }
+        )
+    return jsonify(
+        {
+            "code": 202,
+            "message": "Journey skill course pair deleted successfully."
         }
     ), 202
 
@@ -771,173 +673,6 @@ def create_journey():
         }
     ), 201
 
-#get all journey skill course
-@app.route("/journey_skill_course")
-def get_all_journey_skill_course():
-    jsclist = Journey_Skill_Course.query.all()
-    if jsclist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "journey_skill_course": [journey_skill_course.to_dict() for journey_skill_course in jsclist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There is no journey skill course."
-        }
-    ), 404
-
-#get all journey info by journey id
-@app.route("/all_journey_info/<int:journey_id>")
-def get_all_journey_info_by_journey_id(journey_id):
-    journey = Journey.query.filter_by(journey_id=journey_id).first()
-    if journey:
-        jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)
-        track = []
-        ans = []
-        role = Role.query.filter_by(role_id=journey.role_id).first()
-        for jsc in jsclist:
-            if jsc.skill_id not in track:
-                skill = Skill.query.filter_by(skill_id=jsc.skill_id).first()
-                temp={
-                    "skill_id":skill.skill_id,
-                    "skill_name":skill.skill_name,
-                    "skill_status":skill.skill_status,
-                    "skill_courses":[]
-                }
-                ans.append(temp)
-                track.append(jsc.skill_id)
-            for skill in ans:
-                if skill["skill_id"]==jsc.skill_id:
-                    course_info = Course.query.filter_by(course_id=jsc.course_id).first()
-                    course_ans = course_info.to_dict()
-                    course_registration_info = Course_Registration.query.filter_by(staff_id=journey.staff_id,course_id=jsc.course_id).first()
-                    if course_registration_info:
-                        course_ans["course_completion_status"] =course_registration_info.completion_status
-                    else:
-                        course_ans["course_completion_status"] = "Not Registered"
-                    
-                    skill["skill_courses"].append(course_ans)
-
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "journey_id": journey_id,
-                    "journey_name":journey.journey_name,
-                    #"role_id":journey.role_id,
-                    "role": role.to_dict(),
-                    "staff_id":journey.staff_id,
-                    "journey_completion_status": journey_completion_status(ans),
-                    "skills": ans
-                }
-            }
-        ), 200
-
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There is no journey with journey id = "+journey_id+ "."
-        }
-    ), 404
-
-def journey_completion_status(skills_list):
-    skills_count = 0
-    skills_completed_count = 0
-    for skill in skills_list:
-        skills_count +=1
-        for course in skill["skill_courses"]:
-            if course["course_completion_status"] =="Completed":
-                skills_completed_count +=1
-                break
-        
-    return round(skills_completed_count/skills_count * 100)
-
-#get all journeys info by staff id
-@app.route("/all_journeys_info/<int:staff_id>")
-def get_all_journey_info_by_staff_id(staff_id):
-    journeys = Journey.query.filter_by(staff_id=staff_id)
-    ans=[]
-    if journeys.count()==0:
-        return jsonify(
-            {
-                "code": 404,
-                "message": "There is no journey with staff id = "+staff_id+ "."
-            }
-        ), 404
-
-    for journey in journeys:
-        raw_response = make_response(get_all_journey_info_by_journey_id(journey.journey_id))
-        response=raw_response.get_json()
-        data =  response["data"]
-        ans.append(data)
-    
-    return jsonify(
-        {
-            "code": 200,
-            "data": {
-                "staff_id":staff_id,
-                "journeys":ans
-            }
-        }
-    ), 200
-
-#get skills not inside journey by journey id
-@app.route("/skills_not_in_journey/<int:journey_id>")
-def get_skills_not_in_journey(journey_id):
-    jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)    
-    if jsclist.count():
-        skills =[]
-        for jsc in jsclist:
-            skills.append(jsc.skill_id)
-        #print(skills)
-        slist = Skill.query.filter(Skill.skill_id.not_in(skills))
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "skills not in journey": [skill.to_dict() for skill in slist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no journey skill course with journey id = "+str(journey_id)+"."
-        }
-    ), 404
-
-#remove journey skill course
-@app.route("/remove_journey_skill_course/<int:journey_id>/<int:skill_id>/<string:course_id>")
-def remove_journey_skill_course(journey_id,skill_id,course_id):
-    try:
-        jsc = Journey_Skill_Course.query.filter_by(journey_id = journey_id,course_id = course_id, skill_id=skill_id).delete()
-        if not jsc:
-            return jsonify(
-                {
-                    "code": 404,
-                    "message": "Journey skill course pair with journey_id = " + str(journey_id) + ", course_id = " + str(course_id) + " and skill_id = " + str(skill_id) + " not found."
-                }
-            ), 404        
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code":500,
-                "message": "An error occurred while deleting the journey skill course pair. " + str(e)
-            }
-        )
-    return jsonify(
-        {
-            "code": 202,
-            "message": "Journey skill course pair deleted successfully."
-        }
-    ), 202
-
 #create journey skill course
 @app.route("/journey_skill_course/create", methods=['POST'])
 def create_journey_skill_course():
@@ -966,43 +701,72 @@ def create_journey_skill_course():
         }
     ), 201
 
-#get all roles
-@app.route("/roles")
-def get_all_roles():
-    rlist = Role.query.all()
-    if rlist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "roles": [role.to_dict() for role in rlist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no roles."
-        }
-    ), 404
+#update journey info
+@app.route("/update_journey_info", methods=['POST'])
+def update_journey_info():
+    data = request.get_json()
 
-#get role by id
-@app.route("/role/<int:id>")
-def get_role_by_id(id):
-    role = Role.query.filter_by(role_id=id).first()
-    if role:
+    if not all(key in data.keys() for 
+               key in ("journey_id","journey_name","skills")):
+        return jsonify({
+            "message": "Invalid JSON input. Journey id, name, and corresponded skills should be provided in the JSON object."
+        }), 500
+
+    if data["journey_name"].isspace() or data["journey_name"] == None or len(data["journey_name"])==0:
+        raise Exception ("Journey name should not be empty or just contain white spaces.")
+
+    journey_id=data["journey_id"]
+    skills=data["skills"]
+
+    try:
+        journey = Journey.query.filter_by(journey_id=journey_id).first()
+        journey.journey_name = data["journey_name"]
+        db.session.commit()
+    except Exception as e:
         return jsonify(
             {
-                "code": 200,
-                "data": role.to_dict()
+                "code":500,
+                "message": "An error occurred while updating journey name with journey id = "+journey_id+". " + str(e)
             }
         )
+    
+    try:
+        Journey_Skill_Course.query.filter_by(journey_id = journey_id).delete()    
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting the journey skill course pairs with journey id = "+journey_id+". " + str(e)
+            }
+        )
+    
+    try:
+        for skill in skills:
+            for course_id in skill["course_ids"]:
+                journey_skill_course_input ={
+                    "journey_id":journey_id,
+                    "course_id":course_id,
+                    "skill_id":skill["skill_id"]
+                }
+                journey_skill_course = Journey_Skill_Course(**journey_skill_course_input)
+                db.session.add(journey_skill_course)
+                db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the jounrey skill course pairs. " + str(e)
+            }
+        ), 500
+
     return jsonify(
         {
-            "code": 404,
-            "message": "Role which id = " + str(id) + " not found."
+            "code": 201,
+            "message": "Journey info updated successfully.",
+            "data": data
         }
-    ), 404
+    ), 201
 
 #get roles by status
 @app.route("/roles/<string:status>")
@@ -1023,39 +787,6 @@ def get_roles_by_status(status):
             "message": "There are no roles with status = "+status+"."
         }
     ), 404
-
-#update role status by role id
-@app.route("/update_role_status/<int:role_id>", methods=['PUT'])
-def update_role_status(role_id):
-    try:
-        role = Role.query.filter_by(role_id=role_id).first()
-        if not role:
-            return jsonify(
-                {
-                    "code": 404,
-                    "message": "Role with id = " + str(role_id) + " not found."
-                }
-            ), 404
-
-        # update role status
-        data = request.get_json()
-        if data['role_status']:
-            role.role_status = data['role_status']
-            db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": role.to_dict(),
-                    "message": "Status for role id = " + str(role_id) + " updated successfully."
-                }
-            ), 200
-    except Exception as e:
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while updating role status which id = " + str(role_id) + ". " + str(e)
-            }
-        ), 500
 
 #create role
 @app.route("/role/create", methods=['POST'])
@@ -1094,60 +825,6 @@ def create_role():
             "data": role.to_dict()
         }
     ), 201
-
-#get all role skills
-@app.route("/role_skills")
-def get_all_role_skills():
-    rslist = Role_Skill.query.all()
-    if rslist:
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "role_skills": [role_skill.to_dict() for role_skill in rslist]
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no role skills."
-        }
-    ), 404
-
-#get all roles with skills
-@app.route("/roles_with_skills")
-def get_all_roles_with_skills():
-    ans=[]
-    rlist = Role.query.all()
-    if rlist:
-        for role in rlist:
-            tempdic = {
-                "role_id": role.role_id,
-                "role_name": role.role_name,
-                "role_status": role.role_status,
-                "role_skills":[]
-            }
-
-            list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role.role_id)
-            for role_skill,skill in list:
-                tempdic["role_skills"].append(skill.to_dict())  
-            ans.append(tempdic)
-        
-        return jsonify(
-            {
-                "code": 200,
-                "data": {
-                    "roles": ans,
-                }
-            }
-        ), 200
-    return jsonify(
-        {
-            "code": 404,
-            "message": "There are no roles." 
-        }
-    ), 404
 
 #get roles with skills by role status
 @app.route("/roles_with_skills/<string:role_status>")
@@ -1241,6 +918,570 @@ def get_active_skills_whether_in_role_by_role_id(role_id):
             }
         }
     ), 200
+
+#update role info
+@app.route("/role_info/update", methods=['POST'])
+def update_role_info():
+    data = request.get_json()
+
+    if not all(key in data.keys() for 
+               key in ("role_id","role_name","role_status","skill_ids")):
+        return jsonify({
+            "message": "Invalid JSON input. Role id, name, status and corresponded skill ids should be provided in the JSON object."
+        }), 500
+
+    if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
+        raise Exception ("Role name should not be empty or just contain white spaces.")
+    
+    role_id=data["role_id"]
+    role_name=data["role_name"]
+    role_status=data["role_status"]
+    skill_ids=data["skill_ids"]
+
+    try:
+        role = Role.query.filter_by(role_id=role_id).first()
+        role.role_name = role_name
+        role.role_status = role_status
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while updating role info with role_id = "+str(role_id)+". " + str(e)
+            }
+        )
+
+    try:
+        Role_Skill.query.filter_by(role_id = role_id).delete()
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting role skill pair(s) with role_id = "+str(role_id)+". " + str(e)
+            }
+        )
+    
+    try:
+        for skill_id in skill_ids:
+            cs = {
+                "role_id":role_id,
+                "skill_id":skill_id
+            }
+            role_skill = Role_Skill(**cs)
+            db.session.add(role_skill)
+            db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the role skill pairs. " + str(e)
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Role info updated successfully.",
+            "data": data
+        }
+    ), 201
+
+#get skill by id
+@app.route("/skill/<int:id>")
+def get_skill_by_id(id):
+    skill = Skill.query.filter_by(skill_id=id).first()
+    if skill:
+        return jsonify(
+            {
+                "code": 200,
+                "data": skill.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Skill which id = " + str(id) + " not found."
+        }
+    ), 404
+
+#create skill
+@app.route("/skill/create", methods=['POST'])
+def create_skill():
+    data = request.get_json()
+
+    if not all(key in data.keys() for 
+               key in ("skill_name","skill_status")):
+        return jsonify({
+            "message": "Invalid JSON input. Skill name and status should be provided in the JSON object."
+        }), 500
+    
+    if data["skill_name"].isspace() or data["skill_name"] == None or len(data["skill_name"])==0:
+        raise Exception ("Skill name should not be empty or just contain white spaces.")
+
+    skill = Skill(skill_id = None,**data)
+
+    try:
+        db.session.add(skill)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the skill. " + str(e)
+            }
+        ), 500
+    
+    print(json.dumps(skill.to_dict(), default=str)) # convert a JSON object to a string and print
+    print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Skill created successfully.",
+            "data": skill.to_dict()
+        }
+    ), 201
+
+#Update skill info by id
+@app.route("/update_skill_info/<int:skill_id>", methods=['PUT'])
+def update_skill_info(skill_id):
+
+    skill = Skill.query.filter_by(skill_id=skill_id).first()
+    if not skill:
+        return jsonify(
+            {
+                "code": 404,
+                "message": "Skill with id = " + str(skill_id) + " not found."
+            }
+        ), 404
+    
+    try:
+        data = request.get_json()
+        skill.skill_status = data['skill_status']
+        skill.skill_name = data['skill_name']
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": skill.to_dict(),
+                "message": "Skill info for skill id = " + str(skill_id) + " updated successfully."
+            }
+        ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while updating skill info which id = " + str(skill_id) + ". " + str(e)
+            }
+        ), 500
+
+######################################################################################################
+#NOT USED ROUTES
+######################################################################################################
+
+#get all courses
+@app.route("/courses")
+def get_all_courses():
+    clist = Course.query.all()
+    if clist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "courses": [course.to_dict() for course in clist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no courses."
+        }
+    ), 404
+
+#get course by id
+@app.route("/course/<string:id>")
+def get_course_by_id(id):
+    course = Course.query.filter_by(course_id=id).first()
+    if course:
+        return jsonify(
+            {
+                "code": 200,
+                "data": course.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Course which id = " + str(id) + " not found."
+        }
+    ), 404
+
+#get courses by status
+@app.route("/courses/<string:status>")
+def get_courses_by_status(status):
+    clist = Course.query.filter_by(course_status=status)
+    if clist.count():
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "courses": [course.to_dict() for course in clist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Courses which status = " + status + " not found."
+        }
+    ), 404
+
+#get all course registrations
+@app.route("/course_registrations")
+def get_all_course_registrations():
+    crlist = Course_Registration.query.all()
+    if crlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course_registrations": [course_registration.to_dict() for course_registration in crlist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no course registrations."
+        }
+    ), 404
+
+#get course registration(S) by staff id and course id
+@app.route("/course_registration/<int:staff_id>/<string:course_id>")
+def get_course_registration_by_staff_id_and_course_id(staff_id,course_id):
+    crlist = Course_Registration.query.filter_by(staff_id=staff_id,course_id=course_id)
+    if crlist.count():
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course_registration(S)": [course_registration.to_dict() for course_registration in crlist]
+                }
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Course registration with staff_id = " + str(staff_id) + " and course_id = " + str(course_id) + " not found."
+        }
+    ), 404
+
+#get all course skills
+@app.route("/course_skills")
+def get_all_course_skills():
+    cslist = Course_Skill.query.all()
+    if cslist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "course_skills": [course_skill.to_dict() for course_skill in cslist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no course skills."
+        }
+    ), 404
+
+#remove course skill
+@app.route("/remove_course_skill/<string:course_id>/<int:skill_id>")
+def remove_course_skill(course_id,skill_id):
+    try:
+        cs = Course_Skill.query.filter_by(course_id = course_id, skill_id=skill_id).delete()
+        if not cs:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Course skill pair with course_id = "+str(course_id)+" and skill_id = " + str(skill_id) + " not found."
+                }
+            ), 404
+
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code":500,
+                "message": "An error occurred while deleting the course skill pair. " + str(e)
+            }
+        )
+    return jsonify(
+        {
+            "code": 202,
+            "message": "Course skill pair deleted successfully."
+        }
+    ), 202
+
+#create course skill
+@app.route("/course_skill/create", methods=['POST'])
+def create_course_skill():
+    data = request.get_json()
+    course_skill = Course_Skill(**data)
+
+    try:
+        db.session.add(course_skill)
+        db.session.commit()
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while creating the course skill pair. " + str(e)
+            }
+        ), 500
+    
+    print(json.dumps(course_skill.to_dict(), default=str)) # convert a JSON object to a string and print
+    print()
+
+    return jsonify(
+        {
+            "code": 201,
+            "message": "Course skill pair created successfully.",
+            "data": course_skill.to_dict()
+        }
+    ), 201
+
+#get all journeys
+@app.route("/journeys")
+def get_all_journeys():
+    jlist = Journey.query.all()
+    if jlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "journeys": [journey.to_dict() for journey in jlist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no journeys."
+        }
+    ), 404
+
+#get journey by id
+@app.route("/journey/<int:id>")
+def get_journey_by_id(id):
+    journey = Journey.query.filter_by(journey_id=id).first()
+    if journey:
+        return jsonify(
+            {
+                "code": 200,
+                "data": journey.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Journey which id = " + str(id) + " not found."
+        }
+    ), 404
+
+#get journeys by staff id
+@app.route("/journeys_by_staff/<int:staff_id>")
+def get_journeys_by_staff_id(staff_id):
+    jlist = Journey.query.filter_by(staff_id=staff_id)
+    if jlist.count():
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "journeys": [journey.to_dict() for journey in jlist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no journeys for staff id = "+str(staff_id)+"."
+        }
+    ), 404
+
+#get all journey skill course
+@app.route("/journey_skill_course")
+def get_all_journey_skill_course():
+    jsclist = Journey_Skill_Course.query.all()
+    if jsclist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "journey_skill_course": [journey_skill_course.to_dict() for journey_skill_course in jsclist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There is no journey skill course."
+        }
+    ), 404
+
+#get skills not inside journey by journey id
+@app.route("/skills_not_in_journey/<int:journey_id>")
+def get_skills_not_in_journey(journey_id):
+    jsclist = Journey_Skill_Course.query.filter_by(journey_id=journey_id)    
+    if jsclist.count():
+        skills =[]
+        for jsc in jsclist:
+            skills.append(jsc.skill_id)
+        #print(skills)
+        slist = Skill.query.filter(Skill.skill_id.not_in(skills))
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "skills not in journey": [skill.to_dict() for skill in slist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no journey skill course with journey id = "+str(journey_id)+"."
+        }
+    ), 404
+
+#get all roles
+@app.route("/roles")
+def get_all_roles():
+    rlist = Role.query.all()
+    if rlist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": [role.to_dict() for role in rlist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles."
+        }
+    ), 404
+
+#get role by id
+@app.route("/role/<int:id>")
+def get_role_by_id(id):
+    role = Role.query.filter_by(role_id=id).first()
+    if role:
+        return jsonify(
+            {
+                "code": 200,
+                "data": role.to_dict()
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Role which id = " + str(id) + " not found."
+        }
+    ), 404
+
+
+#update role status by role id
+@app.route("/update_role_status/<int:role_id>", methods=['PUT'])
+def update_role_status(role_id):
+    try:
+        role = Role.query.filter_by(role_id=role_id).first()
+        if not role:
+            return jsonify(
+                {
+                    "code": 404,
+                    "message": "Role with id = " + str(role_id) + " not found."
+                }
+            ), 404
+
+        # update role status
+        data = request.get_json()
+        if data['role_status']:
+            role.role_status = data['role_status']
+            db.session.commit()
+            return jsonify(
+                {
+                    "code": 200,
+                    "data": role.to_dict(),
+                    "message": "Status for role id = " + str(role_id) + " updated successfully."
+                }
+            ), 200
+    except Exception as e:
+        return jsonify(
+            {
+                "code": 500,
+                "message": "An error occurred while updating role status which id = " + str(role_id) + ". " + str(e)
+            }
+        ), 500
+
+#get all role skills
+@app.route("/role_skills")
+def get_all_role_skills():
+    rslist = Role_Skill.query.all()
+    if rslist:
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "role_skills": [role_skill.to_dict() for role_skill in rslist]
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no role skills."
+        }
+    ), 404
+
+#get all roles with skills
+@app.route("/roles_with_skills")
+def get_all_roles_with_skills():
+    ans=[]
+    rlist = Role.query.all()
+    if rlist:
+        for role in rlist:
+            tempdic = {
+                "role_id": role.role_id,
+                "role_name": role.role_name,
+                "role_status": role.role_status,
+                "role_skills":[]
+            }
+
+            list = db.session.query(Role_Skill, Skill).select_from(Role_Skill).join(Skill).filter(Role_Skill.role_id==role.role_id)
+            for role_skill,skill in list:
+                tempdic["role_skills"].append(skill.to_dict())  
+            ans.append(tempdic)
+        
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "roles": ans,
+                }
+            }
+        ), 200
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no roles." 
+        }
+    ), 404
 
 #remove role skill
 @app.route("/remove_role_skill/<int:role_id>/<int:skill_id>")
@@ -1338,74 +1579,6 @@ def update_role_skill():
         }
     ), 201
 
-#update role info
-@app.route("/role_info/update", methods=['POST'])
-def update_role_info():
-    data = request.get_json()
-
-    if not all(key in data.keys() for 
-               key in ("role_id","role_name","role_status","skill_ids")):
-        return jsonify({
-            "message": "Invalid JSON input. Role id, name, status and corresponded skill ids should be provided in the JSON object."
-        }), 500
-
-    if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
-        raise Exception ("Role name should not be empty or just contain white spaces.")
-    
-    role_id=data["role_id"]
-    role_name=data["role_name"]
-    role_status=data["role_status"]
-    skill_ids=data["skill_ids"]
-
-    try:
-        role = Role.query.filter_by(role_id=role_id).first()
-        role.role_name = role_name
-        role.role_status = role_status
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code":500,
-                "message": "An error occurred while updating role info with role_id = "+str(role_id)+". " + str(e)
-            }
-        )
-
-    try:
-        Role_Skill.query.filter_by(role_id = role_id).delete()
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code":500,
-                "message": "An error occurred while deleting role skill pair(s) with role_id = "+str(role_id)+". " + str(e)
-            }
-        )
-    
-    try:
-        for skill_id in skill_ids:
-            cs = {
-                "role_id":role_id,
-                "skill_id":skill_id
-            }
-            role_skill = Role_Skill(**cs)
-            db.session.add(role_skill)
-            db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while creating the role skill pairs. " + str(e)
-            }
-        ), 500
-
-    return jsonify(
-        {
-            "code": 201,
-            "message": "Role info updated successfully.",
-            "data": data
-        }
-    ), 201
-
 #get all skills
 @app.route("/skills")
 def get_all_skills():
@@ -1423,24 +1596,6 @@ def get_all_skills():
         {
             "code": 404,
             "message": "There are no skills."
-        }
-    ), 404
-
-#get skill by id
-@app.route("/skill/<int:id>")
-def get_skill_by_id(id):
-    skill = Skill.query.filter_by(skill_id=id).first()
-    if skill:
-        return jsonify(
-            {
-                "code": 200,
-                "data": skill.to_dict()
-            }
-        )
-    return jsonify(
-        {
-            "code": 404,
-            "message": "Skill which id = " + str(id) + " not found."
         }
     ), 404
 
@@ -1464,77 +1619,6 @@ def get_skills_by_status(status):
         }
     ), 404
 
-#Update skill status by skill id
-@app.route("/update_skill_status/<int:skill_id>", methods=['PUT'])
-def update_skill_status(skill_id):
-    try:
-        skill = Skill.query.filter_by(skill_id=skill_id).first()
-        if not skill:
-            return jsonify(
-                {
-                    "code": 404,
-                    "message": "Skill with id = " + str(skill_id) + " not found."
-                }
-            ), 404
-
-        # update role status
-        data = request.get_json()
-        if data['skill_status']:
-            skill.skill_status = data['skill_status']
-            db.session.commit()
-            return jsonify(
-                {
-                    "code": 200,
-                    "data": skill.to_dict(),
-                    "message": "Status for skill id = " + str(skill_id) + " updated successfully."
-                }
-            ), 200
-    except Exception as e:
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while updating skill status which id = " + str(skill_id) + ". " + str(e)
-            }
-        ), 500
-
-#create skill
-@app.route("/skill/create", methods=['POST'])
-def create_skill():
-    data = request.get_json()
-
-    if not all(key in data.keys() for 
-               key in ("skill_name","skill_status")):
-        return jsonify({
-            "message": "Invalid JSON input. Skill name and status should be provided in the JSON object."
-        }), 500
-    
-    if data["skill_name"].isspace() or data["skill_name"] == None or len(data["skill_name"])==0:
-        raise Exception ("Skill name should not be empty or just contain white spaces.")
-
-    skill = Skill(skill_id = None,**data)
-
-    try:
-        db.session.add(skill)
-        db.session.commit()
-    except Exception as e:
-        return jsonify(
-            {
-                "code": 500,
-                "message": "An error occurred while creating the skill. " + str(e)
-            }
-        ), 500
-    
-    print(json.dumps(skill.to_dict(), default=str)) # convert a JSON object to a string and print
-    print()
-
-    return jsonify(
-        {
-            "code": 201,
-            "message": "Skill created successfully.",
-            "data": skill.to_dict()
-        }
-    ), 201
-
 #get all staffs
 @app.route("/staffs")
 def get_all_staffs():
@@ -1554,7 +1638,6 @@ def get_all_staffs():
             "message": "There are no staffs."
         }
     ), 404
-
 
 #############################################################################
 # @app.route("/doctors")
