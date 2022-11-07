@@ -30,6 +30,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
     <!-- VueJS -->
     <script src="https://unpkg.com/vue@next"></script>
+        <!--Toastr-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(function () {
             $("#sidebar").load("./assets/components/sidebar.html");
@@ -68,7 +71,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
                             <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
-                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: Role 1</a></li>
+                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: {{journey_name}}</a></li>
                             <li class="breadcrumb-item"><a href="editLearningJourney.html">Edit</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Update courses</li>
                         </ol>
@@ -77,27 +80,54 @@
                     <div class="card">
                         <div class="card-body">
                             <br>
-                            <p class="h6 font-weight-bold"><i>Learning Journey 1: Role 1</i></p>
+                            <p class="h6 font-weight-bold"><i>Learning Journey 1: {{journey_name}}</i></p>
                             <br>
                             <table class="table">
                                 <thead>
                                     <tr>
                                         <th scope="col">Skill</th>
-                                        <th scope="col">Skill Status</th>
                                         <th scope="col">Course</th>
                                         <th scope="col">Course Status</th>
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody v-if="loading">
                                     <tr>
-                                        <td rowspan="2" class="align-middle">Skill 1</td>
-                                        <td rowspan="2" class="align-middle">Completed</td>
-                                        <td>Course 1</td>
-                                        <td>Completed</td>
-                                        <td></td>
+                                        <td colspan="4">
+                                            <!--Spinner-->
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <div class="spinner-border" role="status">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <strong>Please wait while we are fetching the records...</strong>
+                                            </div>
+                                            <!--//Spinner-->  
+                                        </td>
                                     </tr>
+                                </tbody>
+
+                                <tbody v-if="errorMsg">
                                     <tr>
+                                        <td colspan="4" style="color:red;">{{this.message}}</td>
+                                    </tr>
+                                </tbody>
+                                <tbody v-if="!errrorMsg && !loading" v-for="skill in skills">
+                                    <tr v-for="(course,index) in skill.skill_courses">
+                                        <td>
+                                            {{skill.skill_name}}
+                                        </td>
+                                        <td>
+                                            {{course.course_name}} 
+                                        </td>
+                                        <td>
+                                            {{course.course_completion_status}}
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-primary" id="removeBtn" @click="hideRemoveBtn(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
+                                        </td>
+                                    </tr>
+                                    <!-- <tr>
                                         <td>Course 2</td>
                                         <td>Completed</td>
                                         <td></td>
@@ -127,7 +157,7 @@
                                         <td>
                                             <button type="button" class="btn btn-primary">Remove</button>
                                         </td>
-                                    </tr>
+                                    </tr> -->
                                 </tbody>
                             </table>
                             <br>
@@ -151,12 +181,16 @@
                                         </a>
                                         <br>
                                         <!-- <p>{{ item.skill }}</p> -->
-                                        <select v-model="item.skill" @change="changeSkill(index)" class="selectpicker" :name="`skillAndCourses[${index}][skill]`" data-live-search="true">
+                                        <!-- <select v-model="item.skill" @change="changeSkill(index)" class="selectpicker" :name="`skillAndCourses[${index}][skill]`" data-live-search="true">
                                             <option value="" disabled></option>
                                             <option>Skill 1</option>
                                             <option>Skill 2</option>
                                             <option>Skill 3</option>
                                             <option>Skill 4</option>
+                                        </select> -->
+                                        <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
+                                            <option value="" disabled></option>
+                                            <option v-for="skill in availableSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -165,16 +199,20 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <select v-model="item.courses" class="selectpicker" :name="`skillAndCourses[${index}][courses]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
+                                        <!-- <select v-model="item.courses" class="selectpicker" :name="`skillAndCourses[${index}][courses]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
                                             <option value="" disabled></option>
                                             <option>Course 1</option>
                                             <option>Course 2</option>
                                             <option>Course 3</option>
                                             <option>Course 4</option>
+                                        </select> -->
+                                        <select v-model="item.course_ids" class="selectpicker" :name="`skillAndCourses[${index}][courses_ids]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
+                                            <optionvalue="" disabled></option>
+                                            <option v-for="course in availableCourses[`${index}`]" :value="course.course_id">{{course.course_name}}</option>
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary mt-1">Update</button>
+                                <button type="submit" class="btn btn-primary mt-1" @click="addANewCourse()">Update</button>
                             </form>
                         </div>
                     </div>
@@ -206,23 +244,28 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <script>
-        Vue.createApp({
+         Vue.createApp({
         data() {
             return { // hardcoded create data
-                role:"",
-                skillAndCourses: [ 
-                    // {
-                    //     skill: "Skill 1",
-                    //     courses: ["Course 2"]
-                    // },
-                    // {
-                    //     skill: "Skill 2",
-                    //     courses: ["Course 2"]
-                    // }
-                ]
+                roleId:"",
+                skillAndCourses: [],
+                availableRoles: [],
+                availableSkills: [],
+                availableCourses: [],
+                journey_name:"",
+                skills:[],
+                skillId: "",
+                courseId: "",
+                staffId: "",
+                message: "There is a problem retrieving journey data, please try again later.",
+                errorMsg: false,
+                loading: true,
+                journeyId: "",
+                toastCount: 0
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
+            this.staffId = getCookie('staff_id');
             
             // check credentials (check for staff)
             if (getCookie('user_type') != null) {
@@ -240,6 +283,9 @@
                     }
                 }
             }
+            this.getJourneyId();
+            
+            
             
             this.skillAndCourses.push({
                 skill: "",
@@ -250,12 +296,119 @@
             $('[data-toggle="tooltip"]').tooltip();  
         },
         methods: {
+            getJourneyId(){
+                    // let params = (new URL(document.location)).searchParams;
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    const learningJourneyId = urlParams.get('learning_journey_id')
+                    this.journeyId = urlParams.get("learning_journey_id");
+
+                    const response =
+                    fetch("http://localhost:5000/all_journey_info/"+learningJourneyId)
+                        .then(response => response.json())
+                        .then(data => {
+                            // console.log(data);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                                this.loading = false;
+                                this.errorMsg = true;
+                            } else {
+                                this.skills = data.data.skills;
+                                this.journey_name = data.data.journey_name;
+                                this.roleId = data.data.role.role_id;
+                                this.loading = false;
+                                this.errorMsg = false;
+                            }
+                            this.getSkillsBasedOnRoleSelected(this.roleId);
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.loading = false;
+                            this.errorMsg = error;
+                            console.log(this.message + error);
+
+                        });
+                        
+            },
+            getSkillsBasedOnRoleSelected(role_id) {
+                $(async () => {
+                    // Change serviceURL to your own
+                    //http://localhost:5000/active_skills_by_role/1
+                    var serviceURL = "http://localhost:5000/active_skills_by_role/" + role_id;
+                    try {
+                        const response =
+                            await fetch(
+                                serviceURL, { method: 'GET' }
+                            );
+                        const result = await response.json();
+                        if (result.code === 200) {
+                            // success case
+                            this.availableSkills = result.data.active_skills;
+                            this.refreshSelectDropDown();
+                        } else if (result.code == 404) {
+                            // No Such Roles Found
+                            //this.skillLoading = false
+                            //this.skillErr = true
+                            //this.skillErrMsg = result.message;
+                        } else {
+                            // unexpected outcome, throw the error
+                            //this.skillLoading = false
+                            //this.skillErr = true
+                            //throw response.status;
+                        }
+                    } catch (error) {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        //this.skillLoading = false
+                        //this.skillErr = true
+                        //this.skillErrMsg = 'There is a problem retrieving skill data, please try again later.<br />' + error;
+                    } // error
+                });
+            },
+            getCoursesBasedOnSkillSelected() {
+                $(async () => {
+                    // Change serviceURL to your own
+                    var serviceURL = "http://localhost:5000/courses_by_skill/" + this.skillId;
+                    try {
+                        const response =
+                            await fetch(
+                                serviceURL, { method: 'GET' }
+                            );
+                        const result = await response.json();
+                        if (result.code === 200) {
+                            // success case
+                            this.availableCourses.push(result.data.courses);
+                            this.refreshSelectDropDown();
+                        } else if (result.code == 404) {
+                            // No Such Roles Found
+                            //this.skillLoading = false
+                            //this.skillErr = true
+                            //this.skillErrMsg = result.message;
+                        } else {
+                            // unexpected outcome, throw the error
+                            //this.skillLoading = false
+                            //this.skillErr = true
+                            //throw response.status;
+                        }
+                    } catch (error) {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        //this.skillLoading = false
+                        //this.skillErr = true
+                        //this.skillErrMsg = 'There is a problem retrieving skill data, please try again later.<br />' + error;
+                    } // error
+                });
+            },
             addSkill() {
+                //initialise course
                 this.skillAndCourses.push({
-                    skill: "",
-                    courses: []
+                    skill_id: "",
+                    course_ids: []
                 });
                 this.refreshSelectDropDown();
+
             },
             removeSkill(index) {
                 this.skillAndCourses.splice(index, 1);
@@ -265,24 +418,182 @@
             // changeRole() {
             //     this.skillAndCourses = [
             //         {
-            //             skill: "",
-            //             courses: [""]
+            //             skill_id: "",
+            //             course_ids: [""]
             //         }
             //     ];
             //     this.refreshSelectDropDown();
             //     $("#courses0").prop('disabled', true);
+            //     this.getSkillsBasedOnRoleSelected();
             // },
-            changeSkill(index) {
+            changeSkill(index, skillId) {
                 // populate courses frm db
                 // unhide courses
+                this.skillId = skillId;
                 $("#courses"+index).prop('disabled', false);
                 this.refreshSelectDropDown();
+                this.getCoursesBasedOnSkillSelected();
+                console.log(this.skillAndCourses);
             },
             refreshSelectDropDown() {
                 setTimeout(() => {
                     jQuery('.selectpicker').selectpicker('refresh');
                     $('[data-toggle="tooltip"]').tooltip();  
                 }, 100);
+            },
+            addANewCourse(){
+                $(async () => {
+                    // Change serviceURL to your own
+                    var serviceURL = "http://localhost:5000/journey_skill_course/create";
+                    try {
+                        const response =
+                            await fetch(
+                                serviceURL,
+                                {
+                                    method: 'POST',
+                                    headers: {
+                                        'Accept': 'application/json', 'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        journey: {
+                                            journey_id: this.journeyId, 
+                                            skill_id: this.skill_id,
+                                            course_id: this.course_id
+                                        }
+                                    })
+                                }
+                            );
+                        const result = await response.json();
+                        if (result.code === 201) {
+                            // success case
+                            // this.loading = false
+                            // this.err = false
+
+                            // toastr configuration
+                            toastr.options = {
+                                "closeButton": true,
+                                "newestOnTop": false,
+                                "progressBar": true,
+                                "positionClass": "toast-bottom-right",
+                                "preventDuplicates": false,
+                                "onclick": null,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
+
+                            if (this.toastCount == 0) {
+                                // success 
+                                toastr.success("Learning Journey created successfully");
+                                this.toastCount += 1;
+                            } 
+                            setInterval(function doThisAfterFourSeconds() {
+                                location.href = './learningJourney.html';
+                            }, 400);
+
+                        } else if (result.code == 500) {
+                            // this.loading = false
+                            // this.err = true
+                            // this.errMsg = result.message;
+                            // toastr.error(result.message);
+                            toastr.error("An error has occurred. Please try again");
+                        } else {
+                            // unexpected outcome, throw the error
+                            // this.loading = false
+                            // this.err = true
+                            toastr.error("An error has occurred. Please try again");
+                            throw response.status;
+                        }
+                    } catch (error) {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        // this.loading = false
+                        // this.err = true
+                        // this.errMsg = 'There is a problem creating new learning journey, please try again later.<br />' + error;
+                    } // error
+                });
+            },
+            hideRemoveBtn(course_completion_status, skill_id, course_id) {
+                // let element = document.getElementById("removeBtn");
+                // let hidden = element.getAttribute("hidden");
+
+                if (course_completion_status != "Completed") {
+            
+                    this.disableRemoveModalButtons = true;
+                    this.removeModalText = "Processing your delete request... Please Wait"
+                    $(async () => {
+                        // Change serviceURL to your own
+                        var serviceURL = "http://localhost:5000/remove_journey_skill_course/" + this.journeyId + "/" + skill_id + "/" + course_id;
+                        try {
+                            const response =
+                                await fetch(
+                                    serviceURL, 
+                                    { 
+                                        method: 'GET',
+                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
+                                    }
+                                );
+                            const result = await response.json();
+                            // toastr configuration
+                            // toastr.options = {
+                            //         "closeButton": true,
+                            //         "newestOnTop": false,
+                            //         "progressBar": true,
+                            //         "positionClass": "toast-bottom-right",
+                            //         "preventDuplicates": false,
+                            //         "onclick": null,
+                            //         "showDuration": "300",
+                            //         "hideDuration": "1000",
+                            //         "timeOut": "5000",
+                            //         "extendedTimeOut": "1000",
+                            //         "showEasing": "swing",
+                            //         "hideEasing": "linear",
+                            //         "showMethod": "fadeIn",
+                            //         "hideMethod": "fadeOut"
+                            //     }
+                            if (result.code === 202) {
+                                // success case
+                                // if (this.toastCount == 0) {
+                                    // success 
+                                    // console.log("created successfully")
+                                    // toastr.success("Removed course successfully");
+                                    // this.toastCount += 1;
+                                // }
+                                location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId; 
+
+                                // setInterval(function doThisAfterFourSeconds() {
+                                //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                                // }, 400);
+                                
+                            } else if (result.code == 404) {
+                                // No records
+                                this.deleteErr = true;
+                                this.removeModalText = result.message;
+                                // toastr.error("An error has occurred. Please try again");
+                            } else {
+                                // unexpected outcome, throw the error
+                                this.deleteErr = true;
+                                // toastr.error("An error has occurred. Please try again");
+                                throw response.status;
+                            }
+                        } catch (error) {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.deleteErr = true;
+                            this.removeModalText = 'There is a problem deleting the record, please try again later.<br />' + error;
+                            // toastr.error("An error has occurred. Please try again");
+                        } // error
+                    });
+                } else {
+                    // alert("Completed course can't be removed.");
+                    toastr.error("Completed course can't be removed.");
+                    // element.setAttribute("hidden", "hidden");
+                }
             }
         },
         computed: {

@@ -57,18 +57,18 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Edit Learning Journey 1: Role 1</h1>                    
+                    <h1 class="h3 mb-4 text-gray-800">Edit Learning Journey 1: {{journey_name}}</h1>                    
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
                             <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
-                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: Role 1</a></li>
+                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: {{journey_name}}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Edit</li>
                         </ol>
                     </nav>
                     <div class="card">
                         <div class="card-body">
                             <a type="button" class="btn btn-danger float-right mb-3" data-toggle="modal" data-target="#deleteModal">Delete Learning Journey</a>
-                            <a type="button" class="btn btn-primary float-right mb-3 mr-2" href="editLearningJourneyForm.html">Update courses</a>
+                            <a type="button" class="btn btn-primary float-right mb-3 mr-2" @click="goToUpdateLJ()">Update courses</a>
                             
                             <table class="table">
                                 <thead>
@@ -80,7 +80,45 @@
                                         <th></th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody v-if="loading">
+                                    <tr>
+                                        <td colspan="4">
+                                            <!--Spinner-->
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <div class="spinner-border" role="status">
+                                                </div>
+                                            </div>
+                                            <div class="d-flex justify-content-center mt-2">
+                                                <strong>Please wait while we are fetching the records...</strong>
+                                            </div>
+                                            <!--//Spinner-->  
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                                <tbody v-if="errorMsg">
+                                    <tr>
+                                        <td colspan="4" style="color:red;">{{this.message}}</td>
+                                    </tr>
+                                </tbody>
+                                <tbody v-if="!errrorMsg && !loading" v-for="skill in skills">
+                                    
+                                    <tr v-for="(course,index) in skill.skill_courses">
+                                        <td>
+                                            {{skill.skill_name}}
+                                        </td>
+                                        <td>
+                                            {{skill.skill_status}}
+                                        </td>
+                                        <td>
+                                            {{course.course_name}} 
+                                        </td>
+                                        <td>
+                                            {{course.course_completion_status}}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <!-- <tbody>
                                     <tr>
                                         <td rowspan="2" class="align-middle">Skill 1</td>
                                         <td rowspan="2" class="align-middle">Completed</td>
@@ -119,7 +157,7 @@
                                             <button type="button" class="btn btn-primary">Remove</button>
                                         </td>
                                     </tr>
-                                </tbody>
+                                </tbody> -->
                             </table>
                         </div>
                     </div>
@@ -183,10 +221,16 @@
         const app = Vue.createApp({
             data() {
                 return {
-                    journeyId: "",
-                    removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
-                    disableRemoveModalButtons: false,
-                    deleteErr: false
+                    // journeyId: "",
+                    // removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
+                    // disableRemoveModalButtons: false,
+                    // deleteErr: false
+                    journey_name:"",
+                    skills:[],
+                    message: "There is a problem retrieving journey data, please try again later.",
+                    errorMsg: false,
+                    loading: true,
+                    journeyId: ""
                 }
             },
             created() {
@@ -210,8 +254,37 @@
             },
             methods: {
                 getJourneyId(){
-                    let params = (new URL(document.location)).searchParams;
-                    this.journeyId = params.get("learning_journey_id");
+                    // let params = (new URL(document.location)).searchParams;
+                    const queryString = window.location.search;
+                    const urlParams = new URLSearchParams(queryString);
+                    const learningJourneyId = urlParams.get('learning_journey_id')
+                    this.journeyId = urlParams.get("learning_journey_id");
+
+                    const response =
+                    fetch("http://localhost:5000/all_journey_info/"+learningJourneyId)
+                        .then(response => response.json())
+                        .then(data => {
+                            // console.log(data);
+                            if (data.code === 404) {
+                                // no skill in db
+                                this.message = data.message;
+                                this.loading = false;
+                                this.errorMsg = true;
+                            } else {
+                                this.skills = data.data.skills;
+                                this.journey_name = data.data.journey_name;
+                                this.loading = false;
+                                this.errorMsg = false;
+                            }
+                        })
+                        .catch(error => {
+                            // Errors when calling the service; such as network error, 
+                            // service offline, etc
+                            this.loading = false;
+                            this.errorMsg = error;
+                            console.log(this.message + error);
+
+                        });
                 },
                 removeJourney(){
                     this.disableRemoveModalButtons = true;
@@ -231,7 +304,7 @@
                             const result = await response.json();
                             if (result.code === 202) {
                                 // success case
-                                location.replace("/learningJourney.html");
+                                location.replace("./learningJourney.html");
                                 
                             } else if (result.code == 404) {
                                 // No records
@@ -249,6 +322,9 @@
                             this.removeModalText = 'There is a problem deleting the record, please try again later.<br />' + error;
                         } // error
                     });
+                },
+                goToUpdateLJ() {
+                    location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
                 }
             }
         });
