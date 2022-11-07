@@ -99,14 +99,9 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <!-- <p>{{ item.skill }}</p> -->
                                         <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
                                             <option value="" disabled></option>
-                                            <option v-for="skill in availableSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
-                                            <!-- <option>Skill 1</option>
-                                            <option>Skill 2</option>
-                                            <option>Skill 3</option>
-                                            <option>Skill 4</option> -->
+                                            <option v-for="skill in availableSkills" :disabled="dropdownSelectedSkill.indexOf(skill.skill_id) > -1 && !(dropdownSelectedSkill[index] == skill.skill_id)" :value="skill.skill_id">{{skill.skill_name}}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
@@ -170,7 +165,8 @@
                 availableCourses: [],
                 skillId: "",
                 staffId: "",
-                toastCount: 0
+                toastCount: 0,
+                dropdownSelectedSkill: []
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
@@ -312,6 +308,7 @@
             },
             removeSkill(index) {
                 this.skillAndCourses.splice(index, 1);
+                this.dropdownSelectedSkill.splice(index, 1);
                 this.refreshSelectDropDown();
             },
             changeRole() {
@@ -321,19 +318,23 @@
                         course_ids: [""]
                     }
                 ];
-                this.refreshSelectDropDown();
+                this.dropdownSelectedSkill = [];
+                
                 $("#courses0").prop('disabled', true);
                 this.getSkillsBasedOnRoleSelected();
+                this.refreshSelectDropDown();
             },
             changeSkill(index, skillId) {
                 // populate courses frm db
                 // unhide courses
+                this.dropdownSelectedSkill[index] = skillId;
                 this.availableCourses[index] = [];
                 this.skillId = skillId;
                 this.skillAndCourses[index].course_ids = [""];
                 $("#courses"+index).prop('disabled', false);
-                this.refreshSelectDropDown();
+                
                 this.getCoursesBasedOnSkillSelected(index);
+                this.refreshSelectDropDown();
             },
             checkCourseDisabled(index) {
 
