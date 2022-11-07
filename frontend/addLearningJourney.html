@@ -115,13 +115,15 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <select v-model="item.course_ids" class="selectpicker" :name="`skillAndCourses[${index}][courses_ids]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
+                                        <select v-model="item.course_ids" 
+                                            class="selectpicker" 
+                                            :name="`skillAndCourses[${index}][courses_ids]`" 
+                                            :id="`courses${index}`" 
+                                            multiple data-live-search="true" 
+                                            @change="checkCourseDisabled(index)"
+                                            disabled>
                                             <optionvalue="" disabled></option>
                                             <option v-for="course in availableCourses[`${index}`]" :value="course.course_id">{{course.course_name}}</option>
-                                            <!-- <option>Course 1</option>
-                                            <option>Course 2</option>
-                                            <option>Course 3</option>
-                                            <option>Course 4</option> -->
                                         </select>
                                     </div>
                                 </div>
@@ -332,6 +334,17 @@
                 $("#courses"+index).prop('disabled', false);
                 this.refreshSelectDropDown();
                 this.getCoursesBasedOnSkillSelected(index);
+            },
+            checkCourseDisabled(index) {
+
+                let availableCoursesLength = this.availableCourses[index].length;
+                let selectedCoursesLength = this.skillAndCourses[index].course_ids.length;
+
+                if (availableCoursesLength == selectedCoursesLength) {
+                    $("#courses"+index).prop('disabled', true);
+                    this.refreshSelectDropDown();
+                }
+
             },
             refreshSelectDropDown() {
                 setTimeout(() => {
