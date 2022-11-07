@@ -170,8 +170,13 @@
                 },
                 save_skill() {
                     $(async () => {
-                            serviceURL = "http://localhost:5000/update_skill_status/"+this.skill_id;
+                            serviceURL = "http://localhost:5000/update_skill_info/"+this.skill_id;
                             try {
+
+                                console.log("result: " +JSON.stringify({
+                                                skill_name: this.skill_name,
+                                                skill_status: this.skill_status
+                                            }));
                                 const response =
                                     await fetch(
                                         serviceURL,
@@ -181,6 +186,7 @@
                                                 'Accept': 'application/json', 'Content-Type': 'application/json'
                                             },
                                             body: JSON.stringify({
+                                                skill_name: this.skill_name,
                                                 skill_status: this.skill_status
                                             })
                                         }
