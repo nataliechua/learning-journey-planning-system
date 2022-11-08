@@ -32,8 +32,8 @@
       python -m pip install mysql-connector-python==0.29
 
 ## Frontend accounts
-- HR: id=hr; password=hr
-- Staff: id=staff; password=staff
+- HR: id=hr; password=hr, staff_id=150265
+- Staff: id=staff; password=staff, staff_id=150008
 
 
 ## API endpoints
@@ -65,6 +65,7 @@
 
 ### skills
 - (ps) Get skill by id: http://localhost:5000/skill/<int:id>
+- (val) Get skills by status: http://localhost:5000/skills/<string:status>
 - (ll) Create skill: http://localhost:5000/skill/create
 - (ps) Update skill info by id: http://localhost:5000/update_skill_info/<int:skill_id>
 
@@ -100,7 +101,6 @@
 - Update role skill: http://localhost:5000/role_skill/update
 #### skills
 - Get all skills: http://localhost:5000/skills
-- Get skills by status: http://localhost:5000/skills/<string:status>
 #### staffs
 - Get all staffs: http://localhost:5000/staffs
 

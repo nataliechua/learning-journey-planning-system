@@ -93,7 +93,7 @@
                                     <select v-model="skill_status" class="selectpicker" id="skill" data-live-search="true">
                                         <option value="" selected disabled></option>
                                         <option>Active</option>
-                                        <option>Inactive</option>
+                                        <option>Retired</option>
                                     </select>
                                 </div>
                                 <button type="button" class="btn btn-primary" @click="saveSkill">Create</button>
@@ -127,7 +127,8 @@
             data() {
                 return {
                     skill_name: "",
-                    skill_status: ""
+                    skill_status: "",
+                    toastCount: 0
                 }
             },
             methods: {
