@@ -41,7 +41,13 @@
         });
         $('select').selectpicker();
     </script>
-
+    <style>
+        @media only screen and (min-width: 1084px) {
+            .bootstrap-select {
+                width: 800px !important;
+            }
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -145,7 +151,6 @@
             },
             methods: {
                 saveRole() {
-                    console.log("SaveRole()");
                     $(async () => {
                             serviceURL = "http://localhost:5000/role/create";
                             try {
@@ -164,7 +169,6 @@
                                         }
                                     );
                                 const result = await response.json();
-                                console.log(result);
                                 // toastr configuration
                                 toastr.options = {
                                     "closeButton": true,
@@ -183,19 +187,16 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                console.log(result.code)
-
                                 if (result.code === 201) {
                                     if (this.toastCount == 0) {
                                         // success 
-                                        // console.log("created successfully")
                                         toastr.success("Created successfully");
                                         this.toastCount += 1;
                                     } 
 
-                                    setInterval(function doThisAfterFourSeconds() {
+                                    setInterval(function doThisAfterEightSeconds() {
                                         location.href = './HRviewALlRoles.html';
-                                    }, 400);
+                                    }, 800);
 
                                     
                                 } else if (result.code == 500) {
@@ -210,7 +211,6 @@
                             } catch (error) {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
-                                console.log(error.message())
                                 toastr.error("An error has occurred. Please try again");
                             } // error
                         });

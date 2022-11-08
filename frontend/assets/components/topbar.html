@@ -57,10 +57,7 @@
         },
         created() { // created is a hook that executes as soon as Vue instance is created
             // check if there's session
-            // console.log("nav's user id: " + getCookie('user_id'))
-            // console.log("navbar.html: getCookie('username') -> " ,getCookie('username'));
-            // console.log("navbar.html: getCookie('user_email') -> ", getCookie('user_email'));
-            
+
             // check credentials  
             if (getCookie('user_id') == null) {
                 this.loggedin = false;
