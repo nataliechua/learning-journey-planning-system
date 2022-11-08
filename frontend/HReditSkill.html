@@ -46,6 +46,13 @@
         var skillname = "Teamwork";
         var skillstatus = "Active";
     </script>
+    <style>
+        @media only screen and (min-width: 1084px) {
+            .bootstrap-select {
+                width: 800px !important;
+            }
+        }
+    </style>
 
 </head>
 
@@ -95,7 +102,7 @@
                                 <select class="selectpicker" id="status" data-live-search="true" v-model="skill_status">
                                     <option value="" selected disabled></option>
                                     <option value="Active">Active</option>
-                                    <option value="Inactive">Inactive</option>
+                                    <option value="Retired">Retired</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn btn-primary" @click="save_skill()" >Save</button>
@@ -149,23 +156,18 @@
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(response);
                             if (data.code === 404) {
                                 // no skill in db
                                 location.href = './HRviewALlSkills.html';
                             } else {
                                 this.skill_name = data.data.skill_name;
                                 this.skill_status = data.data.skill_status;
-                                console.log(this.skill_name);
-                                console.log(this.skill_status);
                                 this.refreshSelectDropDown();
                             }
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
-                            console.log(this.message + error);
-
                         });
                 },
                 save_skill() {
@@ -173,10 +175,6 @@
                             serviceURL = "http://localhost:5000/update_skill_info/"+this.skill_id;
                             try {
 
-                                console.log("result: " +JSON.stringify({
-                                                skill_name: this.skill_name,
-                                                skill_status: this.skill_status
-                                            }));
                                 const response =
                                     await fetch(
                                         serviceURL,
@@ -217,9 +215,9 @@
                                         this.toastCount += 1;
                                     } 
 
-                                    setInterval(function doThisAfterFourSeconds() {
+                                    setInterval(function doThisAfterEightSeconds() {
                                         location.href = './HRviewALlSkills.html';
-                                    }, 400);
+                                    }, 800);
 
                                     
                                 } else if (result.code == 500) {
@@ -272,7 +270,6 @@
                 const queryString = window.location.search;
                 const urlParams = new URLSearchParams(queryString);
                 this.skill_id = urlParams.get('skill_id');
-                console.log("this.skill_id: " + this.skill_id);
                 this.get_skill(this.skill_id);
             }
         });
@@ -295,7 +292,51 @@
 
         const vm = app.mount('#wrapper');
     </script>
-
+    <script>
+        !(function (l) {
+            "use strict";
+            l("#sidebarToggle, #topbar").on("click", function (e) {
+                l("body").toggleClass("sidebar-toggled"),
+                l(".sidebar").toggleClass("toggled"),
+                l(".sidebar").hasClass("toggled") &&
+                    l(".sidebar .collapse").collapse("hide");
+            }),
+                l(window).resize(function () {
+                l(window).width() < 768 && l(".sidebar .collapse").collapse("hide"),
+                    l(window).width() < 480 &&
+                    !l(".sidebar").hasClass("toggled") &&
+                    (l("body").addClass("sidebar-toggled"),
+                    l(".sidebar").addClass("toggled"),
+                    l(".sidebar .collapse").collapse("hide"));
+                }),
+                l("body.fixed-nav .sidebar").on(
+                "mousewheel DOMMouseScroll wheel",
+                function (e) {
+                    var o;
+                    768 < l(window).width() &&
+                    ((o = (o = e.originalEvent).wheelDelta || -o.detail),
+                    (this.scrollTop += 30 * (o < 0 ? 1 : -1)),
+                    e.preventDefault());
+                }
+                ),
+                l(document).on("scroll", function () {
+                100 < l(this).scrollTop()
+                    ? l(".scroll-to-top").fadeIn()
+                    : l(".scroll-to-top").fadeOut();
+                }),
+                l(document).on("click", "a.scroll-to-top", function (e) {
+                var o = l(this);
+                l("html, body")
+                    .stop()
+                    .animate(
+                    { scrollTop: l(o.attr("href")).offset().top },
+                    1e3,
+                    "easeInOutExpo"
+                    ),
+                    e.preventDefault();
+                });
+            })(jQuery);
+    </script>
 </body>
 
 </html>

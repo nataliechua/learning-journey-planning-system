@@ -41,7 +41,13 @@
         });
         $('select').selectpicker();
     </script>
-
+    <style>
+        @media only screen and (min-width: 1084px) {
+            .bootstrap-select {
+                width: 800px !important;
+            }
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -94,33 +100,21 @@
                                     <div class="form-group">
                                         <a id="add_row" class="btn btn-danger float-right" v-if="skillAndCourses.length>1" @click="removeSkill(index)">Remove</a>
                                         <a id="add_row" class="btn btn-primary float-right mr-2" v-if="index==0" @click="addSkill">Add a Skill/Courses</a>
-                                        <label for="skill">Skill</label> &nbsp;
-                                        <a href="#" data-toggle="tooltip" title="Skill Description">
-                                            <i class="fa fa-question-circle"></i>
-                                        </a>
+                                        <label for="skill">Skill</label>
                                         <br>
-                                        <!-- <p>{{ item.skill }}</p> -->
                                         <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
                                             <option value="" disabled></option>
-                                            <option v-for="skill in availableSkills" :value="skill.skill_id">{{skill.skill_name}}</option>
-                                            <!-- <option>Skill 1</option>
-                                            <option>Skill 2</option>
-                                            <option>Skill 3</option>
-                                            <option>Skill 4</option> -->
+                                            <option v-for="skill in availableSkills" :disabled="dropdownSelectedSkill.indexOf(skill.skill_id) > -1 && !(dropdownSelectedSkill[index] == skill.skill_id)" :value="skill.skill_id">{{skill.skill_name}}</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="courses">Course</label>&nbsp;
-                                        <a href="#" data-toggle="tooltip" title="Course Description">
-                                            <i class="fa fa-question-circle"></i>
-                                        </a>
+                                        <label for="courses">Course</label>
                                         <br>
                                         <select v-model="item.course_ids" 
                                             class="selectpicker" 
                                             :name="`skillAndCourses[${index}][courses_ids]`" 
                                             :id="`courses${index}`" 
                                             multiple data-live-search="true" 
-                                            @change="checkCourseDisabled(index)"
                                             disabled>
                                             <optionvalue="" disabled></option>
                                             <option v-for="course in availableCourses[`${index}`]" :value="course.course_id">{{course.course_name}}</option>
@@ -170,7 +164,8 @@
                 availableCourses: [],
                 skillId: "",
                 staffId: "",
-                toastCount: 0
+                toastCount: 0,
+                dropdownSelectedSkill: []
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
@@ -312,6 +307,7 @@
             },
             removeSkill(index) {
                 this.skillAndCourses.splice(index, 1);
+                this.dropdownSelectedSkill.splice(index, 1);
                 this.refreshSelectDropDown();
             },
             changeRole() {
@@ -321,30 +317,23 @@
                         course_ids: [""]
                     }
                 ];
-                this.refreshSelectDropDown();
+                this.dropdownSelectedSkill = [];
+                
                 $("#courses0").prop('disabled', true);
                 this.getSkillsBasedOnRoleSelected();
+                this.refreshSelectDropDown();
             },
             changeSkill(index, skillId) {
                 // populate courses frm db
                 // unhide courses
+                this.dropdownSelectedSkill[index] = skillId;
                 this.availableCourses[index] = [];
                 this.skillId = skillId;
                 this.skillAndCourses[index].course_ids = [""];
                 $("#courses"+index).prop('disabled', false);
-                this.refreshSelectDropDown();
+                
                 this.getCoursesBasedOnSkillSelected(index);
-            },
-            checkCourseDisabled(index) {
-
-                let availableCoursesLength = this.availableCourses[index].length;
-                let selectedCoursesLength = this.skillAndCourses[index].course_ids.length;
-
-                if (availableCoursesLength == selectedCoursesLength) {
-                    $("#courses"+index).prop('disabled', true);
-                    this.refreshSelectDropDown();
-                }
-
+                this.refreshSelectDropDown();
             },
             refreshSelectDropDown() {
                 setTimeout(() => {
