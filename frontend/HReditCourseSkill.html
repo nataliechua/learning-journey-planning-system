@@ -30,6 +30,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
     <!-- VueJS -->
     <script src="https://unpkg.com/vue@next"></script>
+    <!--Toastr-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
         $(function () {
             $("#sidebar").load("./assets/components/sidebar.html");
@@ -161,7 +164,8 @@
 
                     updateLoad: false,
                     updateErr: false,
-                    updateErrMsg: ""
+                    updateErrMsg: "",
+                    toastCount: 0
                 }
             },
             methods: {
@@ -231,23 +235,50 @@
                                     }
                                 );
                                 const result = await response.json();
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
+
                                 if (result.code === 201) {
+                                    if (this.toastCount == 0) {
+                                        // this.showAlertBox("success");
+                                        // success 
+                                        toastr.success("Updated successfully");
+                                        this.toastCount += 1;
+                                    }
                                     // success case
                                     this.updateLoad = false;
                                     this.updateErr = false;
-                                    this.showAlertBox("success");
+                                    setInterval(function doThisAfterEightSeconds() {
+                                        location.href = './HRviewAllCourses.html';
+                                    }, 800);
 
                                 } else if (result.code == 500) {
                                     this.updateErr = true;
                                     this.updateLoad = false;
-                                    this.updateMsg = result.message;
-                                    this.showAlertBox("failed");
+                                    // this.updateMsg = result.message;
+                                    // this.showAlertBox("failed");
+                                    toastr.error("An error has occurred. Please try again");
                                 } else {
                                     // unexpected outcome, throw the error
                                     //this.showAlertBox("addFailed");
                                     this.updateErr = true;
                                     this.updateLoad = false;
-                                    this.showAlertBox("failed");
+                                    // this.showAlertBox("failed");
                                     throw response.status;
                                 }
                             } catch (error) {
@@ -255,8 +286,9 @@
                                 // service offline, etc
                                 this.updateLoad = false;
                                 this.updateErr = true;
-                                this.showAlertBox("failed");
-                                this.updateErrMsg = 'There is a problem updating records, please try again later.<br />' + error;
+                                // this.showAlertBox("failed");
+                                // this.updateErrMsg = 'There is a problem updating records, please try again later.<br />' + error;
+                                toastr.error("An error has occurred. Please try again");
                             } // error
                         });
                 },
