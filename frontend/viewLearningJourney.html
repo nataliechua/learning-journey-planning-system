@@ -63,7 +63,7 @@
                     <h1 class="h3 mb-4 text-gray-800">{{journey_name}}</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
-                            <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
+                            <li class="breadcrumb-item"><a href="index.html">Learning Journey</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{journey_name}}</li>
                         </ol>
                     </nav>
@@ -226,8 +226,9 @@
                 }
             },
             goToEditLJ() {
-                    location.href = './editLearningJourney.html?learning_journey_id=' + this.journeyId;
-                }
+                // location.href = './editLearningJourney.html?learning_journey_id=' + this.journeyId;
+                location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+            }
         },created() {
             // check credentials (check for staff)
             if (getCookie('user_type') != null) {
