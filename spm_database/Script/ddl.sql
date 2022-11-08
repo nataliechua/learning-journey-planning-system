@@ -57,7 +57,7 @@ CONSTRAINT cs_fk2 FOREIGN KEY (Skill_ID) REFERENCES SKILL(Skill_ID)
 CREATE TABLE JOURNEY
 (
 Journey_ID int auto_increment NOT NULL PRIMARY KEY,
-Journey_Name varchar(30) NOT NULL,
+Journey_Name varchar(50) NOT NULL,
 Staff_ID int NOT NULL,
 Role_ID int NOT NULL,
 CONSTRAINT journey_fk1 FOREIGN KEY (Staff_ID) REFERENCES STAFF(Staff_ID),

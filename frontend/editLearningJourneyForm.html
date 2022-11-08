@@ -71,11 +71,11 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
                             <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
-                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: {{journey_name}}</a></li>
-                            <li class="breadcrumb-item"><a href="editLearningJourney.html">Edit</a></li>
+                            <li class="breadcrumb-item"><a :href="prevUrl"> {{journey_name}}</a></li>
                             <li class="breadcrumb-item active" aria-current="page">Update courses</li>
                         </ol>
                     </nav>
+
                     <!--View Learning Journey-->
                     <div class="card">
                         <div class="card-body">
@@ -305,7 +305,8 @@
                 loading: true,
                 journeyId: "",
                 toastCount: 0,
-                dropdownSelectedSkill: []
+                dropdownSelectedSkill: [],
+                prevUrl:""
             }
         },
         created() { // created is a hook that executes as soon as Vue instance is created
@@ -327,6 +328,7 @@
                     }
                 }
             }
+
             this.getJourneyId();
             
             this.skillAndCourses.push({
@@ -346,6 +348,8 @@
                     // const learningJourneyId = urlParams.get('learning_journey_id')
                     this.journeyId = urlParams.get("learning_journey_id");
 
+                    this.prevUrl = "viewLearningJourney.html?learning_journey_id=" + this.journeyId;
+                    
                     const response =
                     fetch("http://localhost:5000/all_journey_info/"+ this.journeyId)
                         .then(response => response.json())

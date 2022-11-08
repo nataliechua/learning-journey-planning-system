@@ -174,7 +174,7 @@
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
-                            <div class="modal-body" v-text="removeModalText">{{journey_id}}</div>
+                            <div class="modal-body" v-text="removeModalText"></div>
                             <div class="modal-footer">
                                 <div v-if="deleteErr">
                                     <button class="btn btn-primary" type="button" data-dismiss="modal">Ok</button>
@@ -222,7 +222,7 @@
             data() {
                 return {
                     // journeyId: "",
-                    // removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
+                    removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
                     // disableRemoveModalButtons: false,
                     // deleteErr: false
                     journey_name:"",
