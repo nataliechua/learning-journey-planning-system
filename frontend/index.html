@@ -133,36 +133,8 @@
                         <div class="list-group-item" aria-current="true">
                             <div class="d-flex w-100 justify-content-between">
                                 <h4 class="mb-1">My Plan</h4>
-                                <!-- <small>
-                                    <button type="button" class="btn btn-outline-secondary">See All ></button>
-                                </small> -->
                             </div>
                         </div>
-                        <!-- <a v-for="(journey, index) in journeys" href="viewLearningJourney.html" class="list-group-item list-group-item-action" aria-current="true">
-                            <div class="d-flex w-100">
-                                {{journey}}
-                                {{journey.journey_completion_status}}
-                                <div class="mr-4">
-                                    <div class="progress mx-auto" data-value='50'>
-                                        <span class="progress-left">
-                                            <span class="progress-bar border-primary"></span>
-                                        </span>
-                                        <span class="progress-right">
-                                            <span class="progress-bar border-primary"></span>
-                                        </span>
-                                        <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                            <div class="h5 font-weight-bold text-primary">50%</div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div>
-                                    <h5 class="mb-1">Learning Journey 2</h5>
-                                    <p class="mb-1"><i class="fas fa-fw fa-check-circle"></i>&nbsp;Course 1</p>
-                                    <p class="mb-1"><i class="fas fa-fw fa-exclamation-circle"></i>&nbsp;Course 2</p>
-                                </div>
-                            </div>
-                        </a> -->
                         <div v-if="loading" class="list-group-item list-group-item-action">
                             <!--Spinner-->
                             <div class="d-flex justify-content-center mt-2">
@@ -287,9 +259,7 @@
                                     this.loading = false;
                                     this.errorMsg = true;
                                 } else {
-                                    this.journeys = data.data.journeys
-                                    // console.log(this.journeys);
-                                    console.log("data: " ,data.data.journeys);
+                                    this.journeys = data.data.journeys;
                                     this.loading = false;
                                     this.errorMsg = false;
                                     // initilize progress bar
@@ -301,8 +271,6 @@
                                 // service offline, etc
                                 this.loading = false;
                                 this.errorMsg = error;
-                                console.log(this.message + error);
-
                             });
                 },
                 goToViewLJ(learning_journey_id) {
@@ -351,6 +319,51 @@
             }
             return null;
         }
+    </script>
+    <script>
+        !(function (l) {
+            "use strict";
+            l("#sidebarToggle, #topbar").on("click", function (e) {
+                l("body").toggleClass("sidebar-toggled"),
+                l(".sidebar").toggleClass("toggled"),
+                l(".sidebar").hasClass("toggled") &&
+                    l(".sidebar .collapse").collapse("hide");
+            }),
+                l(window).resize(function () {
+                l(window).width() < 768 && l(".sidebar .collapse").collapse("hide"),
+                    l(window).width() < 480 &&
+                    !l(".sidebar").hasClass("toggled") &&
+                    (l("body").addClass("sidebar-toggled"),
+                    l(".sidebar").addClass("toggled"),
+                    l(".sidebar .collapse").collapse("hide"));
+                }),
+                l("body.fixed-nav .sidebar").on(
+                "mousewheel DOMMouseScroll wheel",
+                function (e) {
+                    var o;
+                    768 < l(window).width() &&
+                    ((o = (o = e.originalEvent).wheelDelta || -o.detail),
+                    (this.scrollTop += 30 * (o < 0 ? 1 : -1)),
+                    e.preventDefault());
+                }
+                ),
+                l(document).on("scroll", function () {
+                100 < l(this).scrollTop()
+                    ? l(".scroll-to-top").fadeIn()
+                    : l(".scroll-to-top").fadeOut();
+                }),
+                l(document).on("click", "a.scroll-to-top", function (e) {
+                var o = l(this);
+                l("html, body")
+                    .stop()
+                    .animate(
+                    { scrollTop: l(o.attr("href")).offset().top },
+                    1e3,
+                    "easeInOutExpo"
+                    ),
+                    e.preventDefault();
+                });
+            })(jQuery);
     </script>
 
 </body>

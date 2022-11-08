@@ -190,7 +190,6 @@
                     fetch("http://localhost:5000/all_journey_info/"+learningJourneyId)
                         .then(response => response.json())
                         .then(data => {
-                            // console.log(data);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
@@ -208,8 +207,6 @@
                             // service offline, etc
                             this.loading = false;
                             this.errorMsg = error;
-                            console.log(this.message + error);
-
                         });
 
                 function getCookie(cname) {
