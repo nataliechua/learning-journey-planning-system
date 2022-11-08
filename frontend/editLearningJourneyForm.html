@@ -123,10 +123,19 @@
                                         <td>
                                             {{course.course_completion_status}}
                                         </td>
+
                                         <td>
-                                            <button type="button" class="btn btn-primary" id="removeBtn" @click="hideRemoveBtn(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
+                                            <label id="skill_id" hidden>{{skill.skill_id}} </label>
+                                            <label id="course_id" hidden>{{course.course_id}} </label>
+                                            <label id="course_completion_status" hidden>{{course.course_completion_status}} </label>
+                                           
+                                            <button type="button" class="btn btn-danger" v-if="course.course_completion_status != 'Completed'" id="removeBtn" data-toggle="modal" data-target="#deleteModal">Remove</button>
+
+                                            <!-- @click="removeCourse(course.course_completion_status, skill.skill_id, course.course_id)" -->
+                                            
                                         </td>
                                     </tr>
+
                                     <!-- <tr>
                                         <td>Course 2</td>
                                         <td>Completed</td>
@@ -220,6 +229,31 @@
                     </div>
                 </div>
                 <!-- /.container-fluid -->
+                                <!-- Delete Confirm Modal - STARTS -->
+                                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                                aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Confirm Delete?</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body" v-text="removeModalText">{{journey_id}}</div>
+                                        <div class="modal-footer">
+                                            <div v-if="deleteErr">
+                                                <button class="btn btn-primary" type="button" data-dismiss="modal">Ok</button>
+                                            </div>
+                                            <div v-else>
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal" :disabled="disableRemoveModalButtons">Cancel</button>
+                                                <button class="btn btn-danger ml-2" type="button" @click="removeCourse()" :disabled="disableRemoveModalButtons">Remove</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Delete Confirm Modal - ENDS -->
 
             </div>
             <!-- End of Main Content -->
@@ -250,6 +284,7 @@
         data() {
             return { // hardcoded create data
                 roleId:"",
+                num_of_course: 0,
                 skillAndCourses: [],
                 existSkillAndCourses: [],
                 availableRoles: [],
@@ -262,6 +297,9 @@
                 skillId: "",
                 courseId: "",
                 staffId: "",
+                removeModalText: "Select 'Confirm' below if you are sure to remove the course.",
+                disableRemoveModalButtons: false,
+                deleteErr: false,
                 message: "There is a problem retrieving journey data, please try again later.",
                 errorMsg: false,
                 loading: true,
@@ -324,6 +362,7 @@
                                 this.roleId = data.data.role.role_id;
                                 this.loading = false;
                                 this.errorMsg = false;
+                                this.num_of_course = data.data.skills.length;
                                 // this.exist_skill_id = data.data.skills[0].skill_id;
                                 // console.log(data.data.skills[0].skill_courses[0].course_id);
                                 // console.log(data.data.skills[0].skill_courses[0]);
@@ -376,7 +415,6 @@
                             this.loading = false;
                             this.errorMsg = error;
                             console.log(this.message + error);
-
                         });
                         
             },
@@ -560,7 +598,7 @@
                             // setInterval(function doThisAfterFourSeconds() {
                             //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
                             // }, 400);
-                            // location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                            location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
                         } else if (result.code == 500) {
                             // this.loading = false
                             // this.err = true
@@ -584,81 +622,89 @@
                     } // error
                 });
             },
-            hideRemoveBtn(course_completion_status, skill_id, course_id) {
+            removeCourse() {
                 // let element = document.getElementById("removeBtn");
                 // let hidden = element.getAttribute("hidden");
+                let course_completion_status = document.getElementById("course_completion_status").innerText;
+                let course_id = document.getElementById("course_id").innerText;
+                let skill_id = document.getElementById("skill_id").innerText;
 
-                if (course_completion_status != "Completed") {
-            
-                    this.disableRemoveModalButtons = true;
-                    this.removeModalText = "Processing your delete request... Please Wait"
-                    $(async () => {
-                        // Change serviceURL to your own
-                        var serviceURL = "http://localhost:5000/remove_journey_skill_course/" + this.journeyId + "/" + skill_id + "/" + course_id;
-                        try {
-                            const response =
-                                await fetch(
-                                    serviceURL, 
-                                    { 
-                                        method: 'GET',
-                                        headers: {'Accept': 'application/json', 'Content-Type': 'application/json'} 
-                                    }
-                                );
-                            const result = await response.json();
-                            // toastr configuration
-                            // toastr.options = {
-                            //         "closeButton": true,
-                            //         "newestOnTop": false,
-                            //         "progressBar": true,
-                            //         "positionClass": "toast-bottom-right",
-                            //         "preventDuplicates": false,
-                            //         "onclick": null,
-                            //         "showDuration": "300",
-                            //         "hideDuration": "1000",
-                            //         "timeOut": "5000",
-                            //         "extendedTimeOut": "1000",
-                            //         "showEasing": "swing",
-                            //         "hideEasing": "linear",
-                            //         "showMethod": "fadeIn",
-                            //         "hideMethod": "fadeOut"
-                            //     }
-                            if (result.code === 202) {
-                                // success case
-                                // if (this.toastCount == 0) {
+                if (this.num_of_course <= 1) {
+                    toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
+                } else {
+
+                    if (course_completion_status != "Completed") {
+
+                        this.disableRemoveModalButtons = true;
+                        this.removeModalText = "Processing your delete request... Please Wait"
+                        $(async () => {
+                            // Change serviceURL to your own
+                            var serviceURL = "http://localhost:5000/remove_journey_skill_course/" + this.journeyId + "/" + skill_id + "/" + course_id;
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL,
+                                        {
+                                            method: 'GET',
+                                            headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
+                                        }
+                                    );
+                                const result = await response.json();
+                                // toastr configuration
+                                // toastr.options = {
+                                //         "closeButton": true,
+                                //         "newestOnTop": false,
+                                //         "progressBar": true,
+                                //         "positionClass": "toast-bottom-right",
+                                //         "preventDuplicates": false,
+                                //         "onclick": null,
+                                //         "showDuration": "300",
+                                //         "hideDuration": "1000",
+                                //         "timeOut": "5000",
+                                //         "extendedTimeOut": "1000",
+                                //         "showEasing": "swing",
+                                //         "hideEasing": "linear",
+                                //         "showMethod": "fadeIn",
+                                //         "hideMethod": "fadeOut"
+                                //     }
+                                if (result.code === 202) {
+                                    // success case
+                                    // if (this.toastCount == 0) {
                                     // success 
                                     // console.log("created successfully")
                                     // toastr.success("Removed course successfully");
                                     // this.toastCount += 1;
-                                // }
-                                location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId; 
+                                    // }
+                                    location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
 
-                                // setInterval(function doThisAfterFourSeconds() {
-                                //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
-                                // }, 400);
-                                
-                            } else if (result.code == 404) {
-                                // No records
+                                    // setInterval(function doThisAfterFourSeconds() {
+                                    //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                                    // }, 400);
+
+                                } else if (result.code == 404) {
+                                    // No records
+                                    this.deleteErr = true;
+                                    this.removeModalText = result.message;
+                                    // toastr.error("An error has occurred. Please try again");
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    this.deleteErr = true;
+                                    // toastr.error("An error has occurred. Please try again");
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
                                 this.deleteErr = true;
-                                this.removeModalText = result.message;
+                                this.removeModalText = 'There is a problem deleting the record, please try again later.<br />' + error;
                                 // toastr.error("An error has occurred. Please try again");
-                            } else {
-                                // unexpected outcome, throw the error
-                                this.deleteErr = true;
-                                // toastr.error("An error has occurred. Please try again");
-                                throw response.status;
-                            }
-                        } catch (error) {
-                            // Errors when calling the service; such as network error, 
-                            // service offline, etc
-                            this.deleteErr = true;
-                            this.removeModalText = 'There is a problem deleting the record, please try again later.<br />' + error;
-                            // toastr.error("An error has occurred. Please try again");
-                        } // error
-                    });
-                } else {
-                    // alert("Completed course can't be removed.");
-                    toastr.error("Completed course can't be removed.");
-                    // element.setAttribute("hidden", "hidden");
+                            } // error
+                        });
+                    } else {
+                        // alert("Completed course can't be removed.");
+                        toastr.error("Completed course can't be removed.");
+                        // element.setAttribute("hidden", "hidden");
+                    }
                 }
             }
         },
