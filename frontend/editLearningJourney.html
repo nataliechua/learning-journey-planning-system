@@ -300,11 +300,15 @@
                                     }
                                 );
                             const result = await response.json();
-                            if (result.code === 202) {
+                            if (response.status === 202) {
                                 // success case
                                 location.replace("./learningJourney.html");
                                 
-                            } else if (result.code == 404) {
+                            } else if (response.status == 404) {
+                                // No records
+                                this.deleteErr = true;
+                                this.removeModalText = result.message;
+                            }else if (response.status == 500) {
                                 // No records
                                 this.deleteErr = true;
                                 this.removeModalText = result.message;

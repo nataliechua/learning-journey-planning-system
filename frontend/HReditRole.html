@@ -201,7 +201,8 @@
                                     }
                                 );
                             const result = await response.json();
-                            if (result.code === 200) {
+                            
+                            if (response.status === 200) {
                                 // success case
                                 this.loading = false;
                                 this.roleDetails = result.data;
@@ -210,8 +211,13 @@
                                 this.err = false;
                                 this.refreshSelectDropDown();
                                 
-                            } else if (result.code == 404) {
+                            } else if (response.status == 404) {
                                 // No records
+                                this.loading = false;
+                                this.err = true;
+                                this.errMsg = result.message;
+                            } else if (response.status == 500) {
+                                console.log("i;mghere")
                                 this.loading = false;
                                 this.err = true;
                                 this.errMsg = result.message;
@@ -271,7 +277,7 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                if (result.code === 201) {
+                                if (response.status === 201) {
                                     if (this.toastCount == 0) {
                                         // success case
                                         // this.updateLoad = false;
@@ -287,12 +293,18 @@
                                         location.href = './HRviewAllCourses.html';
                                     }, 800);
 
-                                } else if (result.code == 500) {
+                                } else if (response.status == 500) {
                                     this.updateErr = true;
                                     this.updateLoad = false;
                                     // this.updateMsg = result.message;
                                     // this.showAlertBox("failed");
-                                    toastr.error("An error has occurred. Please try again");
+                                    toastr.error(result.message);
+                                }else if (response.status == 500) {
+                                    this.updateErr = true;
+                                    this.updateLoad = false;
+                                    // this.updateMsg = result.message;
+                                    // this.showAlertBox("failed");
+                                    toastr.error(result.message);
                                 } else {
                                     // unexpected outcome, throw the error
                                     this.updateErr = true;
