@@ -633,9 +633,9 @@
                 let course_id = document.getElementById("course_id").innerText;
                 let skill_id = document.getElementById("skill_id").innerText;
 
-                if (this.num_of_course <= 1) {
-                    toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
-                } else {
+                // if (this.num_of_course <= 1) {
+                //     toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
+                // } else {
 
                     if (course_completion_status != "Completed") {
 
@@ -709,7 +709,7 @@
                         toastr.error("Completed course can't be removed.");
                         // element.setAttribute("hidden", "hidden");
                     }
-                }
+                // }
             }
         },
         computed: {
