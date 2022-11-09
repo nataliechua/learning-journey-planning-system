@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -125,48 +124,14 @@
                                         </td>
 
                                         <td>
-                                            <label id="skill_id" hidden>{{skill.skill_id}} </label>
+                                            <!-- <label id="skill_id" hidden>{{skill.skill_id}} </label>
                                             <label id="course_id" hidden>{{course.course_id}} </label>
                                             <label id="course_completion_status" hidden>{{course.course_completion_status}} </label>
-                                           
-                                            <button type="button" class="btn btn-danger" v-if="course.course_completion_status != 'Completed'" id="removeBtn" data-toggle="modal" data-target="#deleteModal">Remove</button>
+                                            -->
+                                            <button type="button" class="btn btn-danger" v-if="course.course_completion_status != 'Completed'" id="removeBtn" data-toggle="modal" data-target="#deleteModal" @click="passData(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
 
-                                            <!-- @click="removeCourse(course.course_completion_status, skill.skill_id, course.course_id)" -->
-                                            
                                         </td>
                                     </tr>
-
-                                    <!-- <tr>
-                                        <td>Course 2</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2" class="align-middle">Skill 2</td>
-                                        <td rowspan="2" class="align-middle">Completed</td>
-                                        <td>Course 1</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Course 2</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td rowspan="2" class="align-middle">Skill 3</td>
-                                        <td rowspan="2" class="align-middle">In progress</td>
-                                        <td>Course 1</td>
-                                        <td>Completed</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Course 2</td>
-                                        <td>In progress （50%）</td>
-                                        <td>
-                                            <button type="button" class="btn btn-primary">Remove</button>
-                                        </td>
-                                    </tr> -->
                                 </tbody>
                             </table>
                             <br>
@@ -189,14 +154,6 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <!-- <p>{{ item.skill }}</p> -->
-                                        <!-- <select v-model="item.skill" @change="changeSkill(index)" class="selectpicker" :name="`skillAndCourses[${index}][skill]`" data-live-search="true">
-                                            <option value="" disabled></option>
-                                            <option>Skill 1</option>
-                                            <option>Skill 2</option>
-                                            <option>Skill 3</option>
-                                            <option>Skill 4</option>
-                                        </select> -->
                                         <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
                                             <option value="" disabled></option>
                                             <option v-for="skill in availableSkills" :disabled="dropdownSelectedSkill.indexOf(skill.skill_id) > -1 && !(dropdownSelectedSkill[index] == skill.skill_id)" :value="skill.skill_id">{{skill.skill_name}}</option>
@@ -208,13 +165,6 @@
                                             <i class="fa fa-question-circle"></i>
                                         </a>
                                         <br>
-                                        <!-- <select v-model="item.courses" class="selectpicker" :name="`skillAndCourses[${index}][courses]`" :id="`courses${index}`" multiple data-live-search="true" disabled>
-                                            <option value="" disabled></option>
-                                            <option>Course 1</option>
-                                            <option>Course 2</option>
-                                            <option>Course 3</option>
-                                            <option>Course 4</option>
-                                        </select> -->
                                         <select v-model="item.course_ids" class="selectpicker" :name="`skillAndCourses[${index}][courses_ids]`"
                                             :id="`courses${index}`" multiple data-live-search="true" @change="checkCourseDisabled(index)" disabled>
                                             <optionvalue="" disabled>
@@ -284,18 +234,17 @@
         data() {
             return { // hardcoded create data
                 roleId:"",
-                num_of_course: 0,
+                selectedCourseId: "",
+                selectedSkillId: "",
+                selectedCourseStatus: "",
+                num_of_skill: 0,
                 skillAndCourses: [],
                 existSkillAndCourses: [],
-                availableRoles: [],
                 availableSkills: [],
                 availableCourses: [],
                 journey_name:"",
                 skills:[],
-                exist_course_ids: [],
-                exist_skill_id: "",
                 skillId: "",
-                courseId: "",
                 staffId: "",
                 removeModalText: "Select 'Confirm' below if you are sure to remove the course.",
                 disableRemoveModalButtons: false,
@@ -337,15 +286,12 @@
             });
 
             this.refreshSelectDropDown();
-            
             $('[data-toggle="tooltip"]').tooltip();  
         },
         methods: {
             getJourneyId(){
-                    // let params = (new URL(document.location)).searchParams;
                     const queryString = window.location.search;
                     const urlParams = new URLSearchParams(queryString);
-                    // const learningJourneyId = urlParams.get('learning_journey_id')
                     this.journeyId = urlParams.get("learning_journey_id");
 
                     this.prevUrl = "viewLearningJourney.html?learning_journey_id=" + this.journeyId;
@@ -354,7 +300,6 @@
                     fetch("http://localhost:5000/all_journey_info/"+ this.journeyId)
                         .then(response => response.json())
                         .then(data => {
-                            // console.log(data);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
@@ -366,10 +311,7 @@
                                 this.roleId = data.data.role.role_id;
                                 this.loading = false;
                                 this.errorMsg = false;
-                                this.num_of_course = data.data.skills.length;
-                                // this.exist_skill_id = data.data.skills[0].skill_id;
-                                // console.log(data.data.skills[0].skill_courses[0].course_id);
-                                // console.log(data.data.skills[0].skill_courses[0]);
+                                this.num_of_skill = data.data.skills.length;
                                 
                                 for (let i = 0; i < data.data.skills.length; i++) {
                                     exist_course_ids = [];
@@ -382,36 +324,7 @@
                                     });
                                 }
                             }
-
                             this.getSkillsBasedOnRoleSelected(this.roleId);
-                            // console.log(this.existSkillAndCourses);
-                            // for (let i = 0; i < this.existSkillAndCourses.length; i++) {
-                            //     // for (let j = 0; j < this.existSkillAndCourses[i].course_ids; j++) {
-                            //     //     this.exist_course_ids.push(this.existSkillAndCourses[i].course_ids[j]);
-                            //     //     console.log(this.existSkillAndCourses[i].course_ids[j]);
-                            //     // }
-                            //     this.skillAndCourses.push({
-                            //         skill_id: this.existSkillAndCourses[i].skill_id,
-                            //         course_ids: this.existSkillAndCourses[i].course_ids
-                            //     });
-                            // }
-                            // console.log(this.skillAndCourses);
-
-                            // console.log(this.existSkillAndCourses);
-                            // for (let i = 0; i < this.existSkillAndCourses.length; i++) {
-                            //     for (let j = 0; j < this.existSkillAndCourses[i].course_ids; j++) {
-                            //         this.exist_course_ids.push(this.existSkillAndCourses[i].course_ids[j]);
-                            //     }
-                            //     this.skillAndCourses.push({
-                            //         skill_id: this.existSkillAndCourses[i],
-                            //         course_ids: this.exist_course_ids
-                            //     });
-                            // };
-                            // for (let i = 0; i < this.existSkillAndCourses.length; i++) {
-                            //     this.skillAndCourses.push(this.existSkillAndCourses[i]);
-                            // }
-                            
-                            // console.log(this.skillAndCourses);
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
@@ -425,7 +338,6 @@
             getSkillsBasedOnRoleSelected(role_id) {
                 $(async () => {
                     // Change serviceURL to your own
-                    //http://localhost:5000/active_skills_by_role/1
                     var serviceURL = "http://localhost:5000/active_skills_by_role/" + role_id;
                     try {
                         const response =
@@ -470,7 +382,6 @@
                         if (result.code === 200) {
                             // success case
                             this.availableCourses[index] = result.data.courses;
-                            //this.availableCourses.push(result.data.courses);
                             this.refreshSelectDropDown();
                         } else if (result.code == 404) {
                             // No Such Roles Found
@@ -541,10 +452,10 @@
                     // Change serviceURL to your own
                     var serviceURL = "http://localhost:5000/update_journey_info";
 
-                    var dup = this.skillAndCourses;
+                    var dup_skillAndCourses = this.skillAndCourses;
 
                     for (let i = 0; i < this.existSkillAndCourses.length; i++) {
-                        dup.push({
+                        dup_skillAndCourses.push({
                             skill_id: this.existSkillAndCourses[i].skill_id,
                             course_ids: this.existSkillAndCourses[i].course_ids
                         });
@@ -563,10 +474,7 @@
                                         
                                         journey_id: this.journeyId,
                                         journey_name: this.journey_name,
-                                        skills: dup 
-                                            // skill_id: this.skill_id,
-                                            // course_id: this.course_id
-                                        
+                                        skills: dup_skillAndCourses 
                                     })
                                 }
                             );
@@ -626,18 +534,24 @@
                     } // error
                 });
             },
+            passData(course_completion_status, skill_id, course_id) {
+                this.selectedCourseStatus = course_completion_status;
+                this.selectedSkillId = skill_id;
+                this.selectedCourseId = course_id;
+            },
             removeCourse() {
-                // let element = document.getElementById("removeBtn");
-                // let hidden = element.getAttribute("hidden");
-                let course_completion_status = document.getElementById("course_completion_status").innerText;
-                let course_id = document.getElementById("course_id").innerText;
-                let skill_id = document.getElementById("skill_id").innerText;
+                let course_completion_status = this.selectedCourseStatus;
+                let course_id = this.selectedCourseId;
+                let skill_id = this.selectedSkillId;
 
-                // if (this.num_of_course <= 1) {
-                //     toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
-                // } else {
+                    if (this.num_of_skill == 1 && this.skills[0].skill_courses.length == 1) {
 
-                    if (course_completion_status != "Completed") {
+                        toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
+                        
+                    } else {
+                        // alert("Completed course can't be removed.");
+                        // toastr.error("Course cannot be removed. Each learning journey must have at least one course.");
+                        // element.setAttribute("hidden", "hidden");
 
                         this.disableRemoveModalButtons = true;
                         this.removeModalText = "Processing your delete request... Please Wait"
@@ -704,10 +618,6 @@
                                 // toastr.error("An error has occurred. Please try again");
                             } // error
                         });
-                    } else {
-                        // alert("Completed course can't be removed.");
-                        toastr.error("Completed course can't be removed.");
-                        // element.setAttribute("hidden", "hidden");
                     }
                 // }
             }
