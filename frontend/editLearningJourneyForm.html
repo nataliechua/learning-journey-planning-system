@@ -40,7 +40,13 @@
         });
         $('select').selectpicker();
     </script>
-
+    <style>
+        @media only screen and (min-width: 1084px) {
+            .bootstrap-select {
+                width: 800px !important;
+            }
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -149,10 +155,7 @@
                                     <div class="form-group">
                                         <a id="add_row" class="btn btn-danger float-right" v-if="skillAndCourses.length>1" @click="removeSkill(index)">Remove</a>
                                         <a id="add_row" class="btn btn-primary float-right mr-2" v-if="index==0" @click="addSkill">Add a Skill/Courses</a>
-                                        <label for="skill">Skill</label> &nbsp;
-                                        <a href="#" data-toggle="tooltip" title="Skill Description">
-                                            <i class="fa fa-question-circle"></i>
-                                        </a>
+                                        <label for="skill">Skill</label>
                                         <br>
                                         <select v-model="item.skill_id" @change="changeSkill(index, item.skill_id)" class="selectpicker" :name="`skillAndCourses[${index}][skill_id]`" data-live-search="true">
                                             <option value="" disabled></option>
@@ -160,10 +163,7 @@
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="courses">Course</label> &nbsp;
-                                        <a href="#" data-toggle="tooltip" title="Course Description">
-                                            <i class="fa fa-question-circle"></i>
-                                        </a>
+                                        <label for="courses">Course</label>
                                         <br>
                                         <select v-model="item.course_ids" class="selectpicker" :name="`skillAndCourses[${index}][courses_ids]`"
                                             :id="`courses${index}`" multiple data-live-search="true" @change="checkCourseDisabled(index)" disabled>
@@ -294,7 +294,7 @@
                     const urlParams = new URLSearchParams(queryString);
                     this.journeyId = urlParams.get("learning_journey_id");
 
-                    this.prevUrl = "viewLearningJourney.html?learning_journey_id=" + this.journeyId;
+                    this.prevUrl = "editLearningJourney.html?learning_journey_id=" + this.journeyId;
                     
                     const response =
                     fetch("http://localhost:5000/all_journey_info/"+ this.journeyId)
