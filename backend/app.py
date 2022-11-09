@@ -764,6 +764,50 @@ def update_journey_info():
                 "message": "Journey name should not be empty or just contain white spaces."
             }
         ), 500
+    
+    if data["skills"] == [
+                {
+                    "skill_id": "",
+                    "course_ids": [""]
+                }
+            ]:
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "A Journey should at least have one skill."
+            }
+        ), 500 
+    
+    if len(data["skills"])==1 and data["skills"][0]["course_ids"]==[""]:
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "A Journey should at least have one course."
+            }
+        ), 500 
+
+    for skill in data["skills"]:
+        if not all(key in skill.keys() for 
+               key in ("skill_id","course_ids")):
+            return jsonify({
+                "message": "Invalid JSON input. Skill id and corresponding courses ids should be provided in the JSON object."
+            }), 500
+        
+        if skill["skill_id"] == None:
+            return jsonify(
+            {   
+                "code": 500,
+                "message": "A Skill must be chosen for each skill courses pair."
+            }
+        ), 500
+
+        if skill["course_ids"] == None or skill["course_ids"] == [] or skill["course_ids"] == [""]:
+            return jsonify(
+            {   
+                "code": 500,
+                "message": "At least a course must be chosen for each skill courses pair."
+            }
+        ), 500 
 
     journey_id=data["journey_id"]
     skills=data["skills"]
@@ -1027,6 +1071,17 @@ def update_role_info():
     role_status=data["role_status"]
     skill_ids=data["skill_ids"]
 
+    existings = Role.query.filter_by(role_name=role_name)
+    if existings:
+        for existing in existings:
+            if existing.to_dict()["role_id"]!=role_id:
+                return jsonify(
+                    {   
+                        "code": 500,
+                        "message": "Cannot have duplicated Roles."
+                    }
+                ), 500
+
     try:
         role = Role.query.filter_by(role_id=role_id).first()
         role.role_name = role_name
@@ -1176,14 +1231,16 @@ def update_skill_info(skill_id):
         skill.skill_status = data['skill_status']
         skill.skill_name = data['skill_name']
 
-        existing = Skill.query.filter_by(skill_name=data['skill_name'],skill_status=data['skill_status']).first()
-        if existing!=None and existing.to_dict()["skill_id"]!=skill_id:
-            return jsonify(
-                {   
-                    "data": data,
-                    "message": "Cannot have duplicated skills!"
-                }
-            ), 500
+        existings = Skill.query.filter_by(skill_name=data['skill_name'],skill_status=data['skill_status'])
+        if existings:
+            for existing in existings:
+                if existing.to_dict()["skill_id"]!=skill_id:
+                    return jsonify(
+                        {   
+                            "code": 500,
+                            "message": "Cannot have duplicated skills."
+                        }
+                    ), 500
 
         db.session.commit()
         return jsonify(

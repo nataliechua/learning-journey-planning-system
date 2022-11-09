@@ -309,6 +309,29 @@ class TestUpdateRoles(TestApp):
             },
             "message": "Role info updated successfully."
         })
+
+    def test_update_role_by_adding_skills(self):
+        request_body = {
+            "role_id": 1,
+            "role_name": "Data Analyst",
+            "role_status": "Active",
+            "skill_ids": [10,11,12,4]
+        }
+
+        response = self.client.post("/role_info/update",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "role_id": request_body["role_id"],
+                "role_name": "Data Analyst",
+                "role_status": "Active",
+                "skill_ids": [10,11,12,4]
+            },
+            "message": "Role info updated successfully."
+        })
     
     def test_update_role_by_changing_role_status(self):
         request_body = {
@@ -333,8 +356,69 @@ class TestUpdateRoles(TestApp):
             "message": "Role info updated successfully."
         })
     
-    # change role name
-    # update by add skills
+    def test_update_role_by_changing_role_status_and_role_name(self):
+        request_body = {
+            "role_id": 2,
+            "role_name": "Data Consultance",
+            "role_status": "Retired",
+            "skill_ids": [2] 
+        }
+
+        response = self.client.post("/role_info/update",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "role_id": request_body["role_id"],
+                "role_name": "Data Consultance",
+                "role_status": "Retired",
+                "skill_ids": [2]
+            },
+            "message": "Role info updated successfully."
+        })
+    
+    def test_update_role_by_changing_role_name(self):
+        request_body = {
+            "role_id": 1,
+            "role_name": "Electrical Engineer",
+            "role_status": "Active",
+            "skill_ids": [10,11,12] 
+        }
+
+        response = self.client.post("/role_info/update",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "role_id": request_body["role_id"],
+                "role_name": "Electrical Engineer",
+                "role_status": "Active",
+                "skill_ids": [10,11,12]
+            },
+            "message": "Role info updated successfully."
+        })
+    
+    def test_update_role_by_changing_to_existing_role_name(self):
+        request_body = {
+            "role_id": 1,
+            "role_name": "Data Consultance",
+            "role_status": "Active",
+            "skill_ids": [10,11,12] 
+        }
+
+        response = self.client.post("/role_info/update",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json,{   
+                        "code": 500,
+                        "message": "Cannot have duplicated Roles."
+                    })
+    
     # updating role to exsiting role -> cannot do this
 
 #########################
@@ -360,9 +444,43 @@ class TestUpdateSkills(TestApp):
             },
             "message": "Skill info for skill id = 7 updated successfully."
         })
+    
+    def test_update_skill_by_changing_skill_name(self):
+        request_body = {
+            "skill_name":"Team Building",
+            "skill_status":"Active"
+        }
 
-    # change skill name
-    # change to existing skills, should not do this
+        response = self.client.put("/update_skill_info/1",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 200,
+            "data": {
+                "skill_id": 1,
+                "skill_name": "Team Building",
+                "skill_status": "Active"
+            },
+            "message": "Skill info for skill id = 1 updated successfully."
+    })
+
+    def test_update_skill_by_changing_to_existing_skill_name(self):
+        request_body = {
+            "skill_name":"Creativity",
+            "skill_status":"Active"
+        }
+
+        response = self.client.put("/update_skill_info/10",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {   
+                            "code": 500,
+                            "message": "Cannot have duplicated skills."
+                        })
+
+
 
 #########################
 #LJT16 (Select Skills When Creating LJ)
@@ -575,6 +693,230 @@ class TestSelectARoleWhenCreatingLJ(TestApp):
         self.assertEqual(response.json, {
             "code":500,
             "message": 'A Journey should at least have one role.'
+        })
+
+    def test_create_journey_with_a_role(self):
+        request_body = {
+                "journey_name": "Data Analyst LJ",
+                "staff_id": "150008",
+                "role_id": "1",
+                "skills": [
+                {
+                "skill_id": 11,
+                "course_ids": [
+                    "COR001"
+                ]
+                }
+            ]
+        }
+
+        response = self.client.post("/journey/create",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "journey": {
+                    "journey_name": "Data Analyst LJ",
+                    "role_id": "1",
+                    "skills": [
+                        {
+                            "course_ids": [
+                                "COR001"
+                            ],
+                            "skill_id": 11
+                        }
+                    ],
+                    "staff_id": "150008"
+                },
+                "journey_id": response.json["data"]["journey_id"]
+            },
+            "message": "Jounrey and journey skill course pair(s) created successfully."
+        })
+
+#########################
+#LJT22 (Update Courses in Learning Journey)
+#########################
+class TestUpdateCoursesInLJ(TestApp):
+    def test_remove_course_from_LJ(self):
+        request_body = {
+            "journey_id": 5,
+            "staff_id": "150265",
+            "role_id": 5,
+            "journey_name": "Want to be Security Analyst",
+            "skills": [
+                {
+                    "skill_id": 18,
+                    "course_ids": [
+                        "tch001", "tch015"
+                    ]
+                }
+            ]
+        }
+
+        response = self.client.post("/update_journey_info",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "journey_id": 5,
+                "journey_name": "Want to be Security Analyst",
+                "role_id": 5,
+                "skills": [
+                    {
+                        "course_ids": [
+                            "tch001",
+                            "tch015"
+                        ],
+                        "skill_id": 18
+                    }
+                ],
+                "staff_id": "150265"
+            },
+            "message": "Journey info updated successfully."
+        })
+
+    def test_update_LJ_without_a_skill(self):
+        request_body = {
+            "journey_id": 4,
+            "staff_id": "150265",
+            "role_id": 2,
+            "journey_name": "Data Consultance Path",
+            "skills": [
+                {
+                    "skill_id": "",
+                    "course_ids": [
+                        ""
+                    ]
+                }
+            ]
+        }
+
+        response = self.client.post("/update_journey_info",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {   
+                "code": 500,
+                "message": "A Journey should at least have one skill."
+            })
+
+    def test_update_LJ_without_a_course(self):
+        request_body = {
+            "journey_id": 4,
+            "staff_id": "150265",
+            "role_id": 2,
+            "journey_name": "Data Consultance Path",
+            "skills": [
+                {
+                    "skill_id": 11,
+                    "course_ids": [
+                        ""
+                    ]
+                }
+            ]
+        }
+
+        response = self.client.post("/update_journey_info",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {   
+                "code": 500,
+                "message": "A Journey should at least have one course."
+            })
+
+    def test_add_courses_to_one_skill_in_LJ(self):
+        request_body = {
+            "journey_id": 4,
+            "staff_id": "150265",
+            "role_id": 2,
+            "journey_name": "Data Consultance Path",
+            "skills": [
+                {
+                    "skill_id": 11,
+                    "course_ids": [
+                        "COR001"
+                    ]
+                }
+            ]
+        }
+
+        response = self.client.post("/update_journey_info",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "journey_id": 4,
+                "journey_name": "Data Consultance Path",
+                "role_id": 2,
+                "skills": [
+                    {
+                        "course_ids": [
+                            "COR001"
+                        ],
+                        "skill_id": 11
+                    }
+                ],
+                "staff_id": "150265"
+            },
+            "message": "Journey info updated successfully."
+        })
+
+    def test_add_courses_to_two_skills_in_LJ(self):
+        request_body = {
+            "journey_id": 4,
+            "staff_id": "150265",
+            "role_id": 2,
+            "journey_name": "Data Consultance Path",
+            "skills": [
+                {
+                    "skill_id": 11,
+                    "course_ids": [
+                        "tch008"
+                    ]
+                },
+                {
+                    "skill_id": 12,
+                    "course_ids": [
+                        "FIN001"
+                    ]
+                }
+            ]
+        }
+
+        response = self.client.post("/update_journey_info",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+
+        self.assertEqual(response.json, {
+            "code": 201,
+            "data": {
+                "journey_id": 4,
+                "journey_name": "Data Consultance Path",
+                "role_id": 2,
+                "skills": [
+                    {
+                        "course_ids": [
+                            "tch008"
+                        ],
+                        "skill_id": 11
+                    },
+                    {
+                        "course_ids": [
+                            "FIN001"
+                        ],
+                        "skill_id": 12
+                    }
+                ],
+                "staff_id": "150265"
+            },
+            "message": "Journey info updated successfully."
         })
 
 # class TestCreateConsultation(TestApp):
