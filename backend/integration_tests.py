@@ -228,7 +228,7 @@ class TestCreateRoles(TestApp):
 
         self.assertEqual(response.json, {
                 "code":500,
-                "message": "Role with name = Data Consultance alreasy exsit!"
+                "message": "Role with name = Data Consultance already exists!"
             })
 
     def test_create_role_without_role_name(self):
