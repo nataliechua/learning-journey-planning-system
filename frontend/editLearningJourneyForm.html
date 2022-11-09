@@ -134,7 +134,7 @@
                                             <label id="course_id" hidden>{{course.course_id}} </label>
                                             <label id="course_completion_status" hidden>{{course.course_completion_status}} </label>
                                             -->
-                                            <button type="button" class="btn btn-danger" v-if="course.course_completion_status != 'Completed'" id="removeBtn" data-toggle="modal" data-target="#deleteModal" @click="passData(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
+                                            <button type="button" class="btn btn-danger" id="removeBtn" data-toggle="modal" data-target="#deleteModal" @click="passData(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
 
                                         </td>
                                     </tr>
@@ -479,44 +479,41 @@
                                 }
                             );
                         const result = await response.json();
+                        // toastr configuration
+                        toastr.options = {
+                                "closeButton": true,
+                                "newestOnTop": false,
+                                "progressBar": true,
+                                "positionClass": "toast-bottom-right",
+                                "preventDuplicates": false,
+                                "onclick": null,
+                                "showDuration": "300",
+                                "hideDuration": "1000",
+                                "timeOut": "5000",
+                                "extendedTimeOut": "1000",
+                                "showEasing": "swing",
+                                "hideEasing": "linear",
+                                "showMethod": "fadeIn",
+                                "hideMethod": "fadeOut"
+                            }
                         if (result.code === 201) {
                             // success case
                             // this.loading = false
                             // this.err = false
 
-                            // toastr configuration
-                            // toastr.options = {
-                            //     "closeButton": true,
-                            //     "newestOnTop": false,
-                            //     "progressBar": true,
-                            //     "positionClass": "toast-bottom-right",
-                            //     "preventDuplicates": false,
-                            //     "onclick": null,
-                            //     "showDuration": "300",
-                            //     "hideDuration": "1000",
-                            //     "timeOut": "5000",
-                            //     "extendedTimeOut": "1000",
-                            //     "showEasing": "swing",
-                            //     "hideEasing": "linear",
-                            //     "showMethod": "fadeIn",
-                            //     "hideMethod": "fadeOut"
-                            // }
-
-                            // if (this.toastCount == 0) {
+                            if (this.toastCount == 0) {
                             //     // success 
-                            //     toastr.success("Learning Journey created successfully");
-                            //     this.toastCount += 1;
-                            // } 
-                            // setInterval(function doThisAfterFourSeconds() {
-                            //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
-                            // }, 400);
-                            location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                                toastr.success("Learning Journey created successfully");
+                                this.toastCount += 1;
+                            } 
+                            var url = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                            setInterval(function doThisAfterEightSeconds() {
+                                location.href = url;
+                            }, 800);
                         } else if (result.code == 500) {
                             // this.loading = false
                             // this.err = true
                             // this.errMsg = result.message;
-                            toastr.error(this.skillAndCourses);
-
                             toastr.error("An error has occurred. Please try again");
                         } else {
                             // unexpected outcome, throw the error
@@ -569,45 +566,49 @@
                                     );
                                 const result = await response.json();
                                 // toastr configuration
-                                // toastr.options = {
-                                //         "closeButton": true,
-                                //         "newestOnTop": false,
-                                //         "progressBar": true,
-                                //         "positionClass": "toast-bottom-right",
-                                //         "preventDuplicates": false,
-                                //         "onclick": null,
-                                //         "showDuration": "300",
-                                //         "hideDuration": "1000",
-                                //         "timeOut": "5000",
-                                //         "extendedTimeOut": "1000",
-                                //         "showEasing": "swing",
-                                //         "hideEasing": "linear",
-                                //         "showMethod": "fadeIn",
-                                //         "hideMethod": "fadeOut"
-                                //     }
+                                toastr.options = {
+                                        "closeButton": true,
+                                        "newestOnTop": false,
+                                        "progressBar": true,
+                                        "positionClass": "toast-bottom-right",
+                                        "preventDuplicates": false,
+                                        "onclick": null,
+                                        "showDuration": "300",
+                                        "hideDuration": "1000",
+                                        "timeOut": "5000",
+                                        "extendedTimeOut": "1000",
+                                        "showEasing": "swing",
+                                        "hideEasing": "linear",
+                                        "showMethod": "fadeIn",
+                                        "hideMethod": "fadeOut"
+                                    }
                                 if (result.code === 202) {
                                     // success case
-                                    // if (this.toastCount == 0) {
+                                    if (this.toastCount == 0) {
                                     // success 
                                     // console.log("created successfully")
-                                    // toastr.success("Removed course successfully");
-                                    // this.toastCount += 1;
-                                    // }
-                                    location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                                    toastr.success("Removed course successfully");
+                                    this.toastCount += 1;
+                                    }
+                                    // location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
 
                                     // setInterval(function doThisAfterFourSeconds() {
                                     //     location.href = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
                                     // }, 400);
+                                    var url = './editLearningJourneyForm.html?learning_journey_id=' + this.journeyId;
+                                    setInterval(function doThisAfterEightSeconds() {
+                                        location.href = url;
+                                    }, 800);
 
                                 } else if (result.code == 404) {
                                     // No records
                                     this.deleteErr = true;
                                     this.removeModalText = result.message;
-                                    // toastr.error("An error has occurred. Please try again");
+                                    toastr.error("An error has occurred. Please try again");
                                 } else {
                                     // unexpected outcome, throw the error
                                     this.deleteErr = true;
-                                    // toastr.error("An error has occurred. Please try again");
+                                    toastr.error("An error has occurred. Please try again");
                                     throw response.status;
                                 }
                             } catch (error) {
