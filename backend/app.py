@@ -820,7 +820,7 @@ def update_journey_info():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while updating journey name with journey id = "+journey_id+". " ,
+                "message": "An error occurred while updating journey name with journey id = "+str(journey_id)+". " ,
                 "error":str(e)
             }
         )
