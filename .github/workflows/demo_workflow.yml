@@ -11,11 +11,6 @@ on: [push]
 jobs:
   #Defines a job named build. The child keys will define properties of the job.
   build:
-    mysqldatabase:
-      hostname: localhost
-      port: 3306
-      username: root
-      password: 
     #Configures the job to run on the latest version of an Ubuntu Linux runner.
     runs-on: ubuntu-latest
     #Groups together all the steps that run in the check-bats-version job. 
@@ -32,6 +27,9 @@ jobs:
         #This puts both the python commands in your PATH.
         uses: actions/setup-python@v4
         with:
+          connection-string: DRIVER=jdbc;SERVER=localhost://3306;DATABASE=G3T07ddl;UID=root;PWD=
+          sql-file: 'spm_database/Script/ddl.sql'
+
           python-version: '3.x'
 
       - name: Install dependencies
