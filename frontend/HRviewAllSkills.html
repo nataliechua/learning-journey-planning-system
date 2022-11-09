@@ -11,6 +11,9 @@
 
     <title>LJPS</title>
     <link rel="icon" type="image/x-icon" href="assets/img/favicon.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
     <!-- Custom fonts for this template-->
     <link href="vendor/fontawesome/css/all.min.css" rel="stylesheet" type="text/css">
     <link
@@ -150,50 +153,148 @@
                 "Active_skills": [],
                 "Inactive_skills": [],
                 message: "There is a problem retrieving skills data, please try again later.",
-
+                toastCount: 0
             }
         },
         methods: {
+            // getAllActiveSkills() {
+            //     // on Vue instance created, load the active skills
+            //     const response =
+            //         fetch(get_all_active_skills)
+            //             .then(response => response.json())
+            //             .then(data => {
+            //                 if (data.code === 404) {
+            //                     // no skill in db
+            //                     this.message = data.message;
+            //                 } else {
+            //                     this.Active_skills = data.data.skills;
+
+            //                 }
+            //             })
+            //             .catch(error => {
+            //                 // Errors when calling the service; such as network error, 
+            //                 // service offline, etc
+
+            //             });
+            //         },
             getAllActiveSkills() {
-                // on Vue instance created, load the active skills
-                const response =
-                    fetch(get_all_active_skills)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.code === 404) {
-                                // no skill in db
-                                this.message = data.message;
-                            } else {
-                                this.Active_skills = data.data.skills;
+            $(async () => {
+                            var serviceURL = "http://localhost:5000/skills/Active";
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL, {method: 'GET'},
+                                    );
+                                    // console.log(response);
+                                const result = await response.json();
+                                console.log(result);
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
 
-                            }
-                        })
-                        .catch(error => {
-                            // Errors when calling the service; such as network error, 
-                            // service offline, etc
+                                // console.log("helo"+result.data);
+                                if (response.status === 200) {
+                                    if (this.toastCount == 0) {
+                                        this.Active_skills=result.data.skills;
+                                        console.log(this.Active_skills); 
+                                        // success 
+                                        toastr.success(result.message);
+                                        this.toastCount += 1;
+                                    } 
 
-                        });
-                    },
-                    getAllInactiveSkills() {
-                // on Vue instance created, load the Inactive skills 
-                const response =
-                    fetch(get_all_inactive_skills)
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.code === 404) {
-                                // no skill in db
-                                this.message = data.message;
-                            } else {
-                                this.Inactive_skills = data.data.skills;
+                                    // setInterval(function doThisAfterEightSeconds() {
+                                    //     location.href = './HRviewAllSkills.html';
+                                    // }, 800);
 
-                            }
-                        })
-                        .catch(error => {
-                            // Errors when calling the service; such as network error, 
-                            // service offline, etc
+                                    
+                                } else if (response.status == 500) {
+                                    // this.err = true
+                                    // this.errMsg = result.message;
+                                    toastr.error(result.message);
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    toastr.error(result.message);
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                toastr.error("An error has occurred. Please try again");
+                            } // error
+                        })},
+                        getAllInactiveSkills(){
+                        $(async () => {
+                            var serviceURL = "http://localhost:5000/skills/Active";
+                            try {
+                                const response =
+                                    await fetch(
+                                        serviceURL, {method: 'GET'},
+                                    );
+                                    // console.log(response);
+                                const result = await response.json();
+                                console.log(result);
+                                // toastr configuration
+                                toastr.options = {
+                                    "closeButton": true,
+                                    "newestOnTop": false,
+                                    "progressBar": true,
+                                    "positionClass": "toast-bottom-right",
+                                    "preventDuplicates": false,
+                                    "onclick": null,
+                                    "showDuration": "300",
+                                    "hideDuration": "1000",
+                                    "timeOut": "5000",
+                                    "extendedTimeOut": "1000",
+                                    "showEasing": "swing",
+                                    "hideEasing": "linear",
+                                    "showMethod": "fadeIn",
+                                    "hideMethod": "fadeOut"
+                                }
 
-                        });
-                    },
+                                // console.log("helo"+result.data);
+                                if (response.status === 200) {
+                                    if (this.toastCount == 0) {
+                                        this.Inactive_skills=result.data.skills;
+                                        console.log(this.Inactive_skills); 
+                                        // success 
+                                        toastr.success(result.message);
+                                        this.toastCount += 1;
+                                    } 
+
+                                    setInterval(function doThisAfterEightSeconds() {
+                                        location.href = './HRviewAllSkills.html';
+                                    }, 800);
+
+                                    
+                                } else if (response.status == 500) {
+                                    // this.err = true
+                                    // this.errMsg = result.message;
+                                    toastr.error(result.message);
+                                } else {
+                                    // unexpected outcome, throw the error
+                                    toastr.error(result.message);
+                                    throw response.status;
+                                }
+                            } catch (error) {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                toastr.error("An error has occurred. Please try again");
+                            } // error
+                        })},
                     goToEditSkill(skill_id) {
                         location.href = './HReditSkill.html?skill_id=' + skill_id
                     }
