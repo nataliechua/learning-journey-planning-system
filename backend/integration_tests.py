@@ -72,14 +72,14 @@ class TestCreateSkills(TestApp):
             "skill_status": "Active"
         }
 
-        try: 
-            self.client.post("/skill/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
+        response = self.client.post("/skill/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
 
-        except Exception as e:
-            self.assertEqual(str(e),
-                             "Skill with name = Big Data alreasy exsit!")
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": "Skill with name = Big Data alreasy exsit!"
+            })
 
     def test_create_skill_without_skill_name(self):
         request_body = {
@@ -87,26 +87,28 @@ class TestCreateSkills(TestApp):
             "skill_status":"Active"
         }
 
-        try:
-            self.client.post("/skill/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             'Skill name should not be empty or just contain white spaces.')
+
+        response = self.client.post("/skill/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": 'Skill name should not be empty or just contain white spaces.'
+            })
 
     def test_create_skill_without_skill_status(self):
         request_body = {
             "skill_name":"Visual Design",
             "skill_status":""
         }
-        try:
-            self.client.post("/skill/create",
-                                data=json.dumps(request_body),
-                                content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             "Skill status should be either 'Active' or 'Retired'.")
+
+        response  = self.client.post("/skill/create",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": "Skill status should be either 'Active' or 'Retired'."
+            })
 
 #########################
 #LJT-44 (Update course skill)
@@ -219,14 +221,15 @@ class TestCreateRoles(TestApp):
             "role_status":"Active"
         }
 
-        try: 
-            self.client.post("/role/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
 
-        except Exception as e:
-            self.assertEqual(str(e),
-                             "Role with name = Data Consultance alreasy exsit!")
+        response = self.client.post("/role/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
+
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": "Role with name = Data Consultance alreasy exsit!"
+            })
 
     def test_create_role_without_role_name(self):
         request_body = {
@@ -234,26 +237,28 @@ class TestCreateRoles(TestApp):
             "role_status": "Active"
         }
 
-        try:
-            self.client.post("/role/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             'Role name should not be empty or just contain white spaces.')
+
+        response = self.client.post("/role/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": 'Role name should not be empty or just contain white spaces.'
+            })
 
     def test_create_role_without_role_status(self):
         request_body = {
             "role_name": "Software Engineer",
             "role_status": ""
         }
-        try:
-            self.client.post("/role/create",
-                                data=json.dumps(request_body),
-                                content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             "Role status should be either 'Active' or 'Retired'.")
+
+        response = self.client.post("/role/create",
+                            data=json.dumps(request_body),
+                            content_type='application/json')
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": "Role status should be either 'Active' or 'Retired'."
+            })
 
 #########################
 #LJT-12 (Update Roles)
@@ -416,13 +421,14 @@ class TestSelectSkillsWhenCreatingLJ(TestApp):
             ]
         }
 
-        try:
-            self.client.post("/journey/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             'A Journey should at least have one skill.')
+
+        response = self.client.post("/journey/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
+        self.assertEqual(response.json, {
+                "code":500,
+                "message": 'A Journey should at least have one skill.'
+            })
 
 #########################
 #LJT4 (Select Courses When Creating LJ)
@@ -539,13 +545,16 @@ class TestSelectCoursesWhenCreatingLJ(TestApp):
             ]
         }
 
-        try:
-            self.client.post("/journey/create",
-                            data=json.dumps(request_body),
-                            content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             'A Journey should at least have one course.')
+
+        response = self.client.post("/journey/create",
+                        data=json.dumps(request_body),
+                        content_type='application/json')
+        self.assertEqual(response.json, 
+            {
+                "code":500,
+                "message": 'A Journey should at least have one course.'
+            }
+        )
 
 #########################
 #LJT15 (Select A Role When Creating LJ)
@@ -553,21 +562,20 @@ class TestSelectCoursesWhenCreatingLJ(TestApp):
 class TestSelectARoleWhenCreatingLJ(TestApp):
     def test_create_journey_without_a_role(self):
         request_body = {
-            "journey": {
                 "journey_name": "LearnThis",
                 "staff_id": "150008",
                 "role_id": "",
                 "skills": []
-            }
         }
 
-        try:
-            self.client.post("/journey/create",
+        response = self.client.post("/journey/create",
                             data=json.dumps(request_body),
                             content_type='application/json')
-        except Exception as e:
-            self.assertEqual(str(e),
-                             'A Journey should at least have one role.')
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json, {
+            "code":500,
+            "message": 'A Journey should at least have one role.'
+        })
 
 # class TestCreateConsultation(TestApp):
 #     def test_create_consultation(self):

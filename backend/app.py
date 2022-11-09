@@ -605,10 +605,20 @@ def create_journey():
         }), 500
     
     if journey_data["journey_name"].isspace() or journey_data["journey_name"] == None or len(journey_data["journey_name"])==0:
-        raise Exception ("Journey name should not be empty or just contain white spaces.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Journey name should not be empty or just contain white spaces."
+            }
+        ), 500 
 
     if journey_data["role_id"] == "":
-        raise Exception ("A Journey should at least have one role.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "A Journey should at least have one role."
+            }
+        ), 500
 
     if journey_data["skills"] == [
                 {
@@ -616,10 +626,20 @@ def create_journey():
                     "course_ids": [""]
                 }
             ]:
-        raise Exception ("A Journey should at least have one skill.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "A Journey should at least have one skill."
+            }
+        ), 500 
     
     if len(journey_data["skills"])==1 and journey_data["skills"][0]["course_ids"]==[""]:
-        raise Exception ("A Journey should at least have one course.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "A Journey should at least have one course."
+            }
+        ), 500 
 
     for skill in journey_data["skills"]:
         if not all(key in skill.keys() for 
@@ -629,10 +649,20 @@ def create_journey():
             }), 500
         
         if skill["skill_id"] == None:
-            raise Exception ("A Skill must be chosen for each skill courses pair.") 
+            return jsonify(
+            {   
+                "code": 500,
+                "message": "A Skill must be chosen for each skill courses pair."
+            }
+        ), 500
 
         if skill["course_ids"] == None or skill["course_ids"] == [] or skill["course_ids"] == [""]:
-            raise Exception ("At least a course must be chosen for each skill courses pair.") 
+            return jsonify(
+            {   
+                "code": 500,
+                "message": "At least a course must be chosen for each skill courses pair."
+            }
+        ), 500 
 
     journey_input = {
         "journey_name":journey_data["journey_name"],
@@ -728,7 +758,12 @@ def update_journey_info():
         }), 500
 
     if data["journey_name"].isspace() or data["journey_name"] == None or len(data["journey_name"])==0:
-        raise Exception ("Journey name should not be empty or just contain white spaces.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Journey name should not be empty or just contain white spaces."
+            }
+        ), 500
 
     journey_id=data["journey_id"]
     skills=data["skills"]
@@ -818,14 +853,29 @@ def create_role():
         }), 500
     
     if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
-        raise Exception ("Role name should not be empty or just contain white spaces.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Role name should not be empty or just contain white spaces."
+            }
+        ), 500 
 
     if data["role_status"] not in ["Active","Retired"]:
-        raise Exception ("Role status should be either 'Active' or 'Retired'.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Role status should be either 'Active' or 'Retired'."
+            }
+        ), 500
 
     exsiting = Role.query.filter_by(role_name=data["role_name"]).first()
     if exsiting:
-        raise Exception ("Role with name = " + data["role_name"] + " alreasy exsit!")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Role with name = " + data["role_name"] + " already exists!"
+            }
+        ), 500
 
     role = Role(role_id=None,**data)
 
@@ -957,10 +1007,20 @@ def update_role_info():
         }), 500
 
     if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
-        raise Exception ("Role name should not be empty or just contain white spaces.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Role name should not be empty or just contain white spaces."
+            }
+        ), 500 
     
     if data["role_status"] not in ["Active","Retired"]:
-        raise Exception ("Role status should be either 'Active' or 'Retired'.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Role status should be either 'Active' or 'Retired'."
+            }
+        ), 500 
     
     role_id=data["role_id"]
     role_name=data["role_name"]
@@ -1049,14 +1109,29 @@ def create_skill():
         }), 500
     
     if data["skill_name"].isspace() or data["skill_name"] == None or len(data["skill_name"])==0:
-        raise Exception ("Skill name should not be empty or just contain white spaces.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Skill name should not be empty or just contain white spaces."
+            }
+        ), 500 
     
     if data["skill_status"] not in ["Active","Retired"]:
-        raise Exception ("Skill status should be either 'Active' or 'Retired'.")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Skill status should be either 'Active' or 'Retired'."
+            }
+        ), 500 
     
     exsiting = Skill.query.filter_by(skill_name=data["skill_name"]).first()
     if exsiting:
-        raise Exception ("Skill with name = " + data["skill_name"] + " alreasy exsit!")
+        return jsonify(
+            {   
+                "code": 500,
+                "message": "Skill with name = " + data["skill_name"] + " alreasy exsit!"
+            }
+        ), 500 
 
     skill = Skill(skill_id = None,**data)
 
@@ -1095,11 +1170,21 @@ def update_skill_info(skill_id):
                 "message": "Skill with id = " + str(skill_id) + " not found."
             }
         ), 404
-    
+
     try:
         data = request.get_json()
         skill.skill_status = data['skill_status']
         skill.skill_name = data['skill_name']
+
+        existing = Skill.query.filter_by(skill_name=data['skill_name'],skill_status=data['skill_status']).first()
+        if existing!=None and existing.to_dict()["skill_id"]!=skill_id:
+            return jsonify(
+                {   
+                    "data": data,
+                    "message": "Cannot have duplicated skills!"
+                }
+            ), 500
+
         db.session.commit()
         return jsonify(
             {
