@@ -7,22 +7,23 @@ name: Demo Workflow
 #pushes to specific branches, paths, or tags, see "Workflow syntax for GitHub Actions."
 on: [push]
 
+database: 
+  dbopt:
+    host: 
+    port: 5432
+    dbname: db1
+    user: username
+    password: 1234
+    client_encoding: utf-8
+    connect_timeout: 60
+    sslmode: none
+
 #Groups together all the jobs that run in the Demo Workflow workflow.
 jobs:
   #Defines a job named build. The child keys will define properties of the job.
   build:
     #Configures the job to run on the latest version of an Ubuntu Linux runner.
     runs-on: ubuntu-latest
-    dbopt:
-      host: 
-      port: 5432
-      dbname: db1
-      user: username
-      password: 1234
-      client_encoding: utf-8
-      connect_timeout: 60
-      sslmode: none
-   
     #Groups together all the steps that run in the check-bats-version job. 
     #Each item nested under this section is a separate action or shell script.
     steps:
