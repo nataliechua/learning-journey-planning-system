@@ -208,10 +208,10 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                if (result.code === 200) {
+                                if (response.status === 200) {
                                     if (this.toastCount == 0) {
                                         // success 
-                                        toastr.success("Updated successfully");
+                                        toastr.success(result.message);
                                         this.toastCount += 1;
                                     } 
 
@@ -220,13 +220,13 @@
                                     }, 800);
 
                                     
-                                } else if (result.code == 500) {
+                                } else if (response.status == 500) {
                                     // this.err = true
                                     // this.errMsg = result.message;
-                                    toastr.error("An error has occurred. Please try again");
+                                    toastr.error(result.message);
                                 } else {
                                     // unexpected outcome, throw the error
-                                    toastr.error("An error has occurred. Please try again");
+                                    toastr.error(result.message);
                                     throw response.status;
                                 }
                             } catch (error) {
