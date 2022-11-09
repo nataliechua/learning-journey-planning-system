@@ -73,7 +73,7 @@
                                                 <th scope="col" class="col-2">Name</th>
                                                 <th scope="col" class="col-5">Skills Required</th>
                                                 <th scope="col" class="col-2">Status</th>
-                                                <th scope="col" class="col-3">Status</th>
+                                                <th scope="col" class="col-3"></th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -95,29 +95,27 @@
                                 <div>
                                     <b>Retired Roles</b>
                                 </div>
-
-                                <table class="table">
-                                    <thead>
-                                        <tr class="d-flex">
-                                            <th class="col-1" scope="col">ID</th>
-                                            <th class="col-2" scope="col">Role</th>
-                                            <th class="col-5" scope="col">Skills required</th>
-                                            <th class="col-2" scope="col">Status</th>
-                                            <th class="col-3" scope="col"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="d-flex" v-for="role in Retired_roles" >
-                                            <th class="col-1" scope="row">{{ role.role_id  }}</th>
-                                            <td class="col-2">{{ role.role_name }}</td>
-                                            <td class="col-5">{{ role.skills_str }}</td>
-                                            <td class="col-2">{{ role.role_status }}</td>
-                                            <td class="col-3">
-                                                <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
-                                            </td>
-                                        </tr>
-
-
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="col-1">ID</th>
+                                                <th scope="col" class="col-2">Name</th>
+                                                <th scope="col" class="col-5">Skills Required</th>
+                                                <th scope="col" class="col-2">Status</th>
+                                                <th scope="col" class="col-3"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="role in Retired_roles" >
+                                                <th class="col-1" scope="row">{{ role.role_id  }}</th>
+                                                <td class="col-2">{{ role.role_name }}</td>
+                                                <td class="col-5">{{ role.skills_str }}</td>
+                                                <td class="col-2">{{ role.role_status }}</td>
+                                                <td class="col-3">
+                                                    <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
+                                                </td>
+                                            </tr> 
                                         </tbody>
                                     </table>
                                 </div>
