@@ -363,7 +363,7 @@
                                 }
                             );
                         const result = await response.json();
-                        if (result.code === 201) {
+                        if (response.status === 201) {
                             // success case
                             // this.loading = false
                             // this.err = false
@@ -395,12 +395,12 @@
                                 location.href = './learningJourney.html';
                             }, 400);
 
-                        } else if (result.code == 500) {
+                        } else if (response.status == 500) {
                             // this.loading = false
                             // this.err = true
                             // this.errMsg = result.message;
                             // toastr.error(result.message);
-                            toastr.error("An error has occurred. Please try again");
+                            toastr.error(result.message);
                         } else {
                             // unexpected outcome, throw the error
                             // this.loading = false

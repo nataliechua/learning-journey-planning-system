@@ -282,13 +282,19 @@
                                     }
                                 );
                             const result = await response.json();
-                            if (result.code === 200) {
+                            if (response.status === 200) {
                                 // success case
                                 this.activeLoading = false
                                 this.activeErr = false
                                 this.activeCourseDetails = result.data.courses;
                                 
-                            } else if (result.code == 404) {
+                            } else if (response.status == 404) {
+                                // No records
+                                this.activeLoading = false
+                                this.activeErr = true
+                                this.activeErrMsg = result.message;
+                            
+                            } else if (response.status == 500) {
                                 // No records
                                 this.activeLoading = false
                                 this.activeErr = true
@@ -322,13 +328,19 @@
                                     }
                                 );
                             const result = await response.json();
-                            if (result.code === 200) {
+                            if (response.status === 200) {
                                 // success case
                                 this.retiredLoading = false
                                 this.retiredErr = false
                                 this.retiredCourseDetails = result.data.courses;
                                 
-                            } else if (result.code == 404) {
+                            } else if (response.status == 404) {
+                                // No records
+                                this.retiredLoading = false
+                                this.retiredErr = true
+                                this.retiredErrMsg = result.message;
+                            }
+                            else if (response.status == 500) {
                                 // No records
                                 this.retiredLoading = false
                                 this.retiredErr = true
@@ -362,18 +374,23 @@
                                     }
                                 );
                             const result = await response.json();
-                            if (result.code === 200) {
+                            if (response.status === 200) {
                                 // success case
                                 this.pendingLoading = false
                                 this.pendingErr = false
                                 this.pendingCourseDetails = result.data.courses;
                                 
-                            } else if (result.code == 404) {
+                            } else if (response.status == 404) {
                                 // No records
                                 this.pendingLoading = false
                                 this.pendingErr = true
                                 this.pendingErrMsg = result.message;
-                            } else {
+                            } else if (response.status == 500) {
+                                // No records
+                                this.pendingLoading = false
+                                this.pendingErr = true
+                                this.pendingErrMsg = result.message;
+                            }else {
                                 // unexpected outcome, throw the error
                                 this.pendingLoading = false
                                 this.pendingErr = true

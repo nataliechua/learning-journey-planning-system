@@ -253,7 +253,7 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                if (result.code === 201) {
+                                if (response.status === 201) {
                                     if (this.toastCount == 0) {
                                         // this.showAlertBox("success");
                                         // success 
@@ -267,12 +267,12 @@
                                         location.href = './HRviewAllCourses.html';
                                     }, 800);
 
-                                } else if (result.code == 500) {
+                                } else if (response.status == 500) {
                                     this.updateErr = true;
                                     this.updateLoad = false;
                                     // this.updateMsg = result.message;
                                     // this.showAlertBox("failed");
-                                    toastr.error("An error has occurred. Please try again");
+                                    toastr.error(result.message);
                                 } else {
                                     // unexpected outcome, throw the error
                                     //this.showAlertBox("addFailed");
