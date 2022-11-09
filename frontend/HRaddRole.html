@@ -170,6 +170,9 @@
                                         }
                                     );
                                 const result = await response.json();
+
+                                console.log(response.status)
+                                console.log(result.message)
                                 // toastr configuration
                                 toastr.options = {
                                     "closeButton": true,
@@ -188,7 +191,7 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                if (result.code === 201) {
+                                if (response.status === 201) {
                                     if (this.toastCount == 0) {
                                         // success 
                                         toastr.success("Created successfully");
@@ -200,10 +203,10 @@
                                     }, 800);
 
                                     
-                                } else if (result.code == 500) {
+                                } else if (response.status == 500) {
                                     // this.err = true
                                     // this.errMsg = result.message;
-                                    toastr.error("An error has occurred. Please try again");
+                                    toastr.error(result.message);
                                 } else {
                                     // unexpected outcome, throw the error
                                     toastr.error("An error has occurred. Please try again");

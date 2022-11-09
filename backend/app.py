@@ -873,7 +873,7 @@ def create_role():
         return jsonify(
             {   
                 "code": 500,
-                "message": "Role with name = " + data["role_name"] + " alreasy exsit!"
+                "message": "Role with name = " + data["role_name"] + " already exists!"
             }
         ), 500
 
