@@ -93,29 +93,29 @@
 
                             <!-- <div v-if="Inactive_roles.length > 0"> -->
                                 <div>
-                                    <b>Inactive Roles</b>
+                                    <b>Retired Roles</b>
                                 </div>
-                                <div class="table-responsive">
-                                    <table class="table">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col" class="col-1">ID</th>
-                                                <th scope="col" class="col-2">Name</th>
-                                                <th scope="col" class="col-5">Skills Required</th>
-                                                <th scope="col" class="col-2">Status</th>
-                                                <th scope="col" class="col-3">Status</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr v-for="role in Inactive_roles" >
-                                                <th>{{ role.role_id  }}</th>
-                                                <td>{{ role.role_name }}</td>
-                                                <td>{{ role.skills_str }}</td>
-                                                <td>Retired</td>
-                                                <td>
-                                                    <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
-                                                </td>
-                                            </tr>
+
+                                <table class="table">
+                                    <thead>
+                                        <tr class="d-flex">
+                                            <th class="col-1" scope="col">ID</th>
+                                            <th class="col-2" scope="col">Role</th>
+                                            <th class="col-5" scope="col">Skills required</th>
+                                            <th class="col-2" scope="col">Status</th>
+                                            <th class="col-3" scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="d-flex" v-for="role in Retired_roles" >
+                                            <th class="col-1" scope="row">{{ role.role_id  }}</th>
+                                            <td class="col-2">{{ role.role_name }}</td>
+                                            <td class="col-5">{{ role.skills_str }}</td>
+                                            <td class="col-2">{{ role.role_status }}</td>
+                                            <td class="col-3">
+                                                <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
+                                            </td>
+                                        </tr>
 
 
                                         </tbody>
@@ -157,14 +157,14 @@
 
     <script>
         const get_all_active_roles = "http://localhost:5000/roles_with_skills/Active";
-        const get_all_inactive_roles = "http://localhost:5000/roles_with_skills/Inactive";
+        const get_all_retired_roles = "http://localhost:5000/roles_with_skills/Retired";
         const app = Vue.createApp({
 
         data() {
             return {
                 "skills":[],
                 "Active_roles": [],
-                "Inactive_roles": [],
+                "Retired_roles": [],
                 message: "There is a problem retrieving roles data, please try again later.",
 
             }
@@ -206,19 +206,19 @@
 
                         });
                     },
-             getAllInactiveRoles() {
+             getAllRetiredRoles() {
                 // on Vue instance created, load the Inactive role 
                 const response =
-                    fetch(get_all_inactive_roles)
+                    fetch(get_all_retired_roles)
                         .then(response => response.json())
                         .then(data => {
                             if (data.code === 404) {
                                 // no role in db
                                 this.message = data.message;
                             } else {
-                                this.Inactive_roles = data.data.roles
-                                for (var i = 0; i < this.Inactive_roles.length; i++){
-                                    skills = this.Inactive_roles[i].role_skills;
+                                this.Retired_roles = data.data.roles
+                                for (var i = 0; i < this.Retired_roles.length; i++){
+                                    skills = this.Retired_roles[i].role_skills;
 
                                     skills_str="Unassigned"
 
@@ -231,7 +231,7 @@
 
                                     }
 
-                                    this.Inactive_roles[i]["skills_str"] = skills_str;
+                                    this.Retired_roles[i]["skills_str"] = skills_str;
                                 }
                                 
 
@@ -270,7 +270,8 @@
                     }
                     // on Vue instance created, load the book list
                     this.getAllActiveRoles();
-                    this.getAllInactiveRoles();
+                    this.getAllRetiredRoles();
+                    console.log(this.Active_roles)
                 }
                 }
                 );
