@@ -1,10 +1,6 @@
 #This is an optional tag. This will be the workflow name appearing on the Actions tab of your git repo
 name: Demo Workflow
-env:
-  MYSQL_DATABASE: G3T07ddl
-  MYSQL_USER: root
-  MYSQL_PASSWORD: 
-  MYSQL_HOST: 127.0.0.1:3306
+
 #Specifies the trigger for this workflow. This workflow will be triggered on push event, 
 #that is every time someone pushes a change to the repository or merges a pull request. 
 #This is triggered by a push to every branch; for examples of syntax that runs only on 
@@ -17,26 +13,7 @@ jobs:
   build:
     #Configures the job to run on the latest version of an Ubuntu Linux runner.
     runs-on: ubuntu-latest
-
-    container:
-      image: node:14.5.0-alpine
-    services:
-      mysql-master:
-        image: mysql:5.7
-        ports:
-          - 3306/tcp
-        env:
-          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
-          MYSQL_USER: ${{ env.MYSQL_USER }}
-          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_PASSWORD }}
-        options: >-
-          --name=mysql-master
-          --health-cmd="mysqladmin ping"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-
+   
     #Groups together all the steps that run in the check-bats-version job. 
     #Each item nested under this section is a separate action or shell script.
     steps:
@@ -82,4 +59,4 @@ jobs:
         run: |
           #TODO: Add the command to run all the unittest here.
           python backend/unit_tests.py
-          #ython backend/app.py
+          python backend/app.py
