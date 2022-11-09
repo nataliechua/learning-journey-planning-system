@@ -13,14 +13,15 @@ jobs:
   build:
     #Configures the job to run on the latest version of an Ubuntu Linux runner.
     runs-on: ubuntu-latest
-    mysql:
+    services:
+      mysql:
         image: mysql:5.7
         env:
           MYSQL_ROOT_PASSWORD: 
         ports:
         - 32574:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
-    
+   
     #Groups together all the steps that run in the check-bats-version job. 
     #Each item nested under this section is a separate action or shell script.
     steps:
@@ -63,9 +64,9 @@ jobs:
       
       - name: Verify MySQL connection from host
         #connect to mysql
-      run: |
-        sudo apt-get install -y mysql-client
-        mysql --host 127.0.0.1 --port 32574 -uroot -ppassword -e "SHOW DATABASES"
+        run: |
+          sudo apt-get install -y mysql-client
+          mysql --host 127.0.0.1 --port 32574 -uroot -ppassword -e "SHOW DATABASES"
 
       - name: Test with unittest
         #runs the unittest
