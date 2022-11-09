@@ -1129,7 +1129,7 @@ def create_skill():
         return jsonify(
             {   
                 "code": 500,
-                "message": "Skill with name = " + data["skill_name"] + " alreasy exsit!"
+                "message": "Skill with name = " + data["skill_name"] + " already exist!"
             }
         ), 500 
 

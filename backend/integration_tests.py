@@ -78,7 +78,7 @@ class TestCreateSkills(TestApp):
 
         self.assertEqual(response.json, {
                 "code":500,
-                "message": "Skill with name = Big Data alreasy exsit!"
+                "message": "Skill with name = Big Data already exist!"
             })
 
     def test_create_skill_without_skill_name(self):
