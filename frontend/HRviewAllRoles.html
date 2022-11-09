@@ -65,28 +65,30 @@
                                 <div>
                                     <b>Active Roles</b>
                                 </div>
-                                <table class="table">
-                                    <thead>
-                                        <tr class="d-flex">
-                                            <th class="col-1" scope="col">ID</th>
-                                            <th class="col-2" scope="col">Role</th>
-                                            <th class="col-5" scope="col">Skills required</th>
-                                            <th class="col-2" scope="col">Status</th>
-                                            <th class="col-3" scope="col"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr v-for="role in Active_roles" class="d-flex">
-                                            <th class="col-1" scope="row">{{ role.role_id }}</th>
-                                            <td class="col-2">{{ role.role_name }}</td>
-                                            <td class="col-5">{{ role.skills_str }}</td>
-                                            <td class="col-2">{{ role.role_status }}</td>
-                                            <td class="col-3">
-                                                <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <div class="table-responsive">
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col" class="col-1">ID</th>
+                                                <th scope="col" class="col-2">Name</th>
+                                                <th scope="col" class="col-5">Skills Required</th>
+                                                <th scope="col" class="col-2">Status</th>
+                                                <th scope="col" class="col-3">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="role in Active_roles">
+                                                <th>{{ role.role_id }}</th>
+                                                <td>{{ role.role_name }}</td>
+                                                <td>{{ role.skills_str }}</td>
+                                                <td>{{ role.role_status }}</td>
+                                                <td>
+                                                    <a type="button" class="btn btn-primary" @click="goToEditRole(role.role_id)">Edit</a>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             <!-- </div> -->
 
                             <!-- <div v-if="Inactive_roles.length > 0"> -->
@@ -116,8 +118,9 @@
                                         </tr>
 
 
-                                    </tbody>
-                                </table>
+                                        </tbody>
+                                    </table>
+                                </div>
                             <!-- </div> -->
                         </div>
                     </div>
@@ -173,7 +176,6 @@
                     fetch(get_all_active_roles)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(response);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
@@ -201,7 +203,6 @@
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
-                            console.log(this.message + error);
 
                         });
                     },
@@ -211,7 +212,6 @@
                     fetch(get_all_retired_roles)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(response);
                             if (data.code === 404) {
                                 // no role in db
                                 this.message = data.message;
@@ -240,7 +240,6 @@
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
-                            console.log(this.message + error);
 
                         });
                     },
@@ -294,7 +293,51 @@
                 const vm = app.mount('#wrapper');
 
     </script>
-
+    <script>
+        !(function (l) {
+            "use strict";
+            l("#sidebarToggle, #topbar").on("click", function (e) {
+                l("body").toggleClass("sidebar-toggled"),
+                l(".sidebar").toggleClass("toggled"),
+                l(".sidebar").hasClass("toggled") &&
+                    l(".sidebar .collapse").collapse("hide");
+            }),
+                l(window).resize(function () {
+                l(window).width() < 768 && l(".sidebar .collapse").collapse("hide"),
+                    l(window).width() < 480 &&
+                    !l(".sidebar").hasClass("toggled") &&
+                    (l("body").addClass("sidebar-toggled"),
+                    l(".sidebar").addClass("toggled"),
+                    l(".sidebar .collapse").collapse("hide"));
+                }),
+                l("body.fixed-nav .sidebar").on(
+                "mousewheel DOMMouseScroll wheel",
+                function (e) {
+                    var o;
+                    768 < l(window).width() &&
+                    ((o = (o = e.originalEvent).wheelDelta || -o.detail),
+                    (this.scrollTop += 30 * (o < 0 ? 1 : -1)),
+                    e.preventDefault());
+                }
+                ),
+                l(document).on("scroll", function () {
+                100 < l(this).scrollTop()
+                    ? l(".scroll-to-top").fadeIn()
+                    : l(".scroll-to-top").fadeOut();
+                }),
+                l(document).on("click", "a.scroll-to-top", function (e) {
+                var o = l(this);
+                l("html, body")
+                    .stop()
+                    .animate(
+                    { scrollTop: l(o.attr("href")).offset().top },
+                    1e3,
+                    "easeInOutExpo"
+                    ),
+                    e.preventDefault();
+                });
+            })(jQuery);
+    </script>
 </body>
 
 </html>

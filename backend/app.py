@@ -398,7 +398,8 @@ def update_course_skill():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting course skill pair(s) with course_id = "+course_id+". " + str(e)
+                "message": "An error occurred while deleting course skill pair(s) with course_id = "+course_id+". " ,
+                "error":str(e)
             }
         )
     try:
@@ -414,7 +415,8 @@ def update_course_skill():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the course skill pairs. " + str(e)
+                "message": "An error occurred while creating the course skill pairs. " ,
+                "error":str(e)
             }
         ), 500
 
@@ -539,7 +541,8 @@ def remove_journey_by_id(id):
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the journey. " + str(e)
+                "message": "An error occurred while deleting the journey. " ,
+                "error":str(e)
             }
         )
     
@@ -550,7 +553,8 @@ def remove_journey_by_id(id):
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the journey skill course pair. " + str(e)
+                "message": "An error occurred while deleting the journey skill course pair. " ,
+                "error":str(e)
             }
         )
     
@@ -578,7 +582,8 @@ def remove_journey_skill_course(journey_id,skill_id,course_id):
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the journey skill course pair. " + str(e)
+                "message": "An error occurred while deleting the journey skill course pair. " ,
+                "error":str(e)
             }
         )
     return jsonify(
@@ -602,11 +607,19 @@ def create_journey():
     if journey_data["journey_name"].isspace() or journey_data["journey_name"] == None or len(journey_data["journey_name"])==0:
         raise Exception ("Journey name should not be empty or just contain white spaces.")
 
-    if journey_data["role_id"] == None:
+    if journey_data["role_id"] == "":
         raise Exception ("A Journey should at least have one role.")
 
-    if journey_data["skills"] == None or journey_data["skills"] == []:
+    if journey_data["skills"] == [
+                {
+                    "skill_id": "",
+                    "course_ids": [""]
+                }
+            ]:
         raise Exception ("A Journey should at least have one skill.")
+    
+    if len(journey_data["skills"])==1 and journey_data["skills"][0]["course_ids"]==[""]:
+        raise Exception ("A Journey should at least have one course.")
 
     for skill in journey_data["skills"]:
         if not all(key in skill.keys() for 
@@ -618,7 +631,7 @@ def create_journey():
         if skill["skill_id"] == None:
             raise Exception ("A Skill must be chosen for each skill courses pair.") 
 
-        if skill["course_ids"] == None or skill["course_ids"] == []:
+        if skill["course_ids"] == None or skill["course_ids"] == [] or skill["course_ids"] == [""]:
             raise Exception ("At least a course must be chosen for each skill courses pair.") 
 
     journey_input = {
@@ -632,18 +645,17 @@ def create_journey():
         journey = Journey(**journey_input,journey_id = None)
         db.session.add(journey)
         db.session.commit()
+        journey_id = journey.journey_id
     except Exception as e:
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the journey. " + str(e)
+                "message": "An error occurred while creating the journey. " ,
+                "error":str(e)
             }
         ), 500
 
     try:
-        get_journey = Journey.query.filter_by(journey_name=journey_data["journey_name"],staff_id=journey_data["staff_id"],role_id=journey_data["role_id"]).first()
-        journey_id = get_journey.to_dict()["journey_id"]
-
         for skill in skills:
             for course_id in skill["course_ids"]:
                 journey_skill_course_input ={
@@ -659,7 +671,8 @@ def create_journey():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the journey skill course pair(s). " + str(e)
+                "message": "An error occurred while creating the journey skill course pair(s). " ,
+                "error":str(e)
             }
         ), 500
 
@@ -668,6 +681,7 @@ def create_journey():
             "code": 201,
             "message": "Jounrey and journey skill course pair(s) created successfully.",
             "data": {
+                "journey_id":journey_id,
                 "journey": journey_data
             }
         }
@@ -686,7 +700,8 @@ def create_journey_skill_course():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the journey skill course pair. " + str(e)
+                "message": "An error occurred while creating the journey skill course pair. " ,
+                "error":str(e)
             }
         ), 500
     
@@ -726,7 +741,8 @@ def update_journey_info():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while updating journey name with journey id = "+journey_id+". " + str(e)
+                "message": "An error occurred while updating journey name with journey id = "+journey_id+". " ,
+                "error":str(e)
             }
         )
     
@@ -737,7 +753,8 @@ def update_journey_info():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the journey skill course pairs with journey id = "+journey_id+". " + str(e)
+                "message": "An error occurred while deleting the journey skill course pairs with journey id = "+journey_id+". " ,
+                "error":str(e)
             }
         )
     
@@ -756,7 +773,8 @@ def update_journey_info():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the jounrey skill course pairs. " + str(e)
+                "message": "An error occurred while creating the jounrey skill course pairs. " ,
+                "error":str(e)
             }
         ), 500
 
@@ -802,6 +820,13 @@ def create_role():
     if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
         raise Exception ("Role name should not be empty or just contain white spaces.")
 
+    if data["role_status"] not in ["Active","Retired"]:
+        raise Exception ("Role status should be either 'Active' or 'Retired'.")
+
+    exsiting = Role.query.filter_by(role_name=data["role_name"]).first()
+    if exsiting:
+        raise Exception ("Role with name = " + data["role_name"] + " alreasy exsit!")
+
     role = Role(role_id=None,**data)
 
     try:
@@ -811,7 +836,8 @@ def create_role():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the role. " + str(e)
+                "message": "An error occurred while creating the role. " ,
+                "error":str(e)
             }
         ), 500
     
@@ -933,6 +959,9 @@ def update_role_info():
     if data["role_name"].isspace() or data["role_name"] == None or len(data["role_name"])==0:
         raise Exception ("Role name should not be empty or just contain white spaces.")
     
+    if data["role_status"] not in ["Active","Retired"]:
+        raise Exception ("Role status should be either 'Active' or 'Retired'.")
+    
     role_id=data["role_id"]
     role_name=data["role_name"]
     role_status=data["role_status"]
@@ -947,7 +976,8 @@ def update_role_info():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while updating role info with role_id = "+str(role_id)+". " + str(e)
+                "message": "An error occurred while updating role info with role_id = "+str(role_id)+". " ,
+                "error":str(e)
             }
         )
 
@@ -958,7 +988,8 @@ def update_role_info():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting role skill pair(s) with role_id = "+str(role_id)+". " + str(e)
+                "message": "An error occurred while deleting role skill pair(s) with role_id = "+str(role_id)+". " ,
+                "error":str(e)
             }
         )
     
@@ -975,7 +1006,8 @@ def update_role_info():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the role skill pairs. " + str(e)
+                "message": "An error occurred while creating the role skill pairs. " ,
+                "error":str(e)
             }
         ), 500
 
@@ -1018,6 +1050,13 @@ def create_skill():
     
     if data["skill_name"].isspace() or data["skill_name"] == None or len(data["skill_name"])==0:
         raise Exception ("Skill name should not be empty or just contain white spaces.")
+    
+    if data["skill_status"] not in ["Active","Retired"]:
+        raise Exception ("Skill status should be either 'Active' or 'Retired'.")
+    
+    exsiting = Skill.query.filter_by(skill_name=data["skill_name"]).first()
+    if exsiting:
+        raise Exception ("Skill with name = " + data["skill_name"] + " alreasy exsit!")
 
     skill = Skill(skill_id = None,**data)
 
@@ -1028,7 +1067,8 @@ def create_skill():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the skill. " + str(e)
+                "message": "An error occurred while creating the skill. " ,
+                "error":str(e)
             }
         ), 500
     
@@ -1072,7 +1112,8 @@ def update_skill_info(skill_id):
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while updating skill info which id = " + str(skill_id) + ". " + str(e)
+                "message": "An error occurred while updating skill info which id = " + str(skill_id) + ". " ,
+                "error":str(e)
             }
         ), 500
 
@@ -1216,7 +1257,8 @@ def remove_course_skill(course_id,skill_id):
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the course skill pair. " + str(e)
+                "message": "An error occurred while deleting the course skill pair. " ,
+                "error":str(e)
             }
         )
     return jsonify(
@@ -1239,7 +1281,8 @@ def create_course_skill():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the course skill pair. " + str(e)
+                "message": "An error occurred while creating the course skill pair. " ,
+                "error":str(e)
             }
         ), 500
     
@@ -1425,7 +1468,8 @@ def update_role_status(role_id):
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while updating role status which id = " + str(role_id) + ". " + str(e)
+                "message": "An error occurred while updating role status which id = " + str(role_id) + ". " ,
+                "error":str(e)
             }
         ), 500
 
@@ -1500,7 +1544,8 @@ def remove_role_skill(role_id,skill_id):
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting the role skill pair. " + str(e)
+                "message": "An error occurred while deleting the role skill pair. " ,
+                "error":str(e)
             }
         )
     return jsonify(
@@ -1523,7 +1568,8 @@ def create_role_skill():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the role skill pair. " + str(e)
+                "message": "An error occurred while creating the role skill pair. " ,
+                "error":str(e)
             }
         ), 500
     
@@ -1551,7 +1597,8 @@ def update_role_skill():
         return jsonify(
             {
                 "code":500,
-                "message": "An error occurred while deleting role skill pair(s) with role_id = "+role_id+". " + str(e)
+                "message": "An error occurred while deleting role skill pair(s) with role_id = "+role_id+". " ,
+                "error":str(e)
             }
         )
     try:
@@ -1567,7 +1614,8 @@ def update_role_skill():
         return jsonify(
             {
                 "code": 500,
-                "message": "An error occurred while creating the role skill pairs. " + str(e)
+                "message": "An error occurred while creating the role skill pairs. " ,
+                "error":str(e)
             }
         ), 500
 

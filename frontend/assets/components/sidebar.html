@@ -52,8 +52,17 @@
                 <span>Courses</span></a>
         </li>
     </div>
+    <!-- Divider -->
+    <hr class="sidebar-divider d-none d-md-block" style="border-color:#E3E6F0;">
+    <!-- Sidebar Toggler (Sidebar) -->
+    <div class="text-center d-none d-md-inline">
+        <button class="rounded-circle border-0" id="sidebarToggle" style="background-color: #808080 !important;"></button>
+    </div>
+    <!--//Staff-->
 </ul>
-
+</style>
+<!-- Custom scripts for all pages-->
+<!-- <script src="js/sb-admin-2.min.js"></script> -->
 <script>
     Vue.createApp({
         data() {
@@ -64,9 +73,6 @@
         },
         created() { // created is a hook that executes as soon as Vue instance is created
             // check if there's session
-            // console.log("nav's user id: " + getCookie('user_id'))
-            // console.log("navbar.html: getCookie('username') -> " ,getCookie('username'));
-            // console.log("navbar.html: getCookie('user_email') -> ", getCookie('user_email'));
             
             // check credentials  
             if (getCookie('user_id') == null) {
@@ -78,7 +84,6 @@
             else if (getCookie('user_id') == "hr") {
                 this.userid = "hr";
                 this.switchToStaffAcct = getCookie('switch_to_staff_acct');
-                console.log("result: " , this.switchToStaffAcct);
             }
 
             // cookie function

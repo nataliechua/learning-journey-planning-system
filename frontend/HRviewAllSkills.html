@@ -63,55 +63,57 @@
                             <div>
                                 <b>Active Skills</b>
                             </div>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Skill</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="skill in Active_skills" >
-                                        <th scope="row">{{ skill.skill_id }}</th>
-                                        <td>{{ skill.skill_name }}</td>
-                                        <td>{{ skill.skill_status }}</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
-                                        </td>
-                                    </tr>
- 
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="col-2">ID</th>
+                                            <th scope="col" class="col-3">Skill</th>
+                                            <th scope="col" class="col-5">Status</th>
+                                            <th scope="col" class="col-2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="skill in Active_skills" >
+                                            <th scope="row">{{ skill.skill_id }}</th>
+                                            <td>{{ skill.skill_name }}</td>
+                                            <td>{{ skill.skill_status }}</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
+                                            </td>
+                                        </tr>
+    
 
-                                </tbody>
-                            </table>
-
+                                    </tbody>
+                                </table>
+                            </div>
                             <div>
                                 <b>Inactive Skills</b>
                             </div>
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col" class="col-2">ID</th>
+                                            <th scope="col" class="col-3">Skill</th>
+                                            <th scope="col" class="col-5">Status</th>
+                                            <th scope="col" class="col-2"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="skill in Inactive_skills" >
+                                            <th scope="row">{{ skill.skill_id }}</th>
+                                            <td>{{ skill.skill_name }}</td>
+                                            <td>Retired</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
+                                            </td>
+                                        </tr>
+    
 
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">ID</th>
-                                        <th scope="col">Skill</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="skill in Inactive_skills" >
-                                        <th scope="row">{{ skill.skill_id }}</th>
-                                        <td>{{ skill.skill_name }}</td>
-                                        <td>{{ skill.skill_status }}</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary" @click="goToEditSkill(skill.skill_id)">Edit</a>
-                                        </td>
-                                    </tr>
- 
-
-                                </tbody>
-                            </table>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
 
@@ -158,20 +160,17 @@
                     fetch(get_all_active_skills)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(response);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
                             } else {
-                                this.Active_skills = data.data.skills
-                                console.log(this.Active_skills);
+                                this.Active_skills = data.data.skills;
 
                             }
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
-                            console.log(this.message + error);
 
                         });
                     },
@@ -181,20 +180,17 @@
                     fetch(get_all_inactive_skills)
                         .then(response => response.json())
                         .then(data => {
-                            console.log(response);
                             if (data.code === 404) {
                                 // no skill in db
                                 this.message = data.message;
                             } else {
-                                this.Inactive_skills = data.data.skills
-                                console.log(this.Inactive_skills);
+                                this.Inactive_skills = data.data.skills;
 
                             }
                         })
                         .catch(error => {
                             // Errors when calling the service; such as network error, 
                             // service offline, etc
-                            console.log(this.message + error);
 
                         });
                     },

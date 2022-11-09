@@ -31,7 +31,6 @@
             $("#footer").load("./assets/components/footer.html");
         });
     </script>
-
 </head>
 
 <body id="page-top">
@@ -57,12 +56,11 @@
                 <div class="container-fluid">
 
                     <!-- Page Heading -->
-                    <h1 class="h3 mb-4 text-gray-800">Edit Learning Journey 1: {{journey_name}}</h1>                    
+                    <h1 class="h3 mb-4 text-gray-800">View Learning Journey 1: {{journey_name}}</h1>                    
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb bg-light">
-                            <li class="breadcrumb-item"><a href="learningJourney.html">Learning Journey</a></li>
-                            <li class="breadcrumb-item"><a href="viewLearningJourney.html">Learning Journey 1: {{journey_name}}</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                            <li class="breadcrumb-item"><a href="index.html">Learning Journey</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{journey_name}}</li>
                         </ol>
                     </nav>
                     <div class="card">
@@ -174,7 +172,7 @@
                                     <span aria-hidden="true">×</span>
                                 </button>
                             </div>
-                            <div class="modal-body" v-text="removeModalText">{{journey_id}}</div>
+                            <div class="modal-body" v-text="removeModalText"></div>
                             <div class="modal-footer">
                                 <div v-if="deleteErr">
                                     <button class="btn btn-primary" type="button" data-dismiss="modal">Ok</button>
@@ -222,7 +220,7 @@
             data() {
                 return {
                     // journeyId: "",
-                    // removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
+                    removeModalText: "Select 'Confirm' below if you are sure to remove the learning journey",
                     // disableRemoveModalButtons: false,
                     // deleteErr: false
                     journey_name:"",
@@ -246,7 +244,7 @@
 
                         if (switch_to_staff_acct == "N") {
 
-                            location.href = './HRviewAllRoles.html';
+                            location.href = './frontend/HRviewAllRoles.html';
                         }
                     }
                 }

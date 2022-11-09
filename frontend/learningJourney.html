@@ -60,47 +60,49 @@
                     <div class="card">
                         <div class="card-body">
                             <a type="button" class="btn btn-primary float-right mb-3" href="addLearningJourney.html">Add <i class="fas fa-fw fa-plus-circle" style="color: #fff !important;"></i></a>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Learning Journey</th>
-                                        <th scope="col">Role</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody v-if="loading">
-                                    <tr>
-                                        <td colspan="4">
-                                            <!--Spinner-->
-                                            <div class="d-flex justify-content-center mt-2">
-                                                <div class="spinner-border" role="status">
+                            <div class="table-responsive">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Learning Journey</th>
+                                            <th scope="col">Role</th>
+                                            <th scope="col">Status</th>
+                                            <th scope="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody v-if="loading">
+                                        <tr>
+                                            <td colspan="4">
+                                                <!--Spinner-->
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <div class="spinner-border" role="status">
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div class="d-flex justify-content-center mt-2">
-                                                <strong>Please wait while we are fetching the records...</strong>
-                                            </div>
-                                            <!--//Spinner-->  
-                                        </td>
-                                    </tr>
-                                </tbody>
+                                                <div class="d-flex justify-content-center mt-2">
+                                                    <strong>Please wait while we are fetching the records...</strong>
+                                                </div>
+                                                <!--//Spinner-->  
+                                            </td>
+                                        </tr>
+                                    </tbody>
 
-                                <tbody v-if="errorMsg">
-                                    <tr>
-                                        <td colspan="4" style="color:red;">{{this.message}}</td>
-                                    </tr>
-                                </tbody>
-                                <tbody v-if="!errrorMsg && !loading">
-                                    <tr v-for="(journey, index) in journeys">
-                                        <th scope="row">{{ journey.journey_name }}</th>
-                                        <td>{{ journey.role.role_name }}</td>
-                                        <td>{{ journey.journey_completion_status }}%</td>
-                                        <td>
-                                            <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                    <tbody v-if="errorMsg">
+                                        <tr>
+                                            <td colspan="4" style="color:red;">{{this.message}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tbody v-if="!errrorMsg && !loading">
+                                        <tr v-for="(journey, index) in journeys">
+                                            <th scope="row">{{ journey.journey_name }}</th>
+                                            <td>{{ journey.role.role_name }}</td>
+                                            <td>{{ journey.journey_completion_status }}%</td>
+                                            <td>
+                                                <a type="button" class="btn btn-primary" @click="goToViewLJ(journey.journey_id)">View</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -159,7 +161,6 @@
                                     this.errorMsg = true;
                                 } else {
                                     this.journeys = data.data.journeys
-                                    console.log("data: " ,data.data.journeys);
                                     this.loading = false;
                                     this.errorMsg = false;
                                 }
@@ -170,12 +171,10 @@
                                 this.loading = false;
                                 this.message = error;
                                 this.errorMsg = true;
-                                console.log(this.message + error);
-
                             });
                 },
                 goToViewLJ(learning_journey_id) {
-                    location.href = './viewLearningJourney.html?learning_journey_id=' + learning_journey_id
+                    location.href = './editLearningJourney.html?learning_journey_id=' + learning_journey_id
                 }
             },
             created() {
@@ -216,6 +215,52 @@
             }
             return null;
         }
+    </script>
+
+    <script>
+        !(function (l) {
+            "use strict";
+            l("#sidebarToggle, #topbar").on("click", function (e) {
+                l("body").toggleClass("sidebar-toggled"),
+                l(".sidebar").toggleClass("toggled"),
+                l(".sidebar").hasClass("toggled") &&
+                    l(".sidebar .collapse").collapse("hide");
+            }),
+                l(window).resize(function () {
+                l(window).width() < 768 && l(".sidebar .collapse").collapse("hide"),
+                    l(window).width() < 480 &&
+                    !l(".sidebar").hasClass("toggled") &&
+                    (l("body").addClass("sidebar-toggled"),
+                    l(".sidebar").addClass("toggled"),
+                    l(".sidebar .collapse").collapse("hide"));
+                }),
+                l("body.fixed-nav .sidebar").on(
+                "mousewheel DOMMouseScroll wheel",
+                function (e) {
+                    var o;
+                    768 < l(window).width() &&
+                    ((o = (o = e.originalEvent).wheelDelta || -o.detail),
+                    (this.scrollTop += 30 * (o < 0 ? 1 : -1)),
+                    e.preventDefault());
+                }
+                ),
+                l(document).on("scroll", function () {
+                100 < l(this).scrollTop()
+                    ? l(".scroll-to-top").fadeIn()
+                    : l(".scroll-to-top").fadeOut();
+                }),
+                l(document).on("click", "a.scroll-to-top", function (e) {
+                var o = l(this);
+                l("html, body")
+                    .stop()
+                    .animate(
+                    { scrollTop: l(o.attr("href")).offset().top },
+                    1e3,
+                    "easeInOutExpo"
+                    ),
+                    e.preventDefault();
+                });
+            })(jQuery);
     </script>
 </body>
 

@@ -41,7 +41,13 @@
         });
         $('select').selectpicker();
     </script>
-
+    <style>
+        @media only screen and (min-width: 1084px) {
+            .bootstrap-select {
+                width: 800px !important;
+            }
+        }
+    </style>
 </head>
 
 <body id="page-top">
@@ -87,7 +93,7 @@
                                     <select v-model="skill_status" class="selectpicker" id="skill" data-live-search="true">
                                         <option value="" selected disabled></option>
                                         <option>Active</option>
-                                        <option>Inactive</option>
+                                        <option>Retired</option>
                                     </select>
                                 </div>
                                 <button type="button" class="btn btn-primary" @click="saveSkill">Create</button>
@@ -121,12 +127,12 @@
             data() {
                 return {
                     skill_name: "",
-                    skill_status: ""
+                    skill_status: "",
+                    toastCount: 0
                 }
             },
             methods: {
                 saveSkill() {
-                    console.log("SaveSkill()");
                     $(async () => {
                             serviceURL = "http://localhost:5000/skill/create";
                             try {
@@ -145,7 +151,6 @@
                                         }
                                     );
                                 const result = await response.json();
-                                console.log(result);
                                 // toastr configuration
                                 toastr.options = {
                                     "closeButton": true,
@@ -164,19 +169,16 @@
                                     "hideMethod": "fadeOut"
                                 }
 
-                                console.log(result.code)
-
                                 if (result.code === 201) {
                                     if (this.toastCount == 0) {
                                         // success 
-                                        // console.log("created successfully")
                                         toastr.success("Created successfully");
                                         this.toastCount += 1;
                                     } 
 
-                                    setInterval(function doThisAfterFourSeconds() {
+                                    setInterval(function doThisAfterEightSeconds() {
                                         location.href = './HRviewAllSkills.html';
-                                    }, 400);
+                                    }, 800);
 
                                     
                                 } else if (result.code == 500) {
@@ -191,7 +193,6 @@
                             } catch (error) {
                                 // Errors when calling the service; such as network error, 
                                 // service offline, etc
-                                console.log(error.message())
                                 toastr.error("An error has occurred. Please try again");
                             } // error
                         });
