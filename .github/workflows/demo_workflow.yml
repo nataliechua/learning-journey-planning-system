@@ -13,6 +13,7 @@ jobs:
   build:
     #Configures the job to run on the latest version of an Ubuntu Linux runner.
     runs-on: ubuntu-latest
+   
     #Groups together all the steps that run in the check-bats-version job. 
     #Each item nested under this section is a separate action or shell script.
     steps:
@@ -27,10 +28,6 @@ jobs:
         #This puts both the python commands in your PATH.
         uses: actions/setup-python@v4
         with:
-          connection-string: mysql+mysqlconnector://root:root@localhost:3306/ddl
-          sql-file: 'spm_database/Script/ddl.sql'
-          # 'mysql+mysqlconnector://root:root@localhost:3306/is212_example
-
           python-version: '3.x'
 
       - name: Install dependencies
