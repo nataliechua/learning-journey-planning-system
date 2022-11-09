@@ -134,7 +134,7 @@
                                             <label id="course_id" hidden>{{course.course_id}} </label>
                                             <label id="course_completion_status" hidden>{{course.course_completion_status}} </label>
                                             -->
-                                            <button type="button" class="btn btn-danger" v-if="course.course_completion_status != 'Completed'" id="removeBtn" data-toggle="modal" data-target="#deleteModal" @click="passData(course.course_completion_status, skill.skill_id, course.course_id)">Confirm</button>
+                                            <button type="button" class="btn btn-danger" id="removeBtn" data-toggle="modal" data-target="#deleteModal" @click="passData(course.course_completion_status, skill.skill_id, course.course_id)">Remove</button>
 
                                         </td>
                                     </tr>
